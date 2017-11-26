@@ -148,3 +148,7 @@ fabric.properties
 .idea/sonarlint
 
 # End of https://www.gitignore.io/api/node,java,webstorm
+
+.idea/markdown-navigator*
+.gulp-cache
+build/
