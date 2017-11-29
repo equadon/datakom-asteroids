@@ -1,4 +1,4 @@
-import PacketHandler from 'PacketHandler'
+import PacketHandler from 'PacketHandler';
 
 export default
 class GameServer {
@@ -11,7 +11,7 @@ class GameServer {
             pingInterval: 10000,
             pingTimeout: 5000,
             cookie: false
-        })
+        });
 
         // initiate packet handler
         this.handler = new PacketHandler(this);
