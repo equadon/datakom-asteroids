@@ -53,7 +53,7 @@ class GameServer {
         //socket.emit('newplayer', socket.player);
 
         //Send game state to client
-        this.handler.playerInit();
+        this.handler.playerInit(socket);
         console.log('Player ' + socket.player.id + ' has joined!');
     }
 
