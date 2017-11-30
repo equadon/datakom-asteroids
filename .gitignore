@@ -152,3 +152,6 @@ fabric.properties
 .idea/markdown-navigator*
 .gulp-cache
 build/
+
+#MongoDB files
+data/
