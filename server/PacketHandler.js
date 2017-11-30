@@ -43,8 +43,8 @@ class PacketHandler {
         new GameUpdateResponsePacket(gameState).send(socket);
     }
 
-    playerInit(socket, data) {
-        gameState = server.getState();
+    playerInit(socket) {
+        const gameState = this.server.getState();
         new GameUpdateResponsePacket(gameState).send(socket);
     }
 

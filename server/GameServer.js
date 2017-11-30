@@ -6,6 +6,7 @@ class GameServer {
     constructor(db) {
         this.lastPlayerID = 0;
         this.loggedInPlayers = {};
+        this.cows = [];
         this.server = require('http').createServer();
         this.io = require('socket.io')(this.server, {
             path: '/cows',
@@ -35,9 +36,9 @@ class GameServer {
         socket.on('login-request', (data) => {
             this.handler.loginRequest(socket, data);
 
-
             this.initializePlayer(socket);
-            socket.on('move', (data) => {
+
+            socket.on('update', (data) => {
                 this.handler.updateRequest(socket, data);
             });
 
@@ -45,31 +46,15 @@ class GameServer {
     }
 
     initializePlayer(socket) {
-        var players = this.getAllPlayers();
-        socket.emit('allplayers', players);
-
-        //Add the new player
-        // TODO: Fix with real data values, data.(x,y,angle) doesn't exist
-        socket.player = new Player(this.lastPlayerID++, 0,0,0);//data.x, data.y, data.angle);
+        //Create the new player
+        socket.player = new Player(this.lastPlayerID++, 0, 0, 0);
 
         //Send id to client
-        socket.emit('newplayer', socket.player);
+        //socket.emit('newplayer', socket.player);
+
+        //Send game state to client
+        this.handler.playerInit();
         console.log('Player ' + socket.player.id + ' has joined!');
-        socket.broadcast.emit('addplayer', socket.player);
-    }
-
-    managePlayer(socket) {
-        socket.on('move', function (data) {
-            socket.player.x = data.x;
-            socket.player.y = data.y;
-            socket.player.angle = data.angle;
-        });
-
-        let _this = this;
-        socket.on('update', function () {
-            socket.emit('update', _this.getAllPlayers());
-        });
-
     }
 
     onDisconnect(reason) {
@@ -83,7 +68,7 @@ class GameServer {
     getState() {
         return {
             players: this.getAllPlayers(),
-            cows: this.server.getCows()
+            cows: this.server.cows
         };
     }
 

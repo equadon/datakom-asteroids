@@ -1,7 +1,7 @@
 import Packet from 'packets/Packet';
 
 export default
-class GameUpdatePacket extends Packet {
+class GameUpdateResponsePacket extends Packet {
     constructor(state) {
         super('update', {
             players: state.players,
