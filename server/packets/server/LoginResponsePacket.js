@@ -1,4 +1,4 @@
-import Packet from 'packets/Packet'
+import Packet from 'packets/Packet';
 
 export default
 class LoginResponsePacket extends Packet {

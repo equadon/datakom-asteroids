@@ -15,7 +15,9 @@ class LoginHandler {
      */
     createUser(newUser, callback) {
         console.log("Creating new user " + newUser.username);
-        this.db.collection("users").insertOne(newUser, function (err, result) {
+        this.db.collection("users").insertOne({username: newUser.username,
+                                               password: newUser.password},
+                                               function (err, result) {
             if (err) throw err; // TODO: respond with failed user creation
             callback(true);
         });
