@@ -26,7 +26,7 @@ class PacketHandler {
                 // TODO: Keep track of logged in users
             }
             // Send login response
-            new LoginResponsePacket(isValid).send(socket);
+            new LoginResponsePacket(isValid, this.server.lastPlayerID).send(socket);
         });
     }
 
