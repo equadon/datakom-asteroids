@@ -29,9 +29,6 @@ class GameServer {
     }
 
     onConnect(socket) {
-        socket.on('disconnect', (reason) => {
-            this.onDisconnect(reason);
-        });
 
         socket.on('login-request', (data) => {
             this.handler.loginRequest(socket, data);
@@ -42,6 +39,9 @@ class GameServer {
                 this.handler.updateRequest(socket, data);
             });
 
+            socket.on('disconnect', (reason) => {
+                this.onDisconnect(reason);
+            });
         });
     }
 
@@ -53,7 +53,7 @@ class GameServer {
         //socket.emit('newplayer', socket.player);
 
         //Send game state to client
-        this.handler.playerInit();
+        this.handler.playerInit(socket);
         console.log('Player ' + socket.player.id + ' has joined!');
     }
 
