@@ -21,12 +21,12 @@ class PacketHandler {
      * @param data Request data with username and password
      */
     loginRequest(socket, data) {
-        this.loginHandler.login(data, function (isValid) {
+        this.loginHandler.login(data, function (isValid, id) {
             if (isValid) {
                 // TODO: Keep track of logged in users
             }
             // Send login response
-            new LoginResponsePacket(isValid, this.server.lastPlayerID).send(socket);
+            new LoginResponsePacket(isValid, id).send(socket);
         });
     }
 
