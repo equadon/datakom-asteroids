@@ -11,7 +11,7 @@ class PlayState extends Phaser.State {
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('diconnect', (obj) => {this.onDisconnect(obj) });
-        this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
+
 
 
 
@@ -22,18 +22,20 @@ class PlayState extends Phaser.State {
 	create() {
 
         this.player = this.add.sprite(getRandomInt(100, 400), getRandomInt(100, 400), 'ship');
-        this.spawnCow(5, getRandomInt(100, 400), getRandomInt(100, 400));
+
 
 
         //Groups
         this.players = this.add.group();
         this.cows = this.add.group();
 
+        this.spawnCow(5, getRandomInt(100, 400), getRandomInt(100, 400));
+
 
 
         //Scale
         this.player.scale.setTo(.35, .35);
-        this.cow.scale.setTo(.35, .35);
+        //this.cow.scale.setTo(.35, .35);
 
         //Anchor and Angle
         this.player.anchor.setTo(0.5, 0.5);
@@ -42,12 +44,13 @@ class PlayState extends Phaser.State {
         //Enable physics
         this.physics.arcade.enable(this.player);
 
-
+        this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
     }
 
     spawnCow(id, x, y) {
 	    let cow = this.add.sprite(x, y, 'cow');
 	    this.cows.add(cow);
+        cow.scale.setTo(.35, .35);
 	    cow.id = id;
         this.physics.arcade.enable(cow);
     }
@@ -89,7 +92,7 @@ class PlayState extends Phaser.State {
 
 
         } else {
-            console.log(this);
+            console.log(this.player);
             this.player.body.angularVelocity = 0.5;
         }
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
