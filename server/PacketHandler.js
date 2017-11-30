@@ -44,7 +44,7 @@ class PacketHandler {
     }
 
     playerInit(socket) {
-        gameState = server.getState();
+        const gameState = this.server.getState();
         new GameUpdateResponsePacket(gameState).send(socket);
     }
 

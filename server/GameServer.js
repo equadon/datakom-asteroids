@@ -68,7 +68,7 @@ class GameServer {
     getState() {
         return {
             players: this.getAllPlayers(),
-            cows: this.server.getCows()
+            cows: this.server.cows
         };
     }
 
