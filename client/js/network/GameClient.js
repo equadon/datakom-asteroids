@@ -34,12 +34,10 @@ class GameClient {
         this.socket.emit('update', {
             x: player.x,
             y: player.y,
-            angle: 0,
+            angle: player.angle,
             id: player.id
             });
-
-
-    //console.log('wazzup');
+        
     }
 
 }

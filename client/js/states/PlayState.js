@@ -76,7 +76,7 @@ class PlayState extends Phaser.State {
         }
     }
     onUpdateResponse(data) {
-	    console.log('received data');
+	    console.log(data);
     }
 
     update() {
