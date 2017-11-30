@@ -70,6 +70,7 @@ class PlayState extends Phaser.State {
 	    if (login.success) {
 	        console.log('Login successful!');
 	        this.player.id = login.id //TODO
+            console.log(login);
         } else {
 	        console.log('Login failed: ' + login.message);
 	        this.text.setText('Login failed:\n' + login.message);
@@ -117,6 +118,7 @@ class PlayState extends Phaser.State {
         this.game.debug.spriteInfo(this.player, 32, 32);
         this.game.debug.text('acceleration: ' + this.player.body.acceleration, 32, 200);
         this.game.debug.text('velocity: ' + this.player.body.velocity, 32, 232);
+       this.game.debug.text('id: ' + this.player.id, 32, 262);
 
     }
 

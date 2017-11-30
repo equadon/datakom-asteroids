@@ -1,6 +1,7 @@
 import LoginResponsePacket from 'packets/server/LoginResponsePacket';
 import GameUpdateResponsePacket from 'packets/server/GameUpdateResponsePacket';
 import GameUpdateRequestPacket from 'packets/client/GameUpdateRequestPacket';
+import Player from 'Player';
 
 import LoginHandler from 'LoginHandler'
 
@@ -21,12 +22,16 @@ class PacketHandler {
      * @param data Request data with username and password
      */
     loginRequest(socket, data) {
-        this.loginHandler.login(data, function (isValid) {
+        this.loginHandler.login(data, (isValid, id) => {
             if (isValid) {
-                // TODO: Keep track of logged in users
+                // Create player 
+                socket.player = new Player(id, 0, 0, 0);
+                this.server.loggedInPlayers[id] = socket.player;
+                console.log(id);
+                console.log('Player ' + socket.player.id + ' has joined!');
             }
             // Send login response
-            new LoginResponsePacket(isValid).send(socket);
+            new LoginResponsePacket(isValid, socket.player.id).send(socket);
         });
     }
 
@@ -37,9 +42,9 @@ class PacketHandler {
     updateRequest(socket, data) {
         const request = new GameUpdateRequestPacket(data);
         let status = request.data;
-        let player = socket.player;
-        player.update(status);
+        socket.player.update(status);
         let gameState = this.server.getState();
+        console.log(status);
         new GameUpdateResponsePacket(gameState).send(socket);
     }
 

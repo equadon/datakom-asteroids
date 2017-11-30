@@ -1,10 +1,11 @@
 import GameServer from 'GameServer'
 import WebServer from 'WebServer'
+import Database from 'Database'
 
-let MongoClient = require('mongodb').MongoClient;
-let url = "mongodb://localhost:27017/mydb";
 
-MongoClient.connect(url, function (err, db) {
+var database = new Database();
+
+database.connect(function (err, db) {
     if (err) {
         throw err;
     } else {
