@@ -36,10 +36,10 @@ class PacketHandler {
      */
     updateRequest(socket, data) {
         const request = new GameUpdateRequestPacket(data);
-        status = request.data;
-        player = socket.player;
+        let status = request.data;
+        let player = socket.player;
         player.update(status);
-        gameState = server.getState();
+        let gameState = this.server.getState();
         new GameUpdateResponsePacket(gameState).send(socket);
     }
 

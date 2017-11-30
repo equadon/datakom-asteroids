@@ -31,8 +31,6 @@ class PlayState extends Phaser.State {
 
         this.spawnCow(5, getRandomInt(100, 400), getRandomInt(100, 400));
 
-
-
         //Scale
         this.player.scale.setTo(.35, .35);
         //this.cow.scale.setTo(.35, .35);
@@ -45,6 +43,7 @@ class PlayState extends Phaser.State {
         this.physics.arcade.enable(this.player);
 
         this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
+        this.client.on('update', (obj) => { this.onUpdateResponse(obj) });
     }
 
     spawnCow(id, x, y) {
@@ -70,14 +69,15 @@ class PlayState extends Phaser.State {
     onLoginResponse(login) {
 	    if (login.success) {
 	        console.log('Login successful!');
-	        this.text.setText('Login successful!');
-	        this.player.id = 1; //TODO
+	        this.player.id = login.id //TODO
         } else {
 	        console.log('Login failed: ' + login.message);
 	        this.text.setText('Login failed:\n' + login.message);
         }
     }
-
+    onUpdateResponse(data) {
+	    console.log('received data');
+    }
 
     update() {
 
@@ -92,7 +92,6 @@ class PlayState extends Phaser.State {
 
 
         } else {
-            console.log(this.player);
             this.player.body.angularVelocity = 0.5;
         }
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
@@ -110,6 +109,8 @@ class PlayState extends Phaser.State {
          if (this.player.body.velocity.x != 0 || this.player.body.velocity.y != 0) {
 
          }
+
+         this.client.update(this.player);
     }
 
    render() {

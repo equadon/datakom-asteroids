@@ -28,4 +28,18 @@ class GameClient {
     on(name, callback) {
         this.socket.on(name, callback);
     }
+
+    update(player) {
+        
+        this.socket.emit('update', {
+            x: player.x,
+            y: player.y,
+            angle: 0,
+            id: player.id
+            });
+
+
+    //console.log('wazzup');
+    }
+
 }
