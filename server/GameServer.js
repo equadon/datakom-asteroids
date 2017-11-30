@@ -33,32 +33,21 @@ class GameServer {
         socket.on('login-request', (data) => {
             this.handler.loginRequest(socket, data);
 
-            this.initializePlayer(socket);
+            this.handler.playerInit(socket);
 
             socket.on('update', (data) => {
                 this.handler.updateRequest(socket, data);
             });
 
             socket.on('disconnect', (reason) => {
-                this.onDisconnect(reason);
+                this.onDisconnect(socket, reason);
             });
         });
     }
 
-    initializePlayer(socket) {
-        //Create the new player
-        socket.player = new Player(this.lastPlayerID++, 0, 0, 0);
-
-        //Send id to client
-        //socket.emit('newplayer', socket.player);
-
-        //Send game state to client
-        this.handler.playerInit(socket);
-        console.log('Player ' + socket.player.id + ' has joined!');
-    }
-
-    onDisconnect(reason) {
-        console.log('Client disconnected: ' + reason);
+    onDisconnect(socket, reason) {
+        console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
+        delete loggedInPlayers[socket.player.id];
     }
 
     getPlayer(id) {
@@ -67,7 +56,7 @@ class GameServer {
 
     getState() {
         return {
-            players: this.getAllPlayers(),
+            players: this.loggedInPlayers,
             cows: this.server.cows
         };
     }

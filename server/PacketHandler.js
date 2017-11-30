@@ -23,7 +23,10 @@ class PacketHandler {
     loginRequest(socket, data) {
         this.loginHandler.login(data, function (isValid, id) {
             if (isValid) {
-                // TODO: Keep track of logged in users
+                // Create player 
+                socket.player = new Player(id, 0, 0, 0);
+                this.server.loggedInPlayers[id] = socket.player;
+                console.log('Player ' + socket.id + ' has joined!');
             }
             // Send login response
             new LoginResponsePacket(isValid, id).send(socket);
@@ -37,8 +40,8 @@ class PacketHandler {
     updateRequest(socket, data) {
         const request = new GameUpdateRequestPacket(data);
         status = request.data;
-        player = socket.player;
-        player.update(status);
+        console.log(status);
+        player = socket.player.update(status);
         gameState = server.getState();
         new GameUpdateResponsePacket(gameState).send(socket);
     }
