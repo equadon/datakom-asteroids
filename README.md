@@ -5,7 +5,13 @@
 Install dependencies:
 > npm install
 
+Install MongoDB 
+> See nearest search engine
+
 ## Run
+
+To start the database create directory "data" and run:
+> mongod --dbpath data
 
 To start the web server, game server, and the client run:
 > npm start
