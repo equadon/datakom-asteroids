@@ -1,6 +1,7 @@
-import LoginRequestPacket from 'packets/client/LoginRequestPacket'
+import LoginRequestPacket from 'packets/client/LoginRequestPacket';
 
-import LoginResponsePacket from 'packets/server/LoginResponsePacket'
+import LoginResponsePacket from 'packets/server/LoginResponsePacket';
+import GameUpdateRequestPacket from './packets/client/GameUpdateRequestPacket';
 
 
 /**
@@ -26,4 +27,25 @@ class PacketHandler {
         // Send login response
         new LoginResponsePacket(request).send(socket);
     }
+
+    /**
+     * 
+     * @param request Request data with player position 
+     */
+    updateRequest(socket, data) {
+        const request = new GameUpdateRequestPacket(data);
+        status = request.data;
+        player = socket.player;
+        player.update(status);
+        gameState = server.getState();
+        new GameUpdateResponePacket(gameState).send(socket);
+    }
+
+    playerInit(socket, data) {
+        gameState = server.getState();
+        new GameUpdateResponePacket(gameState).send(socket);
+    }
+
+
+
 }

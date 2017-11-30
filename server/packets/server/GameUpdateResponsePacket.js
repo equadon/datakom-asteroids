@@ -2,9 +2,10 @@ import Packet from 'packets/Packet';
 
 export default
 class GameUpdatePacket extends Packet {
-    constructor(players) {
+    constructor(state) {
         super('update', {
-            players: players
+            players: state.players,
+            cows: state.cows
         });
     }
 }

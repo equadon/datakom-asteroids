@@ -1,9 +1,11 @@
 import PacketHandler from 'PacketHandler';
+import Player from 'Player';
 
 export default
 class GameServer {
     constructor() {
         this.lastPlayerID = 0;
+        this.loggedInPlayers = {};
         this.server = require('http').createServer();
         this.io = require('socket.io')(this.server, {
             path: '/cows',
@@ -31,8 +33,11 @@ class GameServer {
         socket.on('login-request', (data) => {
             this.handler.loginRequest(socket, data);
 
+
             this.initializePlayer(socket);
-            this.managePlayer(socket);
+            socket.on('move', (data) => {
+                this.handler.updateRequest(socket, data);
+            });
 
         });
     }
@@ -42,12 +47,7 @@ class GameServer {
         socket.emit('allplayers', players);
 
         //Add the new player
-        socket.player = {
-            id: server.lastPlayerID++,
-            x: data.x,
-            y: data.y,
-            angle: data.angle
-        };
+        socket.player = new Player(server.lastPlayerID++, data.x, data.y, data.angle);
 
         //Send id to client
         socket.emit('newplayer', socket.player);
@@ -70,6 +70,19 @@ class GameServer {
 
     onDisconnect(reason) {
         console.log('Client disconnected: ' + reason);
+    }
+
+    getPlayer(id) {
+        return this.loggedInPlayers[id];
+    }
+
+    getState() {
+        return {
+            players: this.server.getAllPlayers(),
+            cows: this.server.getCows()
+        };
+
+
     }
 
 
