@@ -3,7 +3,7 @@ import Player from 'Player';
 
 export default
 class GameServer {
-    constructor() {
+    constructor(db) {
         this.lastPlayerID = 0;
         this.loggedInPlayers = {};
         this.server = require('http').createServer();
@@ -15,8 +15,10 @@ class GameServer {
             cookie: false
         });
 
+        this.db = db;
+
         // initiate packet handler
-        this.handler = new PacketHandler(this);
+        this.handler = new PacketHandler(this, this.db);
 
         this.io.on('connection', (o) => this.onConnect(o));
     }
@@ -43,11 +45,12 @@ class GameServer {
     }
 
     initializePlayer(socket) {
-        players = getAllPlayers();
+        var players = this.getAllPlayers();
         socket.emit('allplayers', players);
 
         //Add the new player
-        socket.player = new Player(server.lastPlayerID++, data.x, data.y, data.angle);
+        // TODO: Fix with real data values, data.(x,y,angle) doesn't exist
+        socket.player = new Player(this.lastPlayerID++, 0,0,0);//data.x, data.y, data.angle);
 
         //Send id to client
         socket.emit('newplayer', socket.player);
@@ -62,8 +65,9 @@ class GameServer {
             socket.player.angle = data.angle;
         });
 
+        let _this = this;
         socket.on('update', function () {
-            socket.emit('update', getAllPlayers());
+            socket.emit('update', _this.getAllPlayers());
         });
 
     }
@@ -78,18 +82,17 @@ class GameServer {
 
     getState() {
         return {
-            players: this.server.getAllPlayers(),
+            players: this.getAllPlayers(),
             cows: this.server.getCows()
         };
-
-
     }
 
 
     getAllPlayers() {
         var players = [];
+        let _this = this;
         Object.keys(this.io.sockets.connected).forEach(function (socketID) {
-            var player = this.io.sockets.connected[socketID].player;
+            var player = _this.io.sockets.connected[socketID].player;
             if (player) players.push(player);
         });
         return players;

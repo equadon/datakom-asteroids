@@ -1,3 +1,4 @@
+export default
 class Player {
     constructor(id, x, y, angle) {
         this.id = id;
@@ -25,7 +26,7 @@ class Player {
             x: this.x,
             y: this.y,
             angle: this.angle
-        }
+        };
         return player;
     }
 }
