@@ -7,9 +7,15 @@ class Game extends Phaser.Game {
         this.showDebugHeader = () => {};
 
         this.state.add('Play', PlayState);
+        //this.stage.disableVisibilityChange = true;
     }
 
     start() {
         this.state.start('Play');
     }
+
+
+
+
 }
+
