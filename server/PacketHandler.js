@@ -32,8 +32,9 @@ class PacketHandler {
 
                 this.userUpdate(socket.player, 1);
             }
+
             // Send login response
-            new LoginResponsePacket(isValid, socket.player.id).send(socket);
+            new LoginResponsePacket(isValid, socket.player.id, this.server.getPlayers()).send(socket);
         });
     }
 

@@ -61,6 +61,13 @@ class GameServer {
         };
     }
 
+    getPlayers() {
+        let players = [];
+        for (let id of Object.keys(this.io.sockets.connected)) {
+            players.push(this.io.sockets.connected[id].player);
+        }
+        return players;
+    }
 
     getAllPlayers() {
         var players = [];
@@ -75,5 +82,4 @@ class GameServer {
     randomInt(low, high) {
         return Math.floor(Math.random() * (high - low) + low);
     }
-
 }

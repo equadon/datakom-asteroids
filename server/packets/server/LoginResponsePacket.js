@@ -2,12 +2,12 @@ import Packet from 'packets/Packet';
 
 export default
 class LoginResponsePacket extends Packet {
-    constructor(isValid, id) {
+    constructor(isValid, id, players) {
         super('login-response', {
             success: isValid,
             message: isValid ? null : "Invalid password",
-            id: id
+            id: id,
+            players: players
         });
-        console.log(id);
     }
 }
