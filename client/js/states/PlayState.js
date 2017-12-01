@@ -21,10 +21,6 @@ class PlayState extends Phaser.State {
 
 	create() {
 
-        this.player = this.add.sprite(getRandomInt(100, 400), getRandomInt(100, 400), 'ship');
-
-
-
         //Groups
         this.players = this.add.group();
         this.cows = this.add.group();
@@ -32,19 +28,22 @@ class PlayState extends Phaser.State {
         this.spawnCow(5, getRandomInt(100, 400), getRandomInt(100, 400));
 
         //Scale
-        this.player.scale.setTo(.35, .35);
+
         //this.cow.scale.setTo(.35, .35);
 
         //Anchor and Angle
-        this.player.anchor.setTo(0.5, 0.5);
-        this.player.angle = -90;
 
         //Enable physics
-        this.physics.arcade.enable(this.player);
 
+
+
+        //Client on server
         this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
         this.client.on('update', (obj) => { this.onUpdateResponse(obj) });
+        //this.client.on('update', (obj) => { this.onUserUpdate(obj) });
     }
+
+    //Spawn functions
 
     spawnCow(id, x, y) {
 	    let cow = this.add.sprite(x, y, 'cow');
@@ -53,6 +52,31 @@ class PlayState extends Phaser.State {
 	    cow.id = id;
         this.physics.arcade.enable(cow);
     }
+
+    spawnPlayer(id) {
+        let ship = this.add.sprite(getRandomInt(100, 400), getRandomInt(100, 400), 'ship');
+        ship.id = id;
+        //this.players.add(player);
+        ship.scale.setTo(.35, .35);
+        ship.anchor.setTo(0.5, 0.5);
+        ship.angle = -90;
+
+
+        //Enable physics
+        this.physics.arcade.enable(ship);
+
+        return ship;
+    }
+
+    deletePlayer(id) {
+        for (let i=0; i<this.players.children.length; i++) {
+            if (this.players.children[i].id == id) {
+                this.players.children[i].destroy();
+            }
+        };
+    }
+
+    //Client-Server functions
 
     onConnect() {
         console.log('Client connected');
@@ -66,19 +90,44 @@ class PlayState extends Phaser.State {
         this.text.setText('Disconnected!');
     }
 
+
+    //Spawn
     onLoginResponse(login) {
 	    if (login.success) {
 	        console.log('Login successful!');
-	        this.player.id = login.id //TODO
+	        console.log(login.id);
+
+            this.player = this.spawnPlayer(login.id);
+
             console.log(login);
         } else {
 	        console.log('Login failed: ' + login.message);
 	        this.text.setText('Login failed:\n' + login.message);
         }
     }
+
     onUpdateResponse(data) {
 	    console.log(data);
     }
+
+    /**
+     * Spawn or delete Player
+     * @param data Data with login information, id and type. type: 1 = CONNECTED, 0 = DISCONNECTED
+     */
+
+    /*onUserUpdate(data) {
+        if (data.type = 1) {
+            spawnPlayer(data.id);
+        }
+
+        else if (data.type = 0) {
+            //deleteplayer
+        }
+        else {
+            console.log("ERROR in user update")
+        }
+
+    }*/
 
     update() {
 
@@ -92,8 +141,6 @@ class PlayState extends Phaser.State {
             this.player.body.angularVelocity  += 1;
 
 
-        } else {
-            this.player.body.angularVelocity = 0.5;
         }
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             // Add forward acceleration
@@ -103,8 +150,11 @@ class PlayState extends Phaser.State {
             // Add backward acceleration (Mostly for testing)
             this.physics.arcade.accelerationFromRotation(this.player.rotation, -50, this.player.body.acceleration);
 
-        } else {
+        } else if (this.player!=undefined){
             this.player.body.acceleration.setTo(0, 0);
+        }
+        else {
+            return
         }
 
          if (this.player.body.velocity.x != 0 || this.player.body.velocity.y != 0) {
