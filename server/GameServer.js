@@ -5,7 +5,6 @@ export default
 class GameServer {
     constructor(db) {
         this.lastPlayerID = 0;
-        this.loggedInPlayers = {};
         this.cows = [];
         this.server = require('http').createServer();
         this.io = require('socket.io')(this.server, {
@@ -32,10 +31,8 @@ class GameServer {
         socket.on('login-request', (data) => {
             this.handler.loginRequest(socket, data);
 
-            this.handler.playerInit(socket);
-
-            socket.on('update', (data) => {
-                this.handler.updateRequest(socket, data);
+            socket.on('game-update', (data) => {
+                this.handler.gameUpdate(socket, data);
             });
 
             socket.on('disconnect', (reason) => {
@@ -46,19 +43,7 @@ class GameServer {
 
     onDisconnect(socket, reason) {
         console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
-       // delete loggedInPlayers[socket.player.id];
         this.handler.userUpdate(socket.player, 0);
-    }
-
-    getPlayer(id) {
-        return this.loggedInPlayers[id];
-    }
-
-    getState() {
-        return {
-            players: this.loggedInPlayers,
-            cows: this.server.cows
-        };
     }
 
     getPlayers() {
@@ -67,19 +52,5 @@ class GameServer {
             players.push(this.io.sockets.connected[id].player);
         }
         return players;
-    }
-
-    getAllPlayers() {
-        var players = [];
-        let _this = this;
-        Object.keys(this.io.sockets.connected).forEach(function (socketID) {
-            var player = _this.io.sockets.connected[socketID].player;
-            if (player) players.push(player);
-        });
-        return players;
-    }
-
-    randomInt(low, high) {
-        return Math.floor(Math.random() * (high - low) + low);
     }
 }

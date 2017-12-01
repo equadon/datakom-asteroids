@@ -27,7 +27,6 @@ class PacketHandler {
             if (isValid) {
                 // Create player 
                 socket.player = new Player(this.server.lastPlayerID++, 0, 0, 0);
-                this.server.loggedInPlayers[id] = socket.player;
                 console.log('Player ' + socket.player.id + ' has joined!');
 
                 this.userUpdate(socket.player, 1);
@@ -43,16 +42,6 @@ class PacketHandler {
      * @param request Request data with player position 
      */
     updateRequest(socket, data) {
-        const request = new GameUpdateRequestPacket(data);
-        let status = request.data;
-        socket.player.update(status);
-        let gameState = this.server.getState();
-        new GameUpdateResponsePacket(gameState).send(socket);
-    }
-
-    playerInit(socket) {
-        const gameState = this.server.getState();
-        new GameUpdateResponsePacket(gameState).send(socket);
     }
 
     userUpdate(player, type) {
