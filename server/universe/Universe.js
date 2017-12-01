@@ -1,8 +1,5 @@
 import Zone from 'universe/Zone'
 
-const ZONE_WIDTH = 500;
-const ZONE_HEIGHT = 500;
-
 /**
  * Expanding universe consisting of multiple zones.
  */
@@ -17,6 +14,11 @@ class Universe {
     }
 
     expand() {
-        this.zones.push(new Zone(this, this.nextZoneId++, x, y, ZONE_WIDTH, ZONE_HEIGHT));
+        let zone = new Zone(this, this.nextZoneId++, x, y);
+
+        this.zones.push(zone);
+    }
+
+    getZone(x, y) {
     }
 }

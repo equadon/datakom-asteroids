@@ -1,10 +1,13 @@
+const ZONE_WIDTH = 500;
+const ZONE_HEIGHT = 500;
+
 /**
  * Zone that belongs to a universe which keeps track of client positions,
  * planets, cows, etc.
  */
 export default
 class Zone {
-    constructor(universe, id, x, y, width, height) {
+    constructor(universe, id, x, y, width=ZONE_WIDTH, height=ZONE_HEIGHT) {
         this.universe = universe;
         this.id = id;
         this.x = x;
@@ -14,13 +17,13 @@ class Zone {
 
         this.clients = [];
 
-        this.generate();
+        Zone.generate();
     }
 
     /**
      * Generate random zone.
      */
-    generate() {
+    static generate() {
         this.cows = [];
         this.planets = [];
     }
