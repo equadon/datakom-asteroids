@@ -4,13 +4,19 @@ import GameClient from 'network/GameClient'
 
 export default
 class PlayState extends Phaser.State {
-	preload() {
+
+    init() {
+        this.game.stage.disableVisibilityChange = true;
+    }
+
+    preload() {
         this.client = new GameClient();
         this.load.image('ship', 'images/dogrocket_pastell2.png'); //OBS
         this.load.image('cow', 'images/cow.ico');
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('diconnect', (obj) => {this.onDisconnect(obj) });
+
 
 
 
@@ -41,6 +47,7 @@ class PlayState extends Phaser.State {
         this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
         this.client.on('update', (obj) => { this.onUpdateResponse(obj) });
         this.client.on('user-update', (obj) => { this.onUserUpdate(obj) });
+        this.client.login('admin', '123');
     }
 
     //Spawn functions
@@ -56,7 +63,7 @@ class PlayState extends Phaser.State {
     spawnPlayer(id) {
         let ship = this.add.sprite(getRandomInt(100, 400), getRandomInt(100, 400), 'ship');
         ship.id = id;
-        //this.players.add(player);
+        this.players.add(ship);
         ship.scale.setTo(.35, .35);
         ship.anchor.setTo(0.5, 0.5);
         ship.angle = -90;
@@ -80,9 +87,6 @@ class PlayState extends Phaser.State {
 
     onConnect() {
         console.log('Client connected');
-
-
-        this.client.login('admin', '123');
     }
 
     onDisconnect() {
@@ -93,13 +97,12 @@ class PlayState extends Phaser.State {
 
     //Spawn
     onLoginResponse(login) {
+
 	    if (login.success) {
 	        console.log('Login successful!');
 	        console.log(login.id);
 
             this.player = this.spawnPlayer(login.id);
-
-            console.log(login);
         } else {
 	        console.log('Login failed: ' + login.message);
 	        this.text.setText('Login failed:\n' + login.message);
@@ -131,6 +134,10 @@ class PlayState extends Phaser.State {
 
     update() {
 
+
+        if (this.player==undefined) {
+            return;
+        }
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             //  Move to the left
             this.player.body.angularVelocity -= 1;
@@ -153,23 +160,25 @@ class PlayState extends Phaser.State {
         } else if (this.player!=undefined){
             this.player.body.acceleration.setTo(0, 0);
         }
-        else {
-            return
-        }
+
 
          if (this.player.body.velocity.x != 0 || this.player.body.velocity.y != 0) {
 
          }
 
-         this.client.update(this.player);
+        this.client.update(this.player);
+
+
+
     }
 
    render() {
-        this.game.debug.spriteInfo(this.player, 32, 32);
-        this.game.debug.text('acceleration: ' + this.player.body.acceleration, 32, 200);
-        this.game.debug.text('velocity: ' + this.player.body.velocity, 32, 232);
-       this.game.debug.text('id: ' + this.player.id, 32, 262);
-
+       if (this.player!=undefined){
+           this.game.debug.spriteInfo(this.player, 32, 32);
+           this.game.debug.text('acceleration: ' + this.player.body.acceleration, 32, 200);
+           this.game.debug.text('velocity: ' + this.player.body.velocity, 32, 232);
+           this.game.debug.text('id: ' + this.player.id, 32, 262);
+       }
     }
 
 }
