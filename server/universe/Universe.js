@@ -1,8 +1,11 @@
-export Zone from 'universe/Zone'
+import Zone from 'universe/Zone'
 
 const ZONE_WIDTH = 500;
 const ZONE_HEIGHT = 500;
 
+/**
+ * Expanding universe consisting of multiple zones.
+ */
 export default
 class Universe {
     constructor(server) {

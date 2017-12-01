@@ -1,3 +1,7 @@
+/**
+ * Zone that belongs to a universe which keeps track of client positions,
+ * planets, cows, etc.
+ */
 export default
 class Zone {
     constructor(universe, id, x, y, width, height) {
