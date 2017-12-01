@@ -90,13 +90,17 @@ class PlayState extends Phaser.State {
 
 
     //Spawn
+    //login.players = array with player id:s
     onLoginResponse(login) {
 
 	    if (login.success) {
 	        console.log('Login successful!');
-	        console.log(login.id);
-
             this.player = this.spawnPlayer(login.id);
+            for (let p of login.players) {
+                if (p.id != this.player.id) {
+                    this.spawnPlayer(p.id);
+                }
+            }
         } else {
 	        console.log('Login failed: ' + login.message);
 	        this.text.setText('Login failed:\n' + login.message);
