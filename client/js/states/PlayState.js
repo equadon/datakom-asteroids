@@ -40,7 +40,7 @@ class PlayState extends Phaser.State {
         //Client on server
         this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
         this.client.on('update', (obj) => { this.onUpdateResponse(obj) });
-        //this.client.on('update', (obj) => { this.onUserUpdate(obj) });
+        this.client.on('user-update', (obj) => { this.onUserUpdate(obj) });
     }
 
     //Spawn functions
@@ -115,9 +115,9 @@ class PlayState extends Phaser.State {
      * @param data Data with login information, id and type. type: 1 = CONNECTED, 0 = DISCONNECTED
      */
 
-    /*onUserUpdate(data) {
+    onUserUpdate(data) {
         if (data.type = 1) {
-            spawnPlayer(data.id);
+            this.spawnPlayer(data.id);
         }
 
         else if (data.type = 0) {
@@ -127,7 +127,7 @@ class PlayState extends Phaser.State {
             console.log("ERROR in user update")
         }
 
-    }*/
+    }
 
     update() {
 
