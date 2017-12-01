@@ -25,7 +25,7 @@ class PacketHandler {
         this.loginHandler.login(data, (isValid, id) => {
             if (isValid) {
                 // Create player 
-                socket.player = new Player(id, 0, 0, 0);
+                socket.player = new Player(this.server.lastPlayerID++, 0, 0, 0);
                 this.server.loggedInPlayers[id] = socket.player;
                 console.log(id);
                 console.log('Player ' + socket.player.id + ' has joined!');
