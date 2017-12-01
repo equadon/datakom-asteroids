@@ -52,9 +52,9 @@ class PlayState extends Phaser.State {
         this.physics.arcade.enable(cow);
     }
 
-    spawnPlayer(id) {
+    spawnPlayer(id, x, y, v) {
 
-        let ship = this.add.sprite(this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400), 'ship');
+        let ship = this.add.sprite(x, y, 'ship');
         ship.id = id;
 
         //Adding ship to group
@@ -63,7 +63,7 @@ class PlayState extends Phaser.State {
         //Scale and angle ship
         ship.scale.setTo(.35, .35);
         ship.anchor.setTo(0.5, 0.5);
-        ship.angle = -90;
+        ship.angle = v;
 
 
         //Enable physics on ship
@@ -95,10 +95,10 @@ class PlayState extends Phaser.State {
 
 	    if (login.success) {
 	        console.log('Login successful!');
-            this.player = this.spawnPlayer(login.id);
+            this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
             for (let p of login.players) {
                 if (p.id != this.player.id) {
-                    this.spawnPlayer(p.id);
+                    this.spawnPlayer(p.id, login.x, login.y, login.angle);
                 }
             }
         } else {
@@ -119,7 +119,7 @@ class PlayState extends Phaser.State {
     onUserUpdate(data) {
         if (data.type == 1) {
             console.log('Spawn player id ' + data.id);
-            this.spawnPlayer(data.id);
+            this.spawnPlayer(data.id, data.x, data.y, data.angle);
         }
 
         else if (data.type == 0) {
