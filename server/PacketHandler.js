@@ -1,4 +1,5 @@
 import LoginResponsePacket from 'packets/server/LoginResponsePacket';
+import UserUpdatePacket from 'packets/server/UserUpdatePacket';
 import GameUpdateResponsePacket from 'packets/server/GameUpdateResponsePacket';
 import GameUpdateRequestPacket from 'packets/client/GameUpdateRequestPacket';
 import Player from 'Player';
@@ -27,8 +28,9 @@ class PacketHandler {
                 // Create player 
                 socket.player = new Player(this.server.lastPlayerID++, 0, 0, 0);
                 this.server.loggedInPlayers[id] = socket.player;
-                console.log(id);
                 console.log('Player ' + socket.player.id + ' has joined!');
+
+                this.userUpdate(socket.player, 1);
             }
             // Send login response
             new LoginResponsePacket(isValid, socket.player.id).send(socket);
@@ -44,7 +46,6 @@ class PacketHandler {
         let status = request.data;
         socket.player.update(status);
         let gameState = this.server.getState();
-        console.log(status);
         new GameUpdateResponsePacket(gameState).send(socket);
     }
 
@@ -53,6 +54,11 @@ class PacketHandler {
         new GameUpdateResponsePacket(gameState).send(socket);
     }
 
+    userUpdate(player, type) {
+        const sockets = this.server.io.sockets.connected;
 
-
+        for (let socketId of Object.keys(sockets)) {
+            new UserUpdatePacket(player, type).send(sockets[socketId]);
+        }
+    }
 }

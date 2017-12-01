@@ -29,7 +29,6 @@ class GameServer {
     }
 
     onConnect(socket) {
-
         socket.on('login-request', (data) => {
             this.handler.loginRequest(socket, data);
 
@@ -48,6 +47,7 @@ class GameServer {
     onDisconnect(socket, reason) {
         console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
        // delete loggedInPlayers[socket.player.id];
+        this.handler.userUpdate(socket, 0);
     }
 
     getPlayer(id) {
