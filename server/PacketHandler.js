@@ -58,7 +58,11 @@ class PacketHandler {
         const sockets = this.server.io.sockets.connected;
 
         for (let socketId of Object.keys(sockets)) {
-            new UserUpdatePacket(player, type).send(sockets[socketId]);
+            const s = sockets[socketId];
+
+            if (s.player.id != player.id) {
+                new UserUpdatePacket(player, type).send(s);
+            }
         }
     }
 }
