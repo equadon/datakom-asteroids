@@ -98,7 +98,7 @@ class PlayState extends Phaser.State {
             this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
             for (let p of login.players) {
                 if (p.id != this.player.id) {
-                    this.spawnPlayer(p.id, login.x, login.y, login.angle);
+                    this.spawnPlayer(p.id, p.x, p.y, p.angle);
                 }
             }
         } else {
