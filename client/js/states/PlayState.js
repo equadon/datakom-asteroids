@@ -27,21 +27,13 @@ class PlayState extends Phaser.State {
 
 	create() {
 
+        //Group of ship objects
+        this.playerMap = {};
+
         //Groups
-        this.players = this.add.group();
         this.cows = this.add.group();
 
-        this.spawnCow(5, getRandomInt(100, 400), getRandomInt(100, 400));
-
-        //Scale
-
-        //this.cow.scale.setTo(.35, .35);
-
-        //Anchor and Angle
-
-        //Enable physics
-
-
+        this.spawnCow(5, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
 
         //Client on server
         this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
@@ -61,26 +53,28 @@ class PlayState extends Phaser.State {
     }
 
     spawnPlayer(id) {
-        let ship = this.add.sprite(getRandomInt(100, 400), getRandomInt(100, 400), 'ship');
+
+        let ship = this.add.sprite(this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400), 'ship');
         ship.id = id;
-        this.players.add(ship);
+
+        //Adding ship to group
+        this.playerMap[id] = ship;
+
+        //Scale and angle ship
         ship.scale.setTo(.35, .35);
         ship.anchor.setTo(0.5, 0.5);
         ship.angle = -90;
 
 
-        //Enable physics
+        //Enable physics on ship
         this.physics.arcade.enable(ship);
 
         return ship;
     }
 
     deletePlayer(id) {
-        for (let i=0; i<this.players.children.length; i++) {
-            if (this.players.children[i].id == id) {
-                this.players.children[i].destroy();
-            }
-        };
+        this.playerMap[id].destroy();
+        delete this.playerMap[id];
     }
 
     //Client-Server functions
@@ -110,7 +104,7 @@ class PlayState extends Phaser.State {
     }
 
     onUpdateResponse(data) {
-	    console.log(data);
+	   // console.log(data);
     }
 
     /**
@@ -119,12 +113,14 @@ class PlayState extends Phaser.State {
      */
 
     onUserUpdate(data) {
-        if (data.type = 1) {
+        if (data.type == 1) {
+            console.log('Spawn player id ' + data.id);
             this.spawnPlayer(data.id);
         }
 
-        else if (data.type = 0) {
-            //deleteplayer
+        else if (data.type == 0) {
+            console.log('id in log-out' + data.id);
+            this.deletePlayer(data.id);
         }
         else {
             console.log("ERROR in user update")
@@ -183,6 +179,3 @@ class PlayState extends Phaser.State {
 
 }
 
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min) + min);
-}
