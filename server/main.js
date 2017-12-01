@@ -2,6 +2,9 @@ import GameServer from 'GameServer'
 import WebServer from 'WebServer'
 import Database from 'Database'
 
+// Start web server
+const web = new WebServer();
+web.start(8080);
 
 var database = new Database();
 
@@ -12,9 +15,5 @@ database.connect(function (err, db) {
         // Start game server
         const game = new GameServer(db);
         game.start(3000);
-
-        // Start web server
-        const web = new WebServer();
-        web.start(8080);
     }
 });
