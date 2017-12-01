@@ -9,6 +9,7 @@ class LoginResponsePacket extends Packet {
             id: player.id,
             x: player.x,
             y: player.y,
+            angle: player.angle,
             players: players
         });
     }

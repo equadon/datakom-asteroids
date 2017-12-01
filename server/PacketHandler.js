@@ -1,3 +1,4 @@
+import GameServer from 'GameServer'
 import LoginResponsePacket from 'packets/server/LoginResponsePacket';
 import UserUpdatePacket from 'packets/server/UserUpdatePacket';
 import GameUpdateResponsePacket from 'packets/server/GameUpdateResponsePacket';
@@ -26,7 +27,7 @@ class PacketHandler {
         this.loginHandler.login(data, (isValid, id) => {
             if (isValid) {
                 // Create player 
-                socket.player = new Player(this.server.lastPlayerID++, 0, 0, 0);
+                socket.player = new Player(this.server.lastPlayerID++, GameServer.randomInt(100, 400), GameServer.randomInt(100, 400), GameServer.randomInt(0, 359));
                 console.log('Player ' + socket.player.id + ' has joined!');
 
                 this.userUpdate(socket.player, 1);
