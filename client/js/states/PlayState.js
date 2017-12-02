@@ -40,6 +40,21 @@ class PlayState extends Phaser.State {
         this.spawnCow(5, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
         this.spawnCow(6, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
 
+        //Timers
+        this.maxTime = 0.1;
+        this.updateServer = this.maxTime;
+
+        let textStyle = {font: "16px Arial", fill: "#ffffff", align: "center"};
+        this.scoreTitle = this.game.add.text(this.game.width * 0.8, 30, "SCORE: ", textStyle);
+        this.scoreTitle.fixedToCamera = true;
+        this.scoreTitle.anchor.setTo(0.5, 0.5);
+
+        this.scoreValue = this.game.add.text(this.game.width * 0.9, 30, "0", textStyle);
+        this.scoreValue.fixedToCamera = true;
+        this.scoreValue.anchor.setTo(0.5, 0.5);
+
+        this.playerScore=0;
+
         //Client on server
         this.client.on('login-response', (obj) => {
             this.onLoginResponse(obj)
@@ -50,22 +65,14 @@ class PlayState extends Phaser.State {
         this.client.on('user-update', (obj) => {
             this.onUserUpdate(obj)
         });
+
+        this.client.on('cow-update', (obj) => {
+            this.onCowUpdate(obj)
+        });
+
         this.client.login('admin', '123');
 
-        //Timers
-        this.maxTime = 0.1;
-        this.updateServer = this.maxTime;
 
-        let textStyle = {font: "16px Arial", fill: "#ffffff", align: "center"};
-        this.scoreTitle = this.game.add.text(this.game.width * 0.8, 30, "SCORE: ", textStyle);
-        this.scoreTitle.fixedToCamera = true;
-        this.scoreTitle.anchor.setTo(0.5, 0.5);
-        
-        this.scoreValue = this.game.add.text(this.game.width * 0.9, 30, "0", textStyle);
-        this.scoreValue.fixedToCamera = true;
-        this.scoreValue.anchor.setTo(0.5, 0.5);
-
-        this.playerScore=0;
         
         
     }
