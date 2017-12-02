@@ -11,8 +11,8 @@ class PlayState extends Phaser.State {
 
     preload() {
         this.client = new GameClient();
-        this.load.image('ship', 'images/dogrocket_pastell2.png'); //OBS
-        this.load.image('cow', 'images/cow.ico');
+        this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
+        this.load.image('cow', 'images/Ko2.png');
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('diconnect', (obj) => {this.onDisconnect(obj) });
@@ -27,6 +27,8 @@ class PlayState extends Phaser.State {
 
 	create() {
 
+        this.game.stage.backgroundColor = "#151A38";
+
         //Group of ship objects
         this.playerMap = {};
 
@@ -40,6 +42,9 @@ class PlayState extends Phaser.State {
         this.client.on('update', (obj) => { this.onUpdateResponse(obj) });
         this.client.on('user-update', (obj) => { this.onUserUpdate(obj) });
         this.client.login('admin', '123');
+
+        //Timers
+        this.updateServer = .1;
     }
 
     //Spawn functions
@@ -47,7 +52,7 @@ class PlayState extends Phaser.State {
     spawnCow(id, x, y) {
 	    let cow = this.add.sprite(x, y, 'cow');
 	    this.cows.add(cow);
-        cow.scale.setTo(.35, .35);
+        cow.scale.setTo(.5, .5);
 	    cow.id = id;
         this.physics.arcade.enable(cow);
     }
@@ -107,8 +112,17 @@ class PlayState extends Phaser.State {
         }
     }
 
+    //Update the position of all ships
     onUpdateResponse(data) {
-	   // console.log(data);
+        for (let p of data.players) {
+            if (p.id != this.player.id) {
+                let ship = this.playerMap[id];
+                ship.x = p.x;
+                ship.y = p.y;
+                ship.angle = p.angle;
+                ship.body.velocity = p.velocity;
+            }
+        }
     }
 
     /**
@@ -166,7 +180,17 @@ class PlayState extends Phaser.State {
 
          }
 
-        this.client.update(this.player);
+         //Update timer
+        this.updateServer =- this.game.time.physicsElapsed;
+
+         //Update server on position, angle and velocity of ship every 0.1 seconds
+        if (this.updateServer<=0) {
+            this.updateServer = 0.1;
+            this.client.update(this.player);
+        }
+
+
+
 
 
 
