@@ -70,4 +70,15 @@ class Universe {
 
         this.spawnCow();
     }
+
+    removeCow(id) {
+        console.log('removing cow');
+        const sockets = this.server.io.sockets.connected;
+        for (let s of Object.keys(sockets)) {
+            let socket = sockets[s];
+            new CowUpdatePacket({id: id}, false).send(socket);
+        }
+
+        delete this.cows[id];
+    }
 }

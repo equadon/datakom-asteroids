@@ -36,6 +36,10 @@ class GameServer {
                 this.handler.gameUpdate(socket, data);
             });
 
+            socket.on('cow-update', (data) => {
+                this.handler.cowUpdate(socket, data);
+            });
+
             socket.on('disconnect', (reason) => {
                 this.onDisconnect(socket, reason);
             });

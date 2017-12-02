@@ -54,6 +54,10 @@ class PacketHandler {
         }).send(socket);
     }
 
+    cowUpdate(socket, data) {
+        this.server.universe.removeCow(data.id);
+    }
+
     userUpdate(player, type) {
         const sockets = this.server.io.sockets.connected;
 
