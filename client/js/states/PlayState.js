@@ -50,6 +50,8 @@ class PlayState extends Phaser.State {
         cow.scale.setTo(.35, .35);
 	    cow.id = id;
         this.physics.arcade.enable(cow);
+        cow.anchor.setTo(0.5, 0.5);
+        cow.body.angularVelocity = 5;
     }
 
     spawnPlayer(id, x, y, v) {
