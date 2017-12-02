@@ -36,7 +36,9 @@ class GameClient {
             y: player.y,
             angle: player.angle,
             id: player.id,
-            velocity: player.body.velocity
+            velocity: player.body.velocity,
+            acceleration: player.body.acceleration,
+            angularVelocity: player.body.angularVelocity
             });
         
     }

@@ -133,6 +133,7 @@ class PlayState extends Phaser.State {
                 ship.body.velocity = p.velocity;
                 //ship.body.acceleration = p.acceleration;
                 ship.body.angularVelocity= p.angularVelocity;
+                console.log('angular vel' + p.angularVelocity);
             }
         }
     }
