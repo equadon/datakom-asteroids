@@ -3,7 +3,7 @@ import PlayState from 'states/PlayState'
 export default
 class Game extends Phaser.Game {
     constructor() {
-        super(500, 500, Phaser.AUTO, 'main', null);
+        super(1080, 720, Phaser.AUTO, 'main', null);
         this.showDebugHeader = () => {};
 
         this.state.add('Play', PlayState);

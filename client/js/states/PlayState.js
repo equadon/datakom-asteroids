@@ -36,10 +36,14 @@ class PlayState extends Phaser.State {
         this.spawnCow(5, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
 
         //Client on server
-        this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
-        this.client.on('update', (obj) => { this.onUpdateResponse(obj) });
-        this.client.on('user-update', (obj) => { this.onUserUpdate(obj) });
+        this.client.on('login-response', (obj) => { this.onLoginResponse(obj); });
+        this.client.on('update', (obj) => { this.onUpdateResponse(obj); });
+        this.client.on('user-update', (obj) => { this.onUserUpdate(obj); });
         this.client.login('admin', '123');
+
+        //Collision detection
+        
+
     }
 
     //Spawn functions
@@ -70,8 +74,17 @@ class PlayState extends Phaser.State {
 
         //Enable physics on ship
         this.physics.arcade.enable(ship);
+        ship.body.maxVelocity = new Phaser.Point(250, 250);
+        ship.body.drag = new Phaser.Point(30,30);
+        ship.body.collideWorldBounds=true;
+        this.game.physics.arcade.collide(ship, this.cowMap[5], this.collideCow, null, this);
 
         return ship;
+    }
+
+    collideCow(player, cow) {
+        console.log("Got cow!");
+        deleteCow(cow.id);
     }
 
     deletePlayer(id) {
@@ -147,25 +160,28 @@ class PlayState extends Phaser.State {
         }
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             //  Move to the left
-            this.player.body.angularVelocity -= 1;
+            this.player.body.angularVelocity = -150;
 
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             //  Move to the right
-            this.player.body.angularVelocity  += 1;
-
-
+            this.player.body.angularVelocity  = 150;
+        } else {
+            this.player.body.angularVelocity = 0;
         }
+
+
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             // Add forward acceleration
-            this.physics.arcade.accelerationFromRotation(this.player.rotation, 50, this.player.body.acceleration);
+            this.physics.arcade.accelerationFromRotation(this.player.rotation, 300, this.player.body.acceleration);
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             // Add backward acceleration (Mostly for testing)
-            this.physics.arcade.accelerationFromRotation(this.player.rotation, -50, this.player.body.acceleration);
+            this.physics.arcade.accelerationFromRotation(this.player.rotation, -300, this.player.body.acceleration);
 
-        } else if (this.player!=undefined){
+        } else if (this.player != undefined){
             this.player.body.acceleration.setTo(0, 0);
+            
         }
 
 
@@ -180,13 +196,15 @@ class PlayState extends Phaser.State {
     }
 
    render() {
+       let start = 130;
        if (this.player!=undefined){
            this.game.debug.spriteInfo(this.player, 32, 32);
-           this.game.debug.text('acceleration: ' + this.player.body.acceleration, 30, 200);
-           this.game.debug.text('velocity: ' + this.player.body.velocity, 30, 220);
-           this.game.debug.text('id: ' + this.player.id, 30, 240);
-           this.game.debug.text('cows: ' + Object.keys(this.cowMap).length, 30, 260);
-           this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, 280);
+           this.game.debug.text('acceleration: ' + this.player.body.acceleration, 30, start+=20);
+           this.game.debug.text('velocity: ' + this.player.body.velocity, 30, start+=20);
+           this.game.debug.text('angularvelocity: ' + this.player.body.angularVelocity, 30, start+=20);
+           this.game.debug.text('id: ' + this.player.id, 30, start+=20);
+           this.game.debug.text('cows: ' + Object.keys(this.cowMap).length, 30, start+=20);
+           this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
        }
     }
 
