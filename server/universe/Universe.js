@@ -16,7 +16,8 @@ class Universe {
             angle: player.angle,
             velocity: player.velocity,
             acceleration: player.acceleration,
-            angularVelocity: player.angularVelocity
+            angularVelocity: player.angularVelocity,
+            angularAcceleration: player.angularAcceleration
         };
     }
 
