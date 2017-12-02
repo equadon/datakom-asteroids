@@ -46,6 +46,7 @@ class PlayState extends Phaser.State {
         //Timers
         this.maxTime = 0.1;
         this.updateServer = this.maxTime;
+
     }
 
     //Spawn functions
