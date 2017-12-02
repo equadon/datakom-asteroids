@@ -34,6 +34,8 @@ class PlayState extends Phaser.State {
 
         //Group of cow objects
         this.cowMap = {};
+        this.cows = this.game.add.group();
+
 
         this.spawnCow(5, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
 
@@ -53,6 +55,7 @@ class PlayState extends Phaser.State {
 
     spawnCow(id, x, y) {
 	    let cow = this.add.sprite(x, y, 'cow');
+        this.cows.add(cow);
 	    this.cowMap[id] = cow;
         cow.scale.setTo(0.35, 0.35);
 	    cow.id = id;
@@ -80,15 +83,21 @@ class PlayState extends Phaser.State {
         ship.body.maxVelocity = new Phaser.Point(250, 250);
         ship.body.drag = new Phaser.Point(30,30);
         ship.body.collideWorldBounds=true;
-        this.game.physics.arcade.collide(ship, this.cowMap[5], this.collideCow, null, this);
 
         return ship;
     }
 
     collideCow(player, cow) {
         console.log("Got cow!");
-        this.deleteCow(cow.id);
+        if (player.key.includes('cow')) {
+            player.pendingDestroy = true;
+        }
+        else if (cow.key.includes('cow')) {
+            cow.pendingDestroy = true;
+        }
+
     }
+
 
     deletePlayer(id) {
         this.playerMap[id].destroy();
@@ -119,6 +128,7 @@ class PlayState extends Phaser.State {
 	    if (login.success) {
 	        console.log('Login successful!');
             this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
+
             for (let p of login.players) {
                 if (p.id != this.player.id) {
                     this.spawnPlayer(p.id, p.x, p.y, p.angle);
@@ -170,7 +180,7 @@ class PlayState extends Phaser.State {
     }
 
     update() {
-
+        this.game.physics.arcade.collide(this.player, this.cows, this.collideCow, null, this);
 
         if (this.player==undefined) {
             return;
