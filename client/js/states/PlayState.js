@@ -38,15 +38,6 @@ class PlayState extends Phaser.State {
         this.spawnCow(5, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
 
         //Client on server
-<<<<<<< HEAD
-        this.client.on('login-response', (obj) => { this.onLoginResponse(obj); });
-        this.client.on('update', (obj) => { this.onUpdateResponse(obj); });
-        this.client.on('user-update', (obj) => { this.onUserUpdate(obj); });
-        this.client.login('admin', '123');
-
-        //Collision detection
-        
-=======
         this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
         this.client.on('game-update', (obj) => { this.onUpdateResponse(obj) });
         this.client.on('user-update', (obj) => { this.onUserUpdate(obj) });
@@ -55,7 +46,6 @@ class PlayState extends Phaser.State {
         //Timers
         this.maxTime = 0.2;
         this.updateServer = this.maxTime;
->>>>>>> f85ae0be802e367e7d400168cbd23b8d417ba82b
 
     }
 
