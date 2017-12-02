@@ -32,8 +32,8 @@ class PlayState extends Phaser.State {
         //Group of ship objects
         this.playerMap = {};
 
-        //Groups
-        this.cows = this.add.group();
+        //Group of cow objects
+        this.cowMap = {};
 
         this.spawnCow(5, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
 
@@ -51,10 +51,12 @@ class PlayState extends Phaser.State {
 
     spawnCow(id, x, y) {
 	    let cow = this.add.sprite(x, y, 'cow');
-	    this.cows.add(cow);
-        cow.scale.setTo(.5, .5);
+	    this.cowMap[id] = cow;
+        cow.scale.setTo(0.35, 0.35);
 	    cow.id = id;
         this.physics.arcade.enable(cow);
+        cow.anchor.setTo(0.5, 0.5);
+        cow.body.angularVelocity = 5;
     }
 
     spawnPlayer(id, x, y, v) {
@@ -66,7 +68,7 @@ class PlayState extends Phaser.State {
         this.playerMap[id] = ship;
 
         //Scale and angle ship
-        ship.scale.setTo(.35, .35);
+        ship.scale.setTo(0.35, 0.35);
         ship.anchor.setTo(0.5, 0.5);
         ship.angle = v;
 
@@ -80,6 +82,11 @@ class PlayState extends Phaser.State {
     deletePlayer(id) {
         this.playerMap[id].destroy();
         delete this.playerMap[id];
+    }
+
+    deleteCow(id) {
+        this.cowMap[id].destroy();
+        delete this.cowMap[id];
     }
 
     //Client-Server functions
@@ -199,9 +206,11 @@ class PlayState extends Phaser.State {
    render() {
        if (this.player!=undefined){
            this.game.debug.spriteInfo(this.player, 32, 32);
-           this.game.debug.text('acceleration: ' + this.player.body.acceleration, 32, 200);
-           this.game.debug.text('velocity: ' + this.player.body.velocity, 32, 232);
-           this.game.debug.text('id: ' + this.player.id, 32, 262);
+           this.game.debug.text('acceleration: ' + this.player.body.acceleration, 30, 200);
+           this.game.debug.text('velocity: ' + this.player.body.velocity, 30, 220);
+           this.game.debug.text('id: ' + this.player.id, 30, 240);
+           this.game.debug.text('cows: ' + Object.keys(this.cowMap).length, 30, 260);
+           this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, 280);
        }
     }
 

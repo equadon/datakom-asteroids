@@ -10,6 +10,7 @@ import LoginHandler from 'LoginHandler'
 /**
  * Packet handler handles what to do with incoming packets.
  */
+
 export default
 class PacketHandler {
     constructor(server, db) {
