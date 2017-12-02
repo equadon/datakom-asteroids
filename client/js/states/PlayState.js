@@ -131,6 +131,8 @@ class PlayState extends Phaser.State {
                 ship.y = p.y;
                 ship.angle = p.angle;
                 ship.body.velocity = p.velocity;
+                ship.body.acceleration = p.acceleration;
+                ship.body.angularVelocity= p.angularVelocity;
             }
         }
     }
