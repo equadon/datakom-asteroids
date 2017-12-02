@@ -61,12 +61,12 @@ class Universe {
         const cow = new Cow(Cow.getNextId(), x, y, 0);
         this.cows[cow.id] = cow;
 
-        for (let player of Object.keys(this.players)) {
-            new CowUpdatePacket(cow, true).send(player.socket);
+        const sockets = this.server.io.sockets.connected;
+        for (let s of Object.keys(sockets)) {
+            let socket = sockets[s];
+            new CowUpdatePacket(cow, true).send(socket);
         }
 
-        if (this.cows.length < 4) {
-            this.spawnCow();
-        }
+        this.spawnCow();
     }
 }
