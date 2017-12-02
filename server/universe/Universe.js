@@ -66,6 +66,7 @@ class Universe {
             let socket = sockets[s];
             new CowUpdatePacket(cow, true).send(socket);
         }
+        console.log('spawned cow and sent to clients');
 
         this.spawnCow();
     }
