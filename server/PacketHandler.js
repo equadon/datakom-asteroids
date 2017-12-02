@@ -32,10 +32,12 @@ class PacketHandler {
                 console.log('Player ' + socket.player.id + ' has joined!');
 
                 this.userUpdate(socket.player, 1);
+                this.server.universe.addPlayer(socket.player);
             }
 
             // Send login response
-            new LoginResponsePacket(isValid, socket.player, this.server.getPlayers()).send(socket);
+            console.log(this.server.universe.getPlayers());
+            new LoginResponsePacket(isValid, socket.player, this.server.universe.getPlayers()).send(socket);
         });
     }
 
@@ -43,7 +45,8 @@ class PacketHandler {
      * 
      * @param request Request data with player position 
      */
-    updateRequest(socket, data) {
+    gameUpdate(socket, data) {
+        this.universe.updatePlayer(data);
     }
 
     userUpdate(player, type) {
