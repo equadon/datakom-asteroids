@@ -34,26 +34,57 @@ class PlayState extends Phaser.State {
 
         //Group of cow objects
         this.cowMap = {};
+        this.cows = this.game.add.group();
 
-        this.spawnCow(5, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
-
-        //Client on server
-        this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
-        this.client.on('game-update', (obj) => { this.onUpdateResponse(obj) });
-        this.client.on('user-update', (obj) => { this.onUserUpdate(obj) });
-        this.client.login('admin', '123');
 
         //Timers
         this.maxTime = 0.1;
         this.updateServer = this.maxTime;
+
+        let textStyle = {font: "16px Arial", fill: "#ffffff", align: "center"};
+        this.scoreTitle = this.game.add.text(this.game.width * 0.8, 30, "SCORE: ", textStyle);
+        this.scoreTitle.fixedToCamera = true;
+        this.scoreTitle.anchor.setTo(0.5, 0.5);
+
+        this.scoreValue = this.game.add.text(this.game.width * 0.9, 30, "0", textStyle);
+        this.scoreValue.fixedToCamera = true;
+        this.scoreValue.anchor.setTo(0.5, 0.5);
+
+        this.playerScore=0;
+
+
+        //Client on server
+        this.client.on('login-response', (obj) => {
+            this.onLoginResponse(obj)
+        });
+        this.client.on('game-update', (obj) => {
+            this.onUpdateResponse(obj)
+        });
+        this.client.on('user-update', (obj) => {
+            this.onUserUpdate(obj)
+        });
+
+        this.client.on('cow-update', (obj) => {
+            this.onCowUpdate(obj)
+        });
+
+        this.client.login('admin', '123');
+
+
     }
 
     //Spawn functions
 
     spawnCow(id, x, y) {
 	    let cow = this.add.sprite(x, y, 'cow');
+        cow.alpha=0;
+        var tween = this.game.add.tween(cow).to( { alpha: 1 }, 500, "Linear", true);
+        tween.repeat(3, 0.5);
+        this.cows.add(cow);
 	    this.cowMap[id] = cow;
         cow.scale.setTo(0.35, 0.35);
+
+
 	    cow.id = id;
         this.physics.arcade.enable(cow);
         cow.anchor.setTo(0.5, 0.5);
@@ -79,15 +110,30 @@ class PlayState extends Phaser.State {
         ship.body.maxVelocity = new Phaser.Point(250, 250);
         ship.body.drag = new Phaser.Point(30,30);
         ship.body.collideWorldBounds=true;
-        this.game.physics.arcade.collide(ship, this.cowMap[5], this.collideCow, null, this);
 
         return ship;
     }
 
+
+    //If this client collides on a cow.
     collideCow(player, cow) {
         console.log("Got cow!");
-        this.deleteCow(cow.id);
+        if (player.key.includes('cow')) {
+            player.pendingDestroy = true;
+            console.log("collision with cow id:nr" + player.id);
+            this.playerScore++;
+            this.client.gotCow(player.id);
+        }
+        else if (cow.key.includes('cow')) {
+            cow.pendingDestroy = true;
+            console.log("cow id " + cow.id);
+            this.playerScore++;
+            this.client.gotCow(cow.id);
+        }
+
+
     }
+
 
     deletePlayer(id) {
         this.playerMap[id].destroy();
@@ -95,8 +141,12 @@ class PlayState extends Phaser.State {
     }
 
     deleteCow(id) {
-        this.cowMap[id].destroy();
-        delete this.cowMap[id];
+
+        for (let cow of this.cows.children) {
+            if (cow.id == id) {
+                cow.pendingDestroy = true;
+            }
+        }
     }
 
     //Client-Server functions
@@ -118,6 +168,7 @@ class PlayState extends Phaser.State {
 	    if (login.success) {
 	        console.log('Login successful!');
             this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
+
             for (let p of login.players) {
                 if (p.id != this.player.id) {
                     this.spawnPlayer(p.id, p.x, p.y, p.angle);
@@ -180,6 +231,9 @@ class PlayState extends Phaser.State {
 
     update() {
 
+        this.scoreValue.setText(this.playerScore);
+
+        this.game.physics.arcade.collide(this.player, this.cows, this.collideCow, null, this);
 
         if (this.player==undefined) {
             return;
@@ -217,12 +271,12 @@ class PlayState extends Phaser.State {
 
          //Update timer
        this.updateServer -= this.game.time.physicsElapsed;
-        console.log('TIME:' + this.game.time.physicsElapsed);
+        //console.log('TIME:' + this.game.time.physicsElapsed);
        // this.client.update(this.player);
 
          //Update server on position, angle and velocity of ship every 0.1 seconds
        if (this.updateServer<=0) {
-           console.log('UPDATE TIMER');
+           //console.log('UPDATE TIMER');
             this.updateServer = this.maxTime;
             this.client.update(this.player);
         }
@@ -244,7 +298,7 @@ class PlayState extends Phaser.State {
            this.game.debug.text('velocity: ' + this.player.body.velocity, 30, start+=20);
            this.game.debug.text('angularvelocity: ' + this.player.body.angularVelocity, 30, start+=20);
            this.game.debug.text('id: ' + this.player.id, 30, start+=20);
-           this.game.debug.text('cows: ' + Object.keys(this.cowMap).length, 30, start+=20);
+           this.game.debug.text('cows: ' + this.cows.length, 30, start+=20);
            this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
        }
     }

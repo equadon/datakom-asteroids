@@ -1,5 +1,4 @@
 import PacketHandler from 'PacketHandler';
-import Player from 'Player';
 import Universe from 'universe/Universe'
 
 export default
@@ -35,6 +34,10 @@ class GameServer {
 
             socket.on('game-update', (data) => {
                 this.handler.gameUpdate(socket, data);
+            });
+
+            socket.on('cow-update', (data) => {
+                this.handler.cowUpdate(socket, data);
             });
 
             socket.on('disconnect', (reason) => {
