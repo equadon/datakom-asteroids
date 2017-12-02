@@ -51,7 +51,10 @@ class Universe {
     }
 
     spawnCow() {
-        delay(4000).then(result => this.createCow());
+        const cowCount = Object.keys(this.cows).length;
+        if (cowCount < 5) {
+            delay(GameServer.randomInt(300, 10000)).then(result => this.createCow());
+        }
     }
 
     createCow() {
@@ -80,5 +83,7 @@ class Universe {
         }
 
         delete this.cows[id];
+
+        this.spawnCow();
     }
 }
