@@ -84,7 +84,7 @@ class PlayState extends Phaser.State {
 
     collideCow(player, cow) {
         console.log("Got cow!");
-        deleteCow(cow.id);
+        this.deleteCow(cow.id);
     }
 
     deletePlayer(id) {
