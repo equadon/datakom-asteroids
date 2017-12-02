@@ -28,7 +28,7 @@ class PacketHandler {
         this.loginHandler.login(data, (isValid, id) => {
             if (isValid) {
                 // Create player 
-                socket.player = new Player(this.server.lastPlayerID++, GameServer.randomInt(100, 400), GameServer.randomInt(100, 400), GameServer.randomInt(0, 359));
+                socket.player = new Player(socket, this.server.lastPlayerID++, GameServer.randomInt(100, 400), GameServer.randomInt(100, 400), GameServer.randomInt(0, 359));
                 console.log('Player ' + socket.player.id + ' has joined!');
 
                 this.userUpdate(socket.player, 1);
