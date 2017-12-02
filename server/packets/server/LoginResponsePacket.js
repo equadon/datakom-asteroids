@@ -13,6 +13,7 @@ class LoginResponsePacket extends Packet {
             velocity: player.velocity,
             acceleration: player.acceleration,
             angularVelocity: player.angularVelocity,
+            angularAcceleration: player.angularAcceleration,
             players: players
         });
     }

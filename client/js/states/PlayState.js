@@ -44,9 +44,8 @@ class PlayState extends Phaser.State {
         this.client.login('admin', '123');
 
         //Timers
-        this.maxTime = 0.2;
+        this.maxTime = 0.1;
         this.updateServer = this.maxTime;
-
     }
 
     //Spawn functions
@@ -140,6 +139,10 @@ class PlayState extends Phaser.State {
                 ship.y = p.y;
                 ship.angle = p.angle;
                 ship.body.velocity = p.velocity;
+                ship.body.acceleration = p.acceleration;
+                ship.body.angularVelocity= p.angularVelocity;
+                ship.body.angularAcceleration= p.angularAcceleration;
+                //console.log('angular vel' + p.angularVelocity);
             }
         }
     }

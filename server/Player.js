@@ -8,6 +8,7 @@ class Player {
         this.velocity = 0;
         this.acceleration = 0;
         this.angularVelocity = 0;
+        this.angularAcceleration = 0;
     }
 
     setPos(x,y, angle) {
