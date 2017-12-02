@@ -35,7 +35,7 @@ class PlayState extends Phaser.State {
         //Group of cow objects
         this.cowMap = {};
         this.cows = this.game.add.group();
-        
+
 
         //Timers
         this.maxTime = 0.1;
@@ -77,9 +77,14 @@ class PlayState extends Phaser.State {
 
     spawnCow(id, x, y) {
 	    let cow = this.add.sprite(x, y, 'cow');
+        cow.alpha=0;
+        var tween = this.game.add.tween(cow).to( { alpha: 1 }, 500, "Linear", true);
+        tween.repeat(3, 0.5);
         this.cows.add(cow);
 	    this.cowMap[id] = cow;
         cow.scale.setTo(0.35, 0.35);
+
+
 	    cow.id = id;
         this.physics.arcade.enable(cow);
         cow.anchor.setTo(0.5, 0.5);
