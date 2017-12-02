@@ -160,9 +160,19 @@ class PlayState extends Phaser.State {
             this.deletePlayer(data.id);
         }
         else {
-            console.log("ERROR in user update")
+            console.log("ERROR in user update");
         }
 
+    }
+
+    onCowUpdate(data) {
+        if (data.status == "add") {
+            this.spawnCow(data.id, data.x, data.y);
+        } else if (data.status == "remove") {
+            this.deleteCow(data.id);
+        } else {
+            console.log("ERROR in cow update");
+        }
     }
 
     update() {
@@ -213,6 +223,8 @@ class PlayState extends Phaser.State {
             this.updateServer = this.maxTime;
             this.client.update(this.player);
         }
+
+
 
 
 

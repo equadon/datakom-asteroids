@@ -41,4 +41,10 @@ class GameClient {
         
     }
 
+    gotCow(id) {
+        this.socket.emit('cow-update', {
+            id: id
+        });
+    }
+
 }
