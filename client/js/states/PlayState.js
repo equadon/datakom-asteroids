@@ -44,7 +44,7 @@ class PlayState extends Phaser.State {
         this.client.login('admin', '123');
 
         //Timers
-        this.maxTime = 2;
+        this.maxTime = 0.2;
         this.updateServer = this.maxTime;
 
     }
@@ -130,7 +130,7 @@ class PlayState extends Phaser.State {
                 ship.x = p.x;
                 ship.y = p.y;
                 ship.angle = p.angle;
-                //ship.body.velocity = p.velocity;
+                ship.body.velocity = p.velocity;
             }
         }
     }
@@ -191,7 +191,7 @@ class PlayState extends Phaser.State {
          }
 
          //Update timer
-       this.updateServer =- this.game.time.physicsElapsed;
+       this.updateServer -= this.game.time.physicsElapsed;
         console.log('TIME:' + this.game.time.physicsElapsed);
        // this.client.update(this.player);
 
