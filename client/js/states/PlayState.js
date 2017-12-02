@@ -298,7 +298,7 @@ class PlayState extends Phaser.State {
            this.game.debug.text('velocity: ' + this.player.body.velocity, 30, start+=20);
            this.game.debug.text('angularvelocity: ' + this.player.body.angularVelocity, 30, start+=20);
            this.game.debug.text('id: ' + this.player.id, 30, start+=20);
-           this.game.debug.text('cows: ' + Object.keys(this.cowMap).length, 30, start+=20);
+           this.game.debug.text('cows: ' + this.cows.length, 30, start+=20);
            this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
        }
     }

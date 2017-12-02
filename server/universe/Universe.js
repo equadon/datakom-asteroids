@@ -18,6 +18,8 @@ class Universe {
         this.players = {};
         this.cows = {};
 
+        this.spawnedCowCount = 0;
+
         this.spawnCow();
     }
 
@@ -51,9 +53,9 @@ class Universe {
     }
 
     spawnCow() {
-        const cowCount = Object.keys(this.cows).length;
-        if (cowCount < 5) {
-            delay(GameServer.randomInt(300, 10000)).then(result => this.createCow());
+        if (this.spawnedCowCount < 5) {
+            this.spawnedCowCount++;
+            delay(GameServer.randomInt(300, 5000)).then(result => this.createCow());
         }
     }
 
@@ -75,7 +77,7 @@ class Universe {
     }
 
     removeCow(id) {
-        console.log('removing cow');
+        console.log('removing cow: ' + Object.keys(this.cows).length);
         const sockets = this.server.io.sockets.connected;
         for (let s of Object.keys(sockets)) {
             let socket = sockets[s];
@@ -83,6 +85,8 @@ class Universe {
         }
 
         delete this.cows[id];
+
+        this.spawnedCowCount--;
 
         this.spawnCow();
     }
