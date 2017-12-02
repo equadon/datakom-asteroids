@@ -10,6 +10,7 @@ class LoginResponsePacket extends Packet {
             x: player.x,
             y: player.y,
             angle: player.angle,
+            velocity: player.velocity,
             players: players
         });
     }

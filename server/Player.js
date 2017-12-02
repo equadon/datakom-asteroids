@@ -5,6 +5,7 @@ class Player {
         this.x = x;
         this.y = y;
         this.angle = angle;
+        this.velocity = 0;
     }
 
     setPos(x,y, angle) {
