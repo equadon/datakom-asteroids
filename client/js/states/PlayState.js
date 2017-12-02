@@ -39,12 +39,14 @@ class PlayState extends Phaser.State {
 
         //Client on server
         this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
-        this.client.on('update', (obj) => { this.onUpdateResponse(obj) });
+        this.client.on('game-update', (obj) => { this.onUpdateResponse(obj) });
         this.client.on('user-update', (obj) => { this.onUserUpdate(obj) });
         this.client.login('admin', '123');
 
         //Timers
-        this.updateServer = .1;
+        this.maxTime = 2;
+        this.updateServer = this.maxTime;
+
     }
 
     //Spawn functions
@@ -121,13 +123,14 @@ class PlayState extends Phaser.State {
 
     //Update the position of all ships
     onUpdateResponse(data) {
+        console.log('update response:' + data);
         for (let p of data.players) {
             if (p.id != this.player.id) {
-                let ship = this.playerMap[id];
+                let ship = this.playerMap[p.id];
                 ship.x = p.x;
                 ship.y = p.y;
                 ship.angle = p.angle;
-                ship.body.velocity = p.velocity;
+                //ship.body.velocity = p.velocity;
             }
         }
     }
@@ -188,11 +191,14 @@ class PlayState extends Phaser.State {
          }
 
          //Update timer
-        this.updateServer =- this.game.time.physicsElapsed;
+       this.updateServer =- this.game.time.physicsElapsed;
+        console.log('TIME:' + this.game.time.physicsElapsed);
+       // this.client.update(this.player);
 
          //Update server on position, angle and velocity of ship every 0.1 seconds
-        if (this.updateServer<=0) {
-            this.updateServer = 0.1;
+       if (this.updateServer<=0) {
+           console.log('UPDATE TIMER');
+            this.updateServer = this.maxTime;
             this.client.update(this.player);
         }
 
