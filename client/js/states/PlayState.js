@@ -35,10 +35,7 @@ class PlayState extends Phaser.State {
         //Group of cow objects
         this.cowMap = {};
         this.cows = this.game.add.group();
-
-
-        this.spawnCow(5, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
-        this.spawnCow(6, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
+        
 
         //Timers
         this.maxTime = 0.1;
@@ -73,7 +70,7 @@ class PlayState extends Phaser.State {
 
         this.client.login('admin', '123');
 
-        
+
     }
 
     //Spawn functions
