@@ -38,17 +38,36 @@ class PlayState extends Phaser.State {
 
 
         this.spawnCow(5, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
+        this.spawnCow(6, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
 
         //Client on server
-        this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
-        this.client.on('game-update', (obj) => { this.onUpdateResponse(obj) });
-        this.client.on('user-update', (obj) => { this.onUserUpdate(obj) });
+        this.client.on('login-response', (obj) => {
+            this.onLoginResponse(obj)
+        });
+        this.client.on('game-update', (obj) => {
+            this.onUpdateResponse(obj)
+        });
+        this.client.on('user-update', (obj) => {
+            this.onUserUpdate(obj)
+        });
         this.client.login('admin', '123');
 
         //Timers
         this.maxTime = 0.1;
         this.updateServer = this.maxTime;
 
+        let textStyle = {font: "16px Arial", fill: "#ffffff", align: "center"};
+        this.scoreTitle = this.game.add.text(this.game.width * 0.8, 30, "SCORE: ", textStyle);
+        this.scoreTitle.fixedToCamera = true;
+        this.scoreTitle.anchor.setTo(0.5, 0.5);
+        
+        this.scoreValue = this.game.add.text(this.game.width * 0.9, 30, "0", textStyle);
+        this.scoreValue.fixedToCamera = true;
+        this.scoreValue.anchor.setTo(0.5, 0.5);
+
+        this.playerScore=0;
+        
+        
     }
 
     //Spawn functions
@@ -87,21 +106,33 @@ class PlayState extends Phaser.State {
         return ship;
     }
 
+
+    //If this client collides on a cow.
     collideCow(player, cow) {
         console.log("Got cow!");
         if (player.key.includes('cow')) {
             player.pendingDestroy = true;
+            console.log("collision with cow id:nr" + player.id);
+            this.playerScore++;
+            this.client.gotCow(player.id);
         }
         else if (cow.key.includes('cow')) {
             cow.pendingDestroy = true;
+            console.log("cow id " + cow.id);
+            this.playerScore++;
+            this.client.gotCow(cow.id);
         }
+
 
     }
 
 
     deletePlayer(id) {
-        this.playerMap[id].destroy();
-        delete this.playerMap[id];
+        for (let cow of this.cows.children) {
+            if (cow.id == id) {
+                cow.pendingDestroy = true;
+            }
+        }
     }
 
     deleteCow(id) {
@@ -190,6 +221,9 @@ class PlayState extends Phaser.State {
     }
 
     update() {
+
+        this.scoreValue.setText(this.playerScore);
+
         this.game.physics.arcade.collide(this.player, this.cows, this.collideCow, null, this);
 
         if (this.player==undefined) {
@@ -228,12 +262,12 @@ class PlayState extends Phaser.State {
 
          //Update timer
        this.updateServer -= this.game.time.physicsElapsed;
-        console.log('TIME:' + this.game.time.physicsElapsed);
+        //console.log('TIME:' + this.game.time.physicsElapsed);
        // this.client.update(this.player);
 
          //Update server on position, angle and velocity of ship every 0.1 seconds
        if (this.updateServer<=0) {
-           console.log('UPDATE TIMER');
+           //console.log('UPDATE TIMER');
             this.updateServer = this.maxTime;
             this.client.update(this.player);
         }
