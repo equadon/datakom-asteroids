@@ -60,7 +60,7 @@ class PacketHandler {
         for (let socketId of Object.keys(sockets)) {
             const s = sockets[socketId];
 
-            if (s.player.id != player.id) {
+            if (s.player != undefined && s.player.id != player.id) {
                 new UserUpdatePacket(player, type).send(s);
             }
         }
