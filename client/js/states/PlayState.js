@@ -128,16 +128,17 @@ class PlayState extends Phaser.State {
 
 
     deletePlayer(id) {
+        this.playerMap[id].destroy();
+        delete this.playerMap[id];
+    }
+
+    deleteCow(id) {
+
         for (let cow of this.cows.children) {
             if (cow.id == id) {
                 cow.pendingDestroy = true;
             }
         }
-    }
-
-    deleteCow(id) {
-        this.cowMap[id].destroy();
-        delete this.cowMap[id];
     }
 
     //Client-Server functions
