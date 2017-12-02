@@ -32,10 +32,12 @@ class PacketHandler {
                 console.log('Player ' + socket.player.id + ' has joined!');
 
                 this.userUpdate(socket.player, 1);
+                this.server.universe.addPlayer(socket.player);
             }
 
             // Send login response
-            new LoginResponsePacket(isValid, socket.player, this.server.getPlayers()).send(socket);
+            console.log(this.server.universe.getPlayers());
+            new LoginResponsePacket(isValid, socket.player, this.server.universe.getPlayers()).send(socket);
         });
     }
 
@@ -43,7 +45,13 @@ class PacketHandler {
      * 
      * @param request Request data with player position 
      */
-    updateRequest(socket, data) {
+    gameUpdate(socket, data) {
+        this.server.universe.updatePlayer(data);
+
+        new GameUpdateResponsePacket({
+            players: this.server.universe.getPlayers(),
+            cows: []
+        }).send(socket);
     }
 
     userUpdate(player, type) {
@@ -52,7 +60,7 @@ class PacketHandler {
         for (let socketId of Object.keys(sockets)) {
             const s = sockets[socketId];
 
-            if (s.player.id != player.id) {
+            if (s.player != undefined && s.player.id != player.id) {
                 new UserUpdatePacket(player, type).send(s);
             }
         }

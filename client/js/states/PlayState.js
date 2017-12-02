@@ -11,8 +11,8 @@ class PlayState extends Phaser.State {
 
     preload() {
         this.client = new GameClient();
-        this.load.image('ship', 'images/dogrocket_pastell2.png'); //OBS
-        this.load.image('cow', 'images/cow.ico');
+        this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
+        this.load.image('cow', 'images/Ko2.png');
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('diconnect', (obj) => {this.onDisconnect(obj) });
@@ -27,6 +27,8 @@ class PlayState extends Phaser.State {
 
 	create() {
 
+        this.game.stage.backgroundColor = "#151A38";
+
         //Group of ship objects
         this.playerMap = {};
 
@@ -36,6 +38,7 @@ class PlayState extends Phaser.State {
         this.spawnCow(5, this.game.rnd.integerInRange(100, 400), this.game.rnd.integerInRange(100, 400));
 
         //Client on server
+<<<<<<< HEAD
         this.client.on('login-response', (obj) => { this.onLoginResponse(obj); });
         this.client.on('update', (obj) => { this.onUpdateResponse(obj); });
         this.client.on('user-update', (obj) => { this.onUserUpdate(obj); });
@@ -43,6 +46,16 @@ class PlayState extends Phaser.State {
 
         //Collision detection
         
+=======
+        this.client.on('login-response', (obj) => { this.onLoginResponse(obj) });
+        this.client.on('game-update', (obj) => { this.onUpdateResponse(obj) });
+        this.client.on('user-update', (obj) => { this.onUserUpdate(obj) });
+        this.client.login('admin', '123');
+
+        //Timers
+        this.maxTime = 0.2;
+        this.updateServer = this.maxTime;
+>>>>>>> f85ae0be802e367e7d400168cbd23b8d417ba82b
 
     }
 
@@ -127,8 +140,18 @@ class PlayState extends Phaser.State {
         }
     }
 
+    //Update the position of all ships
     onUpdateResponse(data) {
-	   // console.log(data);
+        console.log('update response:' + data);
+        for (let p of data.players) {
+            if (p.id != this.player.id) {
+                let ship = this.playerMap[p.id];
+                ship.x = p.x;
+                ship.y = p.y;
+                ship.angle = p.angle;
+                ship.body.velocity = p.velocity;
+            }
+        }
     }
 
     /**
@@ -189,7 +212,20 @@ class PlayState extends Phaser.State {
 
          }
 
-        this.client.update(this.player);
+         //Update timer
+       this.updateServer -= this.game.time.physicsElapsed;
+        console.log('TIME:' + this.game.time.physicsElapsed);
+       // this.client.update(this.player);
+
+         //Update server on position, angle and velocity of ship every 0.1 seconds
+       if (this.updateServer<=0) {
+           console.log('UPDATE TIMER');
+            this.updateServer = this.maxTime;
+            this.client.update(this.player);
+        }
+
+
+
 
 
 

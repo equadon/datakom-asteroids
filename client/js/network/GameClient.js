@@ -31,11 +31,12 @@ class GameClient {
 
     update(player) {
         
-        this.socket.emit('update', {
+        this.socket.emit('game-update', {
             x: player.x,
             y: player.y,
             angle: player.angle,
-            id: player.id
+            id: player.id,
+            velocity: player.body.velocity
             });
         
     }

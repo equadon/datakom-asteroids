@@ -1,5 +1,6 @@
 import PacketHandler from 'PacketHandler';
 import Player from 'Player';
+import Universe from 'universe/Universe'
 
 export default
 class GameServer {
@@ -16,6 +17,7 @@ class GameServer {
         });
 
         this.db = db;
+        this.universe = new Universe(this);
 
         // initiate packet handler
         this.handler = new PacketHandler(this, this.db);
@@ -44,14 +46,7 @@ class GameServer {
     onDisconnect(socket, reason) {
         console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
         this.handler.userUpdate(socket.player, 0);
-    }
-
-    getPlayers() {
-        let players = [];
-        for (let id of Object.keys(this.io.sockets.connected)) {
-            players.push(this.io.sockets.connected[id].player);
-        }
-        return players;
+        this.universe.removePlayer(socket.player);
     }
 
     static randomInt(low, high) {
