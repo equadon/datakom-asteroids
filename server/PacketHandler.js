@@ -3,7 +3,7 @@ import LoginResponsePacket from 'packets/server/LoginResponsePacket';
 import UserUpdatePacket from 'packets/server/UserUpdatePacket';
 import GameUpdateResponsePacket from 'packets/server/GameUpdateResponsePacket';
 import GameUpdateRequestPacket from 'packets/client/GameUpdateRequestPacket';
-import Player from 'Player';
+import Player from 'universe/Player';
 
 import LoginHandler from 'LoginHandler'
 

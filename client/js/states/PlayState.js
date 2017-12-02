@@ -55,6 +55,7 @@ class PlayState extends Phaser.State {
 
         this.playerScore=0;
 
+
         //Client on server
         this.client.on('login-response', (obj) => {
             this.onLoginResponse(obj)
@@ -72,8 +73,6 @@ class PlayState extends Phaser.State {
 
         this.client.login('admin', '123');
 
-
-        
         
     }
 
