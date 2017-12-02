@@ -1,3 +1,8 @@
+import Cow from 'universe/Cow'
+
+function delay(delay, value) {
+    return new Promise(resolve => setTimeout(resolve, delay, value));
+}
 /**
  * Expanding universe consisting of multiple zones.
  */
@@ -6,6 +11,8 @@ class Universe {
     constructor(server) {
         this.server = server;
         this.players = {};
+
+        delay(1000).then(result => this.spawnCow());
     }
 
     addPlayer(player) {
@@ -35,5 +42,9 @@ class Universe {
             all.push(this.players[id]);
         }
         return all;
+    }
+
+    spawnCow() {
+
     }
 }

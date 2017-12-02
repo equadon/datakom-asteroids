@@ -1,5 +1,4 @@
 import PacketHandler from 'PacketHandler';
-import Player from 'Player';
 import Universe from 'universe/Universe'
 
 export default
