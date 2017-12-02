@@ -47,6 +47,11 @@ class PacketHandler {
      */
     gameUpdate(socket, data) {
         this.universe.updatePlayer(data);
+
+        new GameUpdateResponsePacket({
+            players: this.universe.getPlayers(),
+            cows: []
+        }).send(socket);
     }
 
     userUpdate(player, type) {
