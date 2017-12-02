@@ -23,7 +23,7 @@ class Universe {
     }
 
     removePlayer(player) {
-        this.players[player.id] = undefined;
+        delete this.players[player.id];
     }
 
     getPlayers() {

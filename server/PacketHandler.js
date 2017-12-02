@@ -47,7 +47,6 @@ class PacketHandler {
      */
     gameUpdate(socket, data) {
         this.server.universe.updatePlayer(data);
-        console.log('sending stuff');
 
         new GameUpdateResponsePacket({
             players: this.server.universe.getPlayers(),
