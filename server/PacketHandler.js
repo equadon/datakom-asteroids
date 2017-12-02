@@ -46,10 +46,11 @@ class PacketHandler {
      * @param request Request data with player position 
      */
     gameUpdate(socket, data) {
-        this.universe.updatePlayer(data);
+        this.server.universe.updatePlayer(data);
+        console.log('sending stuff');
 
         new GameUpdateResponsePacket({
-            players: this.universe.getPlayers(),
+            players: this.server.universe.getPlayers(),
             cows: []
         }).send(socket);
     }
