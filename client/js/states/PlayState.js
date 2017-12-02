@@ -66,8 +66,6 @@ class PlayState extends Phaser.State {
         this.scoreValue.anchor.setTo(0.5, 0.5);
 
         this.playerScore=0;
-        
-        
     }
 
     //Spawn functions
