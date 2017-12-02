@@ -51,7 +51,7 @@ class Universe {
     }
 
     spawnCow() {
-        delay(1000).then(result => this.createCow());
+        delay(4000).then(result => this.createCow());
     }
 
     createCow() {
