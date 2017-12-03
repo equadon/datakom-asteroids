@@ -63,7 +63,7 @@ class Universe {
         const x = GameServer.randomInt(50, this.width - 50);
         const y = GameServer.randomInt(50, this.height - 50);
 
-        const cow = new Cow(Cow.getNextId(), x, y, 0);
+        const cow = new Cow(this.server.uniqueObjectId(), x, y, 0);
         this.cows[cow.id] = cow;
 
         const sockets = this.server.io.sockets.connected;

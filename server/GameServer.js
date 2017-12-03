@@ -4,7 +4,7 @@ import Universe from 'universe/Universe'
 export default
 class GameServer {
     constructor(db) {
-        this.lastPlayerID = 0;
+        this.__nextObjectId = 1;
         this.cows = [];
         this.server = require('http').createServer();
         this.io = require('socket.io')(this.server, {
@@ -22,6 +22,10 @@ class GameServer {
         this.handler = new PacketHandler(this, this.db);
 
         this.io.on('connection', (o) => this.onConnect(o));
+    }
+
+    uniqueObjectId() {
+        return this.__nextObjectId++;
     }
 
     start(port) {
