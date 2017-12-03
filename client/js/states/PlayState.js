@@ -62,6 +62,10 @@ class PlayState extends Phaser.State {
             this.onCowUpdate(obj)
         });
 
+        this.client.on('score-update', (obj) => {
+            this.onScoreUpdate(obj);
+        });
+
         this.client.login('admin', '123');
     }
 
@@ -108,13 +112,11 @@ class PlayState extends Phaser.State {
         if (player.key.includes('cow')) {
             player.pendingDestroy = true;
             console.log("collision with cow id:nr" + player.id);
-            this.playerScore++;
             this.client.gotCow(player.id);
         }
         else if (cow.key.includes('cow')) {
             cow.pendingDestroy = true;
             console.log("cow id " + cow.id);
-            this.playerScore++;
             this.client.gotCow(cow.id);
         }
     }
@@ -206,6 +208,11 @@ class PlayState extends Phaser.State {
         } else {
             console.log("ERROR in cow update");
         }
+    }
+
+    onScoreUpdate(data) {
+        this.playerScore = data.score;
+        console.log('received score: ' + data.score);
     }
 
     update() {

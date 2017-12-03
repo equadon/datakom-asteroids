@@ -4,9 +4,8 @@ import Cow from 'universe/Cow'
 import Utility from 'Utility'
 import CowUpdatePacket from 'packets/server/CowUpdatePacket'
 
-function delay(delay, value) {
-    return new Promise(resolve => setTimeout(resolve, delay, value));
-}
+const MAX_COWS = 5;
+
 /**
  * Expanding universe consisting of multiple zones.
  */
@@ -65,9 +64,9 @@ class Universe {
     }
 
     spawnCow() {
-        if (this.spawnedCowCount < 5) {
+        if (this.spawnedCowCount < MAX_COWS) {
             this.spawnedCowCount++;
-            delay(Utility.randomInt(300, 5000)).then(result => this.createCow());
+            Utility.delay(Utility.randomInt(800, 5000)).then(result => this.createCow());
         }
     }
 
@@ -102,5 +101,13 @@ class Universe {
         this.spawnCow();
 
         return removedCow;
+    }
+
+    getCows() {
+        let all = [];
+        for (let id of Object.keys(this.cows)) {
+            all.push(this.cows[id]);
+        }
+        return all;
     }
 }
