@@ -35,7 +35,7 @@ class PacketHandler {
                 socket.player = this.universe.createPlayer(socket);
                 console.log('Player ' + socket.player.id + ' has joined!');
 
-                this.userUpdate(socket.player, 1);
+                this.userUpdate(socket, 1);
                 this.universe.addPlayer(socket.player);
             }
 
@@ -62,15 +62,7 @@ class PacketHandler {
         this.universe.removeCow(data.id);
     }
 
-    userUpdate(player, type) {
-        const sockets = this.server.io.sockets.connected;
-
-        for (let socketId of Object.keys(sockets)) {
-            const s = sockets[socketId];
-
-            if (s.player != undefined && s.player.id != player.id) {
-                new UserUpdatePacket(player, type).send(s);
-            }
-        }
+    userUpdate(socket, type) {
+        new UserUpdatePacket(socket.player, type).broadcast(socket);
     }
 }

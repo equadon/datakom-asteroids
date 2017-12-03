@@ -30,7 +30,7 @@ class Universe {
         const y = Utility.randomInt(100, 400);
         const angle = Utility.randomInt(0, 359);
 
-        let player = new Player(this.server.uniqueObjectId(), x, y, angle);
+        let player = new Player(this.server.uniqueObjectId(), x, y, angle, 0);
 
         return player;
     }
