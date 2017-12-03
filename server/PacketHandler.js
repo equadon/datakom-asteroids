@@ -57,7 +57,7 @@ class PacketHandler {
         }).send(socket);
     }
 
-    cowUpdate(socket, data) {
+    onCowUpdate(socket, data) {
         let cow = this.universe.removeCow(data.id);
 
         if (cow != undefined) {
@@ -69,6 +69,13 @@ class PacketHandler {
             socket.player.score += cow.score;
             new ScoreUpdatePacket(socket.player).send(socket);
         }
+    }
+
+    sendCowUpdate(cow) {
+        const packet = new CowUpdatePacket(cow, true);
+        this.server.io.emit(packet.name, packet.data);
+
+        console.log(`spawned cow (id=${cow.id})`);
     }
 
     userUpdate(socket, type) {

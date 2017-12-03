@@ -2,7 +2,6 @@ import Player from 'universe/Player'
 import Cow from 'universe/Cow'
 
 import Utility from 'Utility'
-import CowUpdatePacket from 'packets/server/CowUpdatePacket'
 
 const MAX_COWS = 5;
 
@@ -66,12 +65,7 @@ class Universe {
         const cow = new Cow(this.server.uniqueObjectId(), x, y, 0, 1);
         this.cows[cow.id] = cow;
 
-        const sockets = this.server.io.sockets.connected;
-        for (let s of Object.keys(sockets)) {
-            let socket = sockets[s];
-            new CowUpdatePacket(cow, true).send(socket);
-        }
-        console.log('spawned cow and sent to clients');
+        this.server.handler.sendCowUpdate(cow);
 
         this.spawnCow();
     }
