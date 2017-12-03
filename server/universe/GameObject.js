@@ -2,35 +2,33 @@ export default
 class GameObject {
     constructor(id, x, y, angle, velocity, acceleration, angularVelocity, angularAcceleration) {
         this.id = id;
-        this.x = x;
-        this.y = y;
-        this.angle = angle;
-        this.velocity = velocity;
-        this.acceleration = acceleration;
-        this.angularVelocity = angularVelocity;
-        this.angularAcceleration = angularAcceleration;
+
+        this.data = {};
+        this.data.x = x;
+        this.data.y = y;
+        this.data.angle = angle;
+        this.data.velocity = velocity;
+        this.data.acceleration = acceleration;
+        this.data.angularVelocity = angularVelocity;
+        this.data.angularAcceleration = angularAcceleration;
     }
 
+    get x() { return this.data.x; }
+    get y() { return this.data.y; }
+    get angle() { return this.data.angle; }
+    get velocity() { return this.data.velocity; }
+    get angularVelocity() { return this.data.angularVelocity; }
+    get angularAcceleration() { return this.data.angularAcceleration; }
+
     update(status) {
-        this.x = status.x || this.x;
-        this.y = status.y || this.y;
-        this.angle = status.angle || this.angle;
-        this.velocity = status.velocity || this.velocity;
-        this.acceleration = status.acceleration || this.acceleration;
-        this.angularVelocity = status.angularVelocity || this.angularVelocity;
-        this.angularAcceleration = status.angularAcceleration || this.angularAcceleration;
+        delete status.id;
+        console.log(status);
+        this.data = status;
     }
 
     get object() {
-        return {
-            id: this.id,
-            x: this.x,
-            y: this.y,
-            angle: this.angle,
-            velocity: this.velocity,
-            acceleration: this.acceleration,
-            angularVelocity: this.angularVelocity,
-            angularAcceleration: this.angularAcceleration
-        };
+        let obj = this.data;
+        obj.id = this.id;
+        return obj;
     }
 }
