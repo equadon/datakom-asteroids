@@ -75,7 +75,7 @@ class Universe {
         const x = Utility.randomInt(50, this.width - 50);
         const y = Utility.randomInt(50, this.height - 50);
 
-        const cow = new Cow(this.server.uniqueObjectId(), x, y, 0);
+        const cow = new Cow(this.server.uniqueObjectId(), x, y, 0, 1);
         this.cows[cow.id] = cow;
 
         const sockets = this.server.io.sockets.connected;
@@ -89,17 +89,18 @@ class Universe {
     }
 
     removeCow(id) {
-        console.log('removing cow: ' + Object.keys(this.cows).length);
-        const sockets = this.server.io.sockets.connected;
-        for (let s of Object.keys(sockets)) {
-            let socket = sockets[s];
-            new CowUpdatePacket({id: id}, false).send(socket);
+        let removedCow = undefined;
+
+        if (this.cows[id] != undefined) {
+            removedCow = this.cows[id];
+
+            delete this.cows[id];
+
+            this.spawnedCowCount--;
         }
 
-        delete this.cows[id];
-
-        this.spawnedCowCount--;
-
         this.spawnCow();
+
+        return removedCow;
     }
 }

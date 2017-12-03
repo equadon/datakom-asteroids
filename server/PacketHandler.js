@@ -1,8 +1,9 @@
-import GameServer from 'GameServer'
 import LoginResponsePacket from 'packets/server/LoginResponsePacket';
 import UserUpdatePacket from 'packets/server/UserUpdatePacket';
 import GameUpdateResponsePacket from 'packets/server/GameUpdateResponsePacket';
-import GameUpdateRequestPacket from 'packets/client/GameUpdateRequestPacket';
+import CowUpdatePacket from 'packets/server/CowUpdatePacket'
+import ScoreUpdatePacket from 'packets/server/ScoreUpdatePacket'
+
 import Player from 'universe/Player';
 
 import LoginHandler from 'LoginHandler'
@@ -59,7 +60,20 @@ class PacketHandler {
     }
 
     cowUpdate(socket, data) {
-        this.universe.removeCow(data.id);
+        let cow = this.universe.removeCow(data.id);
+
+        if (cow != undefined) {
+            const sockets = this.server.io.sockets.connected;
+            for (let s of Object.keys(sockets)) {
+                let socket = sockets[s];
+                new CowUpdatePacket({id: cow.id}, false).send(socket);
+
+                if (socket.player.id == socket.player.id) {
+                    socket.player.score += cow.score;
+                    new ScoreUpdatePacket(socket.player).send(socket);
+                }
+            }
+        }
     }
 
     userUpdate(socket, type) {
