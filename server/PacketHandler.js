@@ -40,7 +40,6 @@ class PacketHandler {
             }
 
             // Send login response
-            console.log(this.universe.getPlayers());
             new LoginResponsePacket(isValid, socket.player, this.universe.getPlayers()).send(socket);
         });
     }
@@ -62,16 +61,13 @@ class PacketHandler {
         let cow = this.universe.removeCow(data.id);
 
         if (cow != undefined) {
-            const sockets = this.server.io.sockets.connected;
-            for (let s of Object.keys(sockets)) {
-                let socket = sockets[s];
-                new CowUpdatePacket({id: cow.id}, false).send(socket);
+            const packet = new CowUpdatePacket({id: cow.id}, false);
 
-                if (socket.player.id == socket.player.id) {
-                    socket.player.score += cow.score;
-                    new ScoreUpdatePacket(socket.player).send(socket);
-                }
-            }
+            this.server.io.emit(packet.name, packet.data);
+
+            // Update score for player that was first to remove the cow
+            socket.player.score += cow.score;
+            new ScoreUpdatePacket(socket.player).send(socket);
         }
     }
 
