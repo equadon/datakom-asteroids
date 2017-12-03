@@ -35,7 +35,7 @@ class PacketHandler {
                 socket.player = this.universe.createPlayer(socket);
                 console.log('Player ' + socket.player.id + ' has joined!');
 
-                this.userUpdate(socket, 1);
+                this.userUpdate(socket, 'connect');
                 this.universe.addPlayer(socket.player);
             }
 

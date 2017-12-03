@@ -1,7 +1,6 @@
 import GameClient from 'network/GameClient'
 
 
-
 export default
 class PlayState extends Phaser.State {
 
@@ -15,12 +14,7 @@ class PlayState extends Phaser.State {
         this.load.image('cow', 'images/Ko2.png');
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
-        this.client.on('diconnect', (obj) => {this.onDisconnect(obj) });
-
-
-
-
-
+        this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
 	}
 
 	//Vi kommer ha ett spelar-id som kopplas till ens användare. Som lagras i databasen.
@@ -69,12 +63,9 @@ class PlayState extends Phaser.State {
         });
 
         this.client.login('admin', '123');
-
-
     }
 
     //Spawn functions
-
     spawnCow(id, x, y) {
 	    let cow = this.add.sprite(x, y, 'cow');
         cow.alpha=0;
@@ -84,7 +75,6 @@ class PlayState extends Phaser.State {
 	    this.cowMap[id] = cow;
         cow.scale.setTo(0.35, 0.35);
 
-
 	    cow.id = id;
         this.physics.arcade.enable(cow);
         cow.anchor.setTo(0.5, 0.5);
@@ -92,7 +82,6 @@ class PlayState extends Phaser.State {
     }
 
     spawnPlayer(id, x, y, v) {
-
         let ship = this.add.sprite(x, y, 'ship');
         ship.id = id;
 
@@ -104,7 +93,6 @@ class PlayState extends Phaser.State {
         ship.anchor.setTo(0.5, 0.5);
         ship.angle = v;
 
-
         //Enable physics on ship
         this.physics.arcade.enable(ship);
         ship.body.maxVelocity = new Phaser.Point(250, 250);
@@ -113,7 +101,6 @@ class PlayState extends Phaser.State {
 
         return ship;
     }
-
 
     //If this client collides on a cow.
     collideCow(player, cow) {
@@ -130,10 +117,7 @@ class PlayState extends Phaser.State {
             this.playerScore++;
             this.client.gotCow(cow.id);
         }
-
-
     }
-
 
     deletePlayer(id) {
         this.playerMap[id].destroy();
@@ -141,7 +125,6 @@ class PlayState extends Phaser.State {
     }
 
     deleteCow(id) {
-
         for (let cow of this.cows.children) {
             if (cow.id == id) {
                 cow.pendingDestroy = true;
@@ -150,21 +133,17 @@ class PlayState extends Phaser.State {
     }
 
     //Client-Server functions
-
     onConnect() {
         console.log('Client connected');
     }
 
     onDisconnect() {
         console.log('Client disconnected');
-        this.text.setText('Disconnected!');
     }
-
 
     //Spawn
     //login.players = array with player id:s
     onLoginResponse(login) {
-
 	    if (login.success) {
 	        console.log('Login successful!');
             this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
@@ -204,12 +183,12 @@ class PlayState extends Phaser.State {
      */
 
     onUserUpdate(data) {
-        if (data.type == 1) {
+        if (data.type == 'connect') {
             console.log('Spawn player id ' + data.id);
             this.spawnPlayer(data.id, data.x, data.y, data.angle);
         }
 
-        else if (data.type == 0) {
+        else if (data.type == 'disconnect') {
             console.log('id in log-out' + data.id);
             this.deletePlayer(data.id);
         }
@@ -230,7 +209,6 @@ class PlayState extends Phaser.State {
     }
 
     update() {
-
         this.scoreValue.setText(this.playerScore);
 
         this.game.physics.arcade.collide(this.player, this.cows, this.collideCow, null, this);
@@ -261,33 +239,24 @@ class PlayState extends Phaser.State {
 
         } else if (this.player != undefined){
             this.player.body.acceleration.setTo(0, 0);
-            
         }
 
 
-         if (this.player.body.velocity.x != 0 || this.player.body.velocity.y != 0) {
+        if (this.player.body.velocity.x != 0 || this.player.body.velocity.y != 0) {
 
-         }
+        }
 
-         //Update timer
-       this.updateServer -= this.game.time.physicsElapsed;
+        //Update timer
+        this.updateServer -= this.game.time.physicsElapsed;
         //console.log('TIME:' + this.game.time.physicsElapsed);
-       // this.client.update(this.player);
+        // this.client.update(this.player);
 
-         //Update server on position, angle and velocity of ship every 0.1 seconds
-       if (this.updateServer<=0) {
-           //console.log('UPDATE TIMER');
+        //Update server on position, angle and velocity of ship every 0.1 seconds
+        if (this.updateServer<=0) {
+            //console.log('UPDATE TIMER');
             this.updateServer = this.maxTime;
             this.client.update(this.player);
         }
-
-
-
-
-
-
-
-
     }
 
    render() {
@@ -302,6 +271,5 @@ class PlayState extends Phaser.State {
            this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
        }
     }
-
 }
 
