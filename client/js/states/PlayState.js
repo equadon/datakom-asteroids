@@ -6,6 +6,13 @@ class PlayState extends Phaser.State {
 
     init() {
         this.game.stage.disableVisibilityChange = true;
+
+        // Disable window scrolling when window is smaller than the game area
+        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
+        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
+        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
+        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.LEFT);
+        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.RIGHT);
     }
 
     preload() {
