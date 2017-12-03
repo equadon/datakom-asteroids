@@ -29,26 +29,15 @@ class Universe {
         const y = Utility.randomInt(100, 400);
         const angle = Utility.randomInt(0, 359);
 
-        let player = new Player(this.server.uniqueObjectId(), x, y, angle, 0);
+        let player = new Player(this.server.uniqueObjectId(), socket, x, y, angle, 0);
+
+        this.players[player.id] = player;
 
         return player;
     }
 
-    addPlayer(player) {
-        this.players[player.id] = {
-            id: player.id,
-            x: player.x,
-            y: player.y,
-            angle: player.angle,
-            velocity: player.velocity,
-            acceleration: player.acceleration,
-            angularVelocity: player.angularVelocity,
-            angularAcceleration: player.angularAcceleration
-        };
-    }
-
-    updatePlayer(player) {
-        this.players[player.id] = player;
+    updatePlayer(data) {
+        this.players[data.id].update(data);
     }
 
     removePlayer(player) {
@@ -58,7 +47,7 @@ class Universe {
     getPlayers() {
         let all = [];
         for (let id of Object.keys(this.players)) {
-            all.push(this.players[id]);
+            all.push(this.players[id].object);
         }
         return all;
     }
@@ -106,7 +95,7 @@ class Universe {
     getCows() {
         let all = [];
         for (let id of Object.keys(this.cows)) {
-            all.push(this.cows[id]);
+            all.push(this.cows[id].object);
         }
         return all;
     }

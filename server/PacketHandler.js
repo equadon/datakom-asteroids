@@ -37,7 +37,6 @@ class PacketHandler {
                 console.log('Player ' + socket.player.id + ' has joined!');
 
                 this.userUpdate(socket, 'connect');
-                this.universe.addPlayer(socket.player);
             }
 
             // Send login response

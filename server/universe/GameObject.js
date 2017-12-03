@@ -21,7 +21,7 @@ class GameObject {
         this.angularAcceleration = status.angularAcceleration || this.angularAcceleration;
     }
 
-    toObject() {
+    get object() {
         return {
             id: this.id,
             x: this.x,
