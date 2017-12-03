@@ -1,7 +1,5 @@
 import GameObject from 'universe/GameObject'
 
-let nextCowId = 0;
-
 export default
 class Cow extends GameObject {
     constructor(id, x, y, angle) {

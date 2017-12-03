@@ -19,6 +19,10 @@ class PacketHandler {
         this.loginHandler = new LoginHandler(db);
     }
 
+    get universe() {
+        return this.server.universe;
+    }
+
     /**
      * User requested to login.
      * @param socket Socket making the request
@@ -28,16 +32,16 @@ class PacketHandler {
         this.loginHandler.login(data, (isValid, id) => {
             if (isValid) {
                 // Create player 
-                socket.player = new Player(this.server.uniqueObjectId(), GameServer.randomInt(100, 400), GameServer.randomInt(100, 400), GameServer.randomInt(0, 359));
+                socket.player = this.universe.createPlayer(socket);
                 console.log('Player ' + socket.player.id + ' has joined!');
 
                 this.userUpdate(socket.player, 1);
-                this.server.universe.addPlayer(socket.player);
+                this.universe.addPlayer(socket.player);
             }
 
             // Send login response
-            console.log(this.server.universe.getPlayers());
-            new LoginResponsePacket(isValid, socket.player, this.server.universe.getPlayers()).send(socket);
+            console.log(this.universe.getPlayers());
+            new LoginResponsePacket(isValid, socket.player, this.universe.getPlayers()).send(socket);
         });
     }
 
@@ -46,16 +50,16 @@ class PacketHandler {
      * @param request Request data with player position 
      */
     gameUpdate(socket, data) {
-        this.server.universe.updatePlayer(data);
+        this.universe.updatePlayer(data);
 
         new GameUpdateResponsePacket({
-            players: this.server.universe.getPlayers(),
+            players: this.universe.getPlayers(),
             cows: []
         }).send(socket);
     }
 
     cowUpdate(socket, data) {
-        this.server.universe.removeCow(data.id);
+        this.universe.removeCow(data.id);
     }
 
     userUpdate(player, type) {

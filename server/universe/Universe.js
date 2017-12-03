@@ -1,5 +1,7 @@
-import GameServer from 'GameServer'
+import Player from 'universe/Player'
 import Cow from 'universe/Cow'
+
+import Utility from 'Utility'
 import CowUpdatePacket from 'packets/server/CowUpdatePacket'
 
 function delay(delay, value) {
@@ -21,6 +23,16 @@ class Universe {
         this.spawnedCowCount = 0;
 
         this.spawnCow();
+    }
+
+    createPlayer(socket) {
+        const x = Utility.randomInt(100, 400);
+        const y = Utility.randomInt(100, 400);
+        const angle = Utility.randomInt(0, 359);
+
+        let player = new Player(this.server.uniqueObjectId(), x, y, angle);
+
+        return player;
     }
 
     addPlayer(player) {
@@ -55,13 +67,13 @@ class Universe {
     spawnCow() {
         if (this.spawnedCowCount < 5) {
             this.spawnedCowCount++;
-            delay(GameServer.randomInt(300, 5000)).then(result => this.createCow());
+            delay(Utility.randomInt(300, 5000)).then(result => this.createCow());
         }
     }
 
     createCow() {
-        const x = GameServer.randomInt(50, this.width - 50);
-        const y = GameServer.randomInt(50, this.height - 50);
+        const x = Utility.randomInt(50, this.width - 50);
+        const y = Utility.randomInt(50, this.height - 50);
 
         const cow = new Cow(this.server.uniqueObjectId(), x, y, 0);
         this.cows[cow.id] = cow;

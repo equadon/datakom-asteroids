@@ -55,8 +55,4 @@ class GameServer {
         this.handler.userUpdate(socket.player, 0);
         this.universe.removePlayer(socket.player);
     }
-
-    static randomInt(low, high) {
-        return Math.floor(Math.random() * (high - low) + low);
-    }
 }
