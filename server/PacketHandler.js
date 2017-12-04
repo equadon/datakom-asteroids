@@ -33,7 +33,8 @@ class PacketHandler {
         this.loginHandler.login(data, (isValid, id) => {
             if (isValid) {
                 // Create player 
-                socket.player = this.universe.createPlayer(socket);
+                socket.player = this.universe.createPlayer(socket, id);
+                console.log(socket.player);
                 console.log('Player ' + socket.player.id + ' has joined!');
 
                 this.userUpdate(socket, 'connect');
