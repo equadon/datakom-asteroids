@@ -19,6 +19,7 @@ class PlayState extends Phaser.State {
         this.client = new GameClient();
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
+        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-liggande.png', 250, 176, );
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
@@ -27,6 +28,10 @@ class PlayState extends Phaser.State {
 	//Vi kommer ha ett spelar-id som kopplas till ens användare. Som lagras i databasen.
 
 	create() {
+
+        let rocket_flame = this.game.add.sprite(300, 200, 'rocket_flame');
+        let walk = rocket_flame.animations.add('walk');
+        rocket_flame.animations.play('walk', 14, true);
 
         this.game.stage.backgroundColor = "#151A38";
 
