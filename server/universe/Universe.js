@@ -23,12 +23,12 @@ class Universe {
         this.spawnCow();
     }
 
-    createPlayer(socket) {
+    createPlayer(socket, id) {
         const x = Utility.randomInt(100, 400);
         const y = Utility.randomInt(100, 400);
         const angle = Utility.randomInt(0, 359);
 
-        let player = new Player(this.server.uniqueObjectId(), socket, x, y, angle, 0);
+        let player = new Player(id, socket, x, y, angle, 0);
 
         this.players[player.id] = player;
 

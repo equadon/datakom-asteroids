@@ -5,18 +5,6 @@ class LoginHandler {
     }
 
     /**
-     * Get the next user id available
-     * @param callback
-     */
-    getNextUserId(callback) {
-        this.db.collection("counters").findOneAndUpdate( { _id: "userid" }, { $inc: { seq: 1 } }, function(err, result){
-            if(err) throw(err);
-            callback(result.value.seq);
-        } );
-    }
-
-
-    /**
      * Add a new user to the database
      *
      * @callback will be called with true
@@ -26,17 +14,15 @@ class LoginHandler {
      */
     createUser(newUser, callback) {
         console.log("Creating new user " + newUser.username);
-        let _this = this;
 
-        _this.getNextUserId(function (id){
-            _this.db.collection("users")
-                .insertOne({username: newUser.username,
-                            password: newUser.password,
-                            userid: id},
-                            function (err, result) {
-                    if (err) throw err; // TODO: respond with failed user creation.
-                    callback(true, id);
-            });
+        let id = this.db.getNextUserID();
+        this.db.collection("users")
+            .insertOne({username: newUser.username,
+                        password: newUser.password,
+                        userid: id},
+                        function (err, result) {
+                if (err) throw err; // TODO: respond with failed user creation.
+                callback(true, id);
         });
     }
 
@@ -60,7 +46,8 @@ class LoginHandler {
                 _this.createUser(request, callback);
             } else {
                 console.log("User " + result.username + " was found");
-                var valid = result.password === request.password;
+                console.log(result);
+                let valid = result.password === request.password;
                 if (!valid) console.log("Invalid password for username: " + result.username);
                 callback(valid, valid ? result.userid : null);
             }
