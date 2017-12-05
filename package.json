@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "express": "^4.16.2",
+    "hashbounds": "^4.5.0",
     "mongodb": "^2.2.33",
     "phaser-ce": "^2.9.2",
     "socket.io": "^2.0.4"

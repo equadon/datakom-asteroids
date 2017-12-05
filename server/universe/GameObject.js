@@ -1,7 +1,9 @@
 export default
 class GameObject {
-    constructor(id, x, y, angle, velocity, acceleration, angularVelocity, angularAcceleration) {
+    constructor(id, x, y, angle, velocity, acceleration, angularVelocity, angularAcceleration, width, height) {
         this.id = id;
+        this.width = width;
+        this.height = height;
 
         this.data = {};
         this.data.x = x;
@@ -20,9 +22,20 @@ class GameObject {
     get angularVelocity() { return this.data.angularVelocity; }
     get angularAcceleration() { return this.data.angularAcceleration; }
 
+    get bounds() {
+        return {
+            x: this.data.x,
+            y: this.data.y,
+            width: this.width,
+            height: this.height
+        };
+    }
+
     update(status) {
         delete status.id;
         this.data = status;
+
+        return this;
     }
 
     get object() {
