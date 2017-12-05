@@ -19,7 +19,7 @@ class PlayState extends Phaser.State {
         this.client = new GameClient();
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
-        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-liggande.png', 250, 176, );
+        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
@@ -29,9 +29,7 @@ class PlayState extends Phaser.State {
 
 	create() {
 
-        let rocket_flame = this.game.add.sprite(300, 200, 'rocket_flame');
-        let walk = rocket_flame.animations.add('walk');
-        rocket_flame.animations.play('walk', 14, true);
+
 
         this.game.stage.backgroundColor = "#151A38";
 
@@ -97,8 +95,12 @@ class PlayState extends Phaser.State {
         cow.body.angularVelocity = 5;
     }
 
+
+
+
     spawnPlayer(id, x, y, v) {
         let ship = this.add.sprite(x, y, 'ship');
+        //this.flames = ship.animations.add('walk');
         ship.id = id;
 
         //Adding ship to group
@@ -251,10 +253,12 @@ class PlayState extends Phaser.State {
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             // Add forward acceleration
             this.physics.arcade.accelerationFromRotation(this.player.rotation, 300, this.player.body.acceleration);
+            //this.player.animations.play('walk', 14, true);
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             // Add backward acceleration (Mostly for testing)
             this.physics.arcade.accelerationFromRotation(this.player.rotation, -300, this.player.body.acceleration);
+            //this.player.animations.play('walk', 14, true);
 
         } else if (this.player != undefined){
             this.player.body.acceleration.setTo(0, 0);
