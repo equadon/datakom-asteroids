@@ -22,7 +22,6 @@ class GameObject {
 
     update(status) {
         delete status.id;
-        console.log(status);
         this.data = status;
     }
 
