@@ -19,7 +19,8 @@ class PlayState extends Phaser.State {
         this.client = new GameClient();
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
-        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
+        this.load.image('planet','images/planet.png');
+        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
@@ -42,8 +43,14 @@ class PlayState extends Phaser.State {
 
 
         //Planets
-        this.planet = this.add.sprite(500, 500, 'planet');
+        this.planet = this.add.sprite(400, 400, 'planet');
+        this.planet.anchor.setTo(0.5,0.5);
         this.physics.arcade.enable(this.planet);
+        this.planet.g = 100;
+        this.planet.scale.setTo(1.5, 1.5);
+        this.planet.mass = 50000;
+        this.planet.body.immovable = true;
+        this.planet.body.setCircle(58);
 
 
         //Timers
@@ -115,12 +122,14 @@ class PlayState extends Phaser.State {
         ship.scale.setTo(0.35, 0.35);
         ship.anchor.setTo(0.5, 0.5);
         ship.angle = v;
+        ship.mass = 100;
 
         //Enable physics on ship
         this.physics.arcade.enable(ship);
         ship.body.maxVelocity = new Phaser.Point(250, 250);
         ship.body.drag = new Phaser.Point(30,30);
         ship.body.collideWorldBounds=true;
+        ship.body.setCircle(122, 122, 0);
 
         return ship;
     }
@@ -139,6 +148,16 @@ class PlayState extends Phaser.State {
             this.client.gotCow(cow.id);
         }
     }
+
+
+    calculateGravity(player, planet) {
+        let distance = Phaser.Math.distance(player.body.x, player.body.y, planet.body.x, planet.body.y);
+        let angle = Phaser.Math.angleBetween(player.x, player.y, planet.x, planet.y);
+        //this.game.physics.arcade.accelerateToObject(player, planet.body, 10000/(distance));
+        let a_x = Math.cos(angle)*planet.g*(planet.mass/(distance*distance));
+        let a_y = Math.sin(angle)*planet.g*(planet.mass/(distance*distance));
+        player.body.acceleration.setTo(a_x, a_y);
+    }   
 
     deletePlayer(id) {
         this.playerMap[id].destroy();
@@ -235,13 +254,16 @@ class PlayState extends Phaser.State {
     }
 
     update() {
+        
         this.scoreValue.setText(this.playerScore);
-
-        this.game.physics.arcade.collide(this.player, this.cows, this.collideCow, null, this);
 
         if (this.player==undefined) {
             return;
         }
+
+        this.calculateGravity(this.player, this.planet);
+        this.game.physics.arcade.collide(this.player, this.cows, this.collideCow, null, this);
+        this.game.physics.arcade.collide(this.player, this.planet);
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             //  Move to the left
             this.player.body.angularVelocity = -150;
@@ -266,7 +288,7 @@ class PlayState extends Phaser.State {
             //this.player.animations.play('walk', 14, true);
 
         } else if (this.player != undefined){
-            this.player.body.acceleration.setTo(0, 0);
+            //this.player.body.acceleration.setTo(0, 0);
         }
 
 
@@ -297,6 +319,9 @@ class PlayState extends Phaser.State {
            this.game.debug.text('id: ' + this.player.id, 30, start+=20);
            this.game.debug.text('cows: ' + this.cows.length, 30, start+=20);
            this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
+           this.game.debug.body(this.player);
+           this.game.debug.body(this.planet);
+       
        }
     }
 }
