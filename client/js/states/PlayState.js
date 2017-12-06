@@ -164,7 +164,6 @@ class PlayState extends Phaser.State {
             }
         } else {
 	        console.log('Login failed: ' + login.message);
-	        this.text.setText('Login failed:\n' + login.message);
         }
     }
 
