@@ -1,10 +1,10 @@
-import GameServer from 'GameServer'
+import Player from 'universe/Player'
 import Cow from 'universe/Cow'
-import CowUpdatePacket from 'packets/server/CowUpdatePacket'
 
-function delay(delay, value) {
-    return new Promise(resolve => setTimeout(resolve, delay, value));
-}
+import Utility from 'Utility'
+
+const MAX_COWS = 5;
+
 /**
  * Expanding universe consisting of multiple zones.
  */
@@ -23,21 +23,20 @@ class Universe {
         this.spawnCow();
     }
 
-    addPlayer(player) {
-        this.players[player.id] = {
-            id: player.id,
-            x: player.x,
-            y: player.y,
-            angle: player.angle,
-            velocity: player.velocity,
-            acceleration: player.acceleration,
-            angularVelocity: player.angularVelocity,
-            angularAcceleration: player.angularAcceleration
-        };
+    createPlayer(socket, id) {
+        const x = Utility.randomInt(100, 400);
+        const y = Utility.randomInt(100, 400);
+        const angle = Utility.randomInt(0, 359);
+
+        let player = new Player(id, socket, x, y, angle, 0);
+
+        this.players[player.id] = player;
+
+        return player;
     }
 
-    updatePlayer(player) {
-        this.players[player.id] = player;
+    updatePlayer(data) {
+        this.players[data.id].update(data);
     }
 
     removePlayer(player) {
@@ -47,47 +46,51 @@ class Universe {
     getPlayers() {
         let all = [];
         for (let id of Object.keys(this.players)) {
-            all.push(this.players[id]);
+            all.push(this.players[id].object);
         }
         return all;
     }
 
     spawnCow() {
-        if (this.spawnedCowCount < 5) {
+        if (this.spawnedCowCount < MAX_COWS) {
             this.spawnedCowCount++;
-            delay(GameServer.randomInt(300, 5000)).then(result => this.createCow());
+            Utility.delay(Utility.randomInt(800, 5000)).then(result => this.createCow());
         }
     }
 
     createCow() {
-        const x = GameServer.randomInt(50, this.width - 50);
-        const y = GameServer.randomInt(50, this.height - 50);
+        const x = Utility.randomInt(50, this.width - 50);
+        const y = Utility.randomInt(50, this.height - 50);
 
-        const cow = new Cow(Cow.getNextId(), x, y, 0);
+        const cow = new Cow(this.server.uniqueObjectId(), x, y, 0, 1);
         this.cows[cow.id] = cow;
 
-        const sockets = this.server.io.sockets.connected;
-        for (let s of Object.keys(sockets)) {
-            let socket = sockets[s];
-            new CowUpdatePacket(cow, true).send(socket);
-        }
-        console.log('spawned cow and sent to clients');
+        this.server.handler.sendCowUpdate(cow);
 
         this.spawnCow();
     }
 
     removeCow(id) {
-        console.log('removing cow: ' + Object.keys(this.cows).length);
-        const sockets = this.server.io.sockets.connected;
-        for (let s of Object.keys(sockets)) {
-            let socket = sockets[s];
-            new CowUpdatePacket({id: id}, false).send(socket);
+        let removedCow = undefined;
+
+        if (this.cows[id] != undefined) {
+            removedCow = this.cows[id];
+
+            delete this.cows[id];
+
+            this.spawnedCowCount--;
         }
 
-        delete this.cows[id];
-
-        this.spawnedCowCount--;
-
         this.spawnCow();
+
+        return removedCow;
+    }
+
+    getCows() {
+        let all = [];
+        for (let id of Object.keys(this.cows)) {
+            all.push(this.cows[id].object);
+        }
+        return all;
     }
 }

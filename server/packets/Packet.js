@@ -8,4 +8,8 @@ class Packet {
     send(socket) {
         socket.emit(this.name, this.data);
     }
+
+    broadcast(socket) {
+        socket.broadcast.emit(this.name, this.data);
+    }
 }

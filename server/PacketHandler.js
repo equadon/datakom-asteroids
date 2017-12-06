@@ -1,8 +1,9 @@
-import GameServer from 'GameServer'
 import LoginResponsePacket from 'packets/server/LoginResponsePacket';
 import UserUpdatePacket from 'packets/server/UserUpdatePacket';
 import GameUpdateResponsePacket from 'packets/server/GameUpdateResponsePacket';
-import GameUpdateRequestPacket from 'packets/client/GameUpdateRequestPacket';
+import CowUpdatePacket from 'packets/server/CowUpdatePacket'
+import ScoreUpdatePacket from 'packets/server/ScoreUpdatePacket'
+
 import Player from 'universe/Player';
 
 import LoginHandler from 'LoginHandler'
@@ -19,6 +20,10 @@ class PacketHandler {
         this.loginHandler = new LoginHandler(db);
     }
 
+    get universe() {
+        return this.server.universe;
+    }
+
     /**
      * User requested to login.
      * @param socket Socket making the request
@@ -28,16 +33,15 @@ class PacketHandler {
         this.loginHandler.login(data, (isValid, id) => {
             if (isValid) {
                 // Create player 
-                socket.player = new Player(this.server.lastPlayerID++, GameServer.randomInt(100, 400), GameServer.randomInt(100, 400), GameServer.randomInt(0, 359));
+                socket.player = this.universe.createPlayer(socket, id);
+                console.log(socket.player);
                 console.log('Player ' + socket.player.id + ' has joined!');
 
-                this.userUpdate(socket.player, 1);
-                this.server.universe.addPlayer(socket.player);
+                this.userUpdate(socket, 'connect');
             }
 
             // Send login response
-            console.log(this.server.universe.getPlayers());
-            new LoginResponsePacket(isValid, socket.player, this.server.universe.getPlayers()).send(socket);
+            new LoginResponsePacket(isValid, socket.player, this.universe.getPlayers()).send(socket);
         });
     }
 
@@ -46,27 +50,36 @@ class PacketHandler {
      * @param request Request data with player position 
      */
     gameUpdate(socket, data) {
-        this.server.universe.updatePlayer(data);
+        this.universe.updatePlayer(data);
 
         new GameUpdateResponsePacket({
-            players: this.server.universe.getPlayers(),
+            players: this.universe.getPlayers(),
             cows: []
         }).send(socket);
     }
 
-    cowUpdate(socket, data) {
-        this.server.universe.removeCow(data.id);
+    onCowUpdate(socket, data) {
+        let cow = this.universe.removeCow(data.id);
+
+        if (cow != undefined) {
+            const packet = new CowUpdatePacket({id: cow.id}, false);
+
+            this.server.io.emit(packet.name, packet.data);
+
+            // Update score for player that was first to remove the cow
+            socket.player.score += cow.score;
+            new ScoreUpdatePacket(socket.player).send(socket);
+        }
     }
 
-    userUpdate(player, type) {
-        const sockets = this.server.io.sockets.connected;
+    sendCowUpdate(cow) {
+        const packet = new CowUpdatePacket(cow, true);
+        this.server.io.emit(packet.name, packet.data);
 
-        for (let socketId of Object.keys(sockets)) {
-            const s = sockets[socketId];
+        console.log(`spawned cow (id=${cow.id})`);
+    }
 
-            if (s.player != undefined && s.player.id != player.id) {
-                new UserUpdatePacket(player, type).send(s);
-            }
-        }
+    userUpdate(socket, type) {
+        new UserUpdatePacket(socket.player, type).broadcast(socket);
     }
 }

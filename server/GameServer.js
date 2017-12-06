@@ -4,7 +4,7 @@ import Universe from 'universe/Universe'
 export default
 class GameServer {
     constructor(db) {
-        this.lastPlayerID = 0;
+        this.__nextObjectId = 1;
         this.cows = [];
         this.server = require('http').createServer();
         this.io = require('socket.io')(this.server, {
@@ -24,6 +24,10 @@ class GameServer {
         this.io.on('connection', (o) => this.onConnect(o));
     }
 
+    uniqueObjectId() {
+        return this.__nextObjectId++;
+    }
+
     start(port) {
         this.server.listen(port);
     }
@@ -37,7 +41,7 @@ class GameServer {
             });
 
             socket.on('cow-update', (data) => {
-                this.handler.cowUpdate(socket, data);
+                this.handler.onCowUpdate(socket, data);
             });
 
             socket.on('disconnect', (reason) => {
@@ -48,11 +52,7 @@ class GameServer {
 
     onDisconnect(socket, reason) {
         console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
-        this.handler.userUpdate(socket.player, 0);
+        this.handler.userUpdate(socket, 'disconnect');
         this.universe.removePlayer(socket.player);
-    }
-
-    static randomInt(low, high) {
-        return Math.floor(Math.random() * (high - low) + low);
     }
 }

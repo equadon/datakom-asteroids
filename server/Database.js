@@ -13,23 +13,23 @@ class Database {
         let _this = this;
         this.MongoClient.connect(this.url, function (err, db) {
             if (err) callback(err, db);
+            db.nextUserId = 1;
+            db.getNextUserID = function() {return this.nextUserId++;};
             _this.initialize(db, callback);
         });
     }
 
     initialize(db, callback) {
-        db.listCollections({name: 'counters'})
+        db.listCollections({name: 'users'})
             .next(function (err, collinfo) {
                 if (collinfo) {
-                    callback(err, db);
-                } else {
-                    var options = { "sort": [['userid','desc']] };
-                    db.collection('users').findOne({}, options , function(err, doc) {
-                        let id = doc ? doc.userid : 1;
-                        db.collection('counters').insertOne({_id: "userid", seq: id}, function (err, r) {
-                            callback(err, db);
-                        });
+                    var options = {"sort": [['userid', 'desc']]};
+                    db.collection('users').findOne({}, options, function (err, doc) {
+                        db.nextUserId = doc ? doc.userid + 1 : 1;
+                        callback(err, db);
                     });
+                } else {
+                    callback(err, db);
                 }
             });
     }
