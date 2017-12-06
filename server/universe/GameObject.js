@@ -22,6 +22,13 @@ class GameObject {
     get angularVelocity() { return this.data.angularVelocity; }
     get angularAcceleration() { return this.data.angularAcceleration; }
 
+    update(status) {
+        delete status.id;
+        this.data = status;
+
+        return this;
+    }
+
     get bounds() {
         return {
             x: this.data.x,
@@ -31,16 +38,15 @@ class GameObject {
         };
     }
 
-    update(status) {
-        delete status.id;
-        this.data = status;
-
-        return this;
-    }
-
     get object() {
         let obj = this.data;
         obj.id = this.id;
         return obj;
+    }
+
+    get hash() {
+        return {
+            id: this.id
+        }
     }
 }

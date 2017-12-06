@@ -28,7 +28,12 @@ class PlayState extends Phaser.State {
 	//Vi kommer ha ett spelar-id som kopplas till ens användare. Som lagras i databasen.
 
 	create() {
-
+        this.game.camera.bounds = {
+            x: Number.MIN_SAFE_INTEGER,
+            y: Number.MIN_SAFE_INTEGER,
+            width: Number.MAX_SAFE_INTEGER * 2,
+            height: Number.MAX_SAFE_INTEGER * 2
+        };
         this.game.stage.backgroundColor = "#151A38";
 
         //Group of ship objects
@@ -113,7 +118,6 @@ class PlayState extends Phaser.State {
         this.physics.arcade.enable(ship);
         ship.body.maxVelocity = new Phaser.Point(250, 250);
         ship.body.drag = new Phaser.Point(30,30);
-        ship.body.collideWorldBounds=true;
 
         return ship;
     }
@@ -161,6 +165,7 @@ class PlayState extends Phaser.State {
 	    if (login.success) {
 	        console.log('Login successful!');
             this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
+            this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 
             for (let p of login.players) {
                 if (p.id != this.player.id) {
@@ -287,6 +292,7 @@ class PlayState extends Phaser.State {
        let start = 130;
        if (this.player!=undefined){
            this.game.debug.spriteInfo(this.player, 32, 32);
+           this.game.debug.cameraInfo(this.game.camera, 432, 32);
            this.game.debug.text('acceleration: ' + this.player.body.acceleration, 30, start+=20);
            this.game.debug.text('velocity: ' + this.player.body.velocity, 30, start+=20);
            this.game.debug.text('angularvelocity: ' + this.player.body.angularVelocity, 30, start+=20);

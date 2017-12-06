@@ -1,5 +1,5 @@
 import PacketHandler from 'PacketHandler';
-import Universe from 'universe/Universe'
+import ExpandingUniverse from 'universe/ExpandingUniverse'
 
 export default
 class GameServer {
@@ -16,10 +16,11 @@ class GameServer {
         });
 
         this.db = db;
-        this.universe = new Universe(this);
 
         // initiate packet handler
         this.handler = new PacketHandler(this, this.db);
+
+        this.universe = new ExpandingUniverse(this);
 
         this.io.on('connection', (o) => this.onConnect(o));
     }
