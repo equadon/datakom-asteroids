@@ -37,6 +37,11 @@ class PlayState extends Phaser.State {
         this.cows = this.game.add.group();
 
 
+        //Planets
+        this.planet = this.add.sprite(500, 500, 'planet');
+        this.physics.arcade.enable(this.planet);
+
+
         //Timers
         this.maxTime = 0.1;
         this.updateServer = this.maxTime;
@@ -230,6 +235,8 @@ class PlayState extends Phaser.State {
     }
 
     update() {
+
+        this.physics.arcade.accelerateToObject(this.player, this.planet.body, 50);
 
         this.scoreValue.setText(this.playerScore);
 
