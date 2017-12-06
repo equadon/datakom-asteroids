@@ -187,17 +187,14 @@ class PlayState extends Phaser.State {
                 ship.angle = p.angle;
                 ship.body.velocity = p.velocity;
                 ship.body.acceleration = p.acceleration;
-                console.log('player acc: ' + p.acceleration );
                 ship.body.angularVelocity= p.angularVelocity;
                 ship.body.angularAcceleration= p.angularAcceleration;
                 if (ship.body.acceleration.x > 0 || ship.body.acceleration.y >0)  {
-                console.log('playing animation');
                     ship.animations.play('flames', 30, true);
                 }
                 else if (ship.body.acceleration.x == 0 && ship.body.acceleration.y == 0) {
                     ship.animations.stop(null, true);
                 }
-                //console.log('angular vel' + p.angularVelocity);
             }
         }
     }
