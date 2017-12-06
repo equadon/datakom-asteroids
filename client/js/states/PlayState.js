@@ -19,6 +19,7 @@ class PlayState extends Phaser.State {
         this.client = new GameClient();
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
+        this.game.load.spritesheet('ship_animated', 'images/rocket-animation-horizontal.png', 251, 176, );
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
@@ -93,8 +94,12 @@ class PlayState extends Phaser.State {
     }
 
     spawnPlayer(id, x, y, v) {
-        let ship = this.add.sprite(x, y, 'ship');
+
+        let ship = this.add.sprite(x, y, 'ship_animated');
         ship.id = id;
+
+        //Adding animation on ship
+        var flames = ship.animations.add('flames');
 
         //Adding ship to group
         this.playerMap[id] = ship;
@@ -171,9 +176,9 @@ class PlayState extends Phaser.State {
         }
     }
 
-    //Update the position of all ships
+    //Update the position of all ships and add flames if they are accelerating
     onUpdateResponse(data) {
-        console.log('update response:' + data);
+        //console.log('update response:' + data);
         for (let p of data.players) {
             if (p.id != this.player.id) {
                 let ship = this.playerMap[p.id];
@@ -182,8 +187,16 @@ class PlayState extends Phaser.State {
                 ship.angle = p.angle;
                 ship.body.velocity = p.velocity;
                 ship.body.acceleration = p.acceleration;
+                console.log('player acc: ' + p.acceleration );
                 ship.body.angularVelocity= p.angularVelocity;
                 ship.body.angularAcceleration= p.angularAcceleration;
+                if (ship.body.acceleration.x > 0 || ship.body.acceleration.y >0)  {
+                console.log('playing animation');
+                    ship.animations.play('flames', 30, true);
+                }
+                else if (ship.body.acceleration.x == 0 && ship.body.acceleration.y == 0) {
+                    ship.animations.stop(null, true);
+                }
                 //console.log('angular vel' + p.angularVelocity);
             }
         }
@@ -196,7 +209,7 @@ class PlayState extends Phaser.State {
 
     onUserUpdate(data) {
         if (data.type == 'connect') {
-            console.log('Spawn player id ' + data.id);
+            //console.log('Spawn player id ' + data.id);
             this.spawnPlayer(data.id, data.x, data.y, data.angle);
         }
 
@@ -233,10 +246,11 @@ class PlayState extends Phaser.State {
         if (this.player==undefined) {
             return;
         }
+
+        //Rotations
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             //  Move to the left
             this.player.body.angularVelocity = -150;
-
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             //  Move to the right
@@ -245,10 +259,12 @@ class PlayState extends Phaser.State {
             this.player.body.angularVelocity = 0;
         }
 
-
+        //Acceleration
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             // Add forward acceleration
             this.physics.arcade.accelerationFromRotation(this.player.rotation, 300, this.player.body.acceleration);
+            //Starting flame animation
+            this.player.animations.play('flames', 30, true);
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             // Add backward acceleration (Mostly for testing)
@@ -256,21 +272,15 @@ class PlayState extends Phaser.State {
 
         } else if (this.player != undefined){
             this.player.body.acceleration.setTo(0, 0);
+            //Stopping animation
+            this.player.animations.stop(null, true);
         }
 
-
-        if (this.player.body.velocity.x != 0 || this.player.body.velocity.y != 0) {
-
-        }
 
         //Update timer
         this.updateServer -= this.game.time.physicsElapsed;
-        //console.log('TIME:' + this.game.time.physicsElapsed);
-        // this.client.update(this.player);
-
         //Update server on position, angle and velocity of ship every 0.1 seconds
         if (this.updateServer<=0) {
-            //console.log('UPDATE TIMER');
             this.updateServer = this.maxTime;
             this.client.update(this.player);
         }
