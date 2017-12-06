@@ -28,4 +28,26 @@ class GameClient {
     on(name, callback) {
         this.socket.on(name, callback);
     }
+
+    update(player) {
+        
+        this.socket.emit('game-update', {
+            x: player.x,
+            y: player.y,
+            angle: player.angle,
+            id: player.id,
+            velocity: player.body.velocity,
+            acceleration: player.body.acceleration,
+            angularVelocity: player.body.angularVelocity,
+            angularAcceleration: player.body.angularAcceleration
+            });
+        
+    }
+
+    gotCow(id) {
+        this.socket.emit('cow-update', {
+            id: id
+        });
+    }
+
 }

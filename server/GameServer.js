@@ -1,22 +1,22 @@
 import PacketHandler from 'PacketHandler';
-import Player from 'Player';
+import Universe from 'universe/Universe'
 
 export default
 class GameServer {
     constructor(db) {
-        this.lastPlayerID = 0;
-        this.loggedInPlayers = {};
+        this.__nextObjectId = 1;
         this.cows = [];
         this.server = require('http').createServer();
         this.io = require('socket.io')(this.server, {
             path: '/cows',
             serveClient: false,
-            pingInterval: 10000,
-            pingTimeout: 5000,
+            pingInterval: 300000,
+            pingTimeout: 50000,
             cookie: false
         });
 
         this.db = db;
+        this.universe = new Universe(this);
 
         // initiate packet handler
         this.handler = new PacketHandler(this, this.db);
@@ -24,67 +24,35 @@ class GameServer {
         this.io.on('connection', (o) => this.onConnect(o));
     }
 
+    uniqueObjectId() {
+        return this.__nextObjectId++;
+    }
+
     start(port) {
         this.server.listen(port);
     }
 
     onConnect(socket) {
-
         socket.on('login-request', (data) => {
             this.handler.loginRequest(socket, data);
 
-            this.initializePlayer(socket);
+            socket.on('game-update', (data) => {
+                this.handler.gameUpdate(socket, data);
+            });
 
-            socket.on('update', (data) => {
-                this.handler.updateRequest(socket, data);
+            socket.on('cow-update', (data) => {
+                this.handler.onCowUpdate(socket, data);
             });
 
             socket.on('disconnect', (reason) => {
-                this.onDisconnect(reason);
+                this.onDisconnect(socket, reason);
             });
         });
     }
 
-    initializePlayer(socket) {
-        //Create the new player
-        socket.player = new Player(this.lastPlayerID++, 0, 0, 0);
-
-        //Send id to client
-        //socket.emit('newplayer', socket.player);
-
-        //Send game state to client
-        this.handler.playerInit(socket);
-        console.log('Player ' + socket.player.id + ' has joined!');
+    onDisconnect(socket, reason) {
+        console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
+        this.handler.userUpdate(socket, 'disconnect');
+        this.universe.removePlayer(socket.player);
     }
-
-    onDisconnect(reason) {
-        console.log('Client disconnected: ' + reason);
-    }
-
-    getPlayer(id) {
-        return this.loggedInPlayers[id];
-    }
-
-    getState() {
-        return {
-            players: this.getAllPlayers(),
-            cows: this.server.cows
-        };
-    }
-
-
-    getAllPlayers() {
-        var players = [];
-        let _this = this;
-        Object.keys(this.io.sockets.connected).forEach(function (socketID) {
-            var player = _this.io.sockets.connected[socketID].player;
-            if (player) players.push(player);
-        });
-        return players;
-    }
-
-    randomInt(low, high) {
-        return Math.floor(Math.random() * (high - low) + low);
-    }
-
 }
