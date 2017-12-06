@@ -162,6 +162,10 @@ class PlayState extends Phaser.State {
                     this.spawnPlayer(p.id, p.x, p.y, p.angle);
                 }
             }
+
+            for (let cow of login.cows) {
+                this.spawnCow(cow.id, cow.x, cow.y);
+            }
         } else {
 	        console.log('Login failed: ' + login.message);
         }

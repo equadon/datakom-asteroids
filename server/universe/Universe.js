@@ -36,7 +36,13 @@ class Universe {
     }
 
     updatePlayer(data) {
-        this.players[data.id].update(data);
+        let player = this.players[data.id];
+
+        if (player == undefined) {
+            console.warn("trying to update a non-existing player with data: " + data);
+        } else {
+            this.players[data.id].update(data);
+        }
     }
 
     removePlayer(player) {

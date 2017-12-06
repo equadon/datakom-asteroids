@@ -2,7 +2,7 @@ import Packet from 'packets/Packet';
 
 export default
 class LoginResponsePacket extends Packet {
-    constructor(isValid, player, players) {
+    constructor(isValid, player, players, cows) {
         super('login-response', {
             success: isValid,
             message: isValid ? null : "Invalid password",
@@ -14,7 +14,8 @@ class LoginResponsePacket extends Packet {
             acceleration: player.acceleration,
             angularVelocity: player.angularVelocity,
             angularAcceleration: player.angularAcceleration,
-            players: players
+            players: players,
+            cows: cows
         });
     }
 }
