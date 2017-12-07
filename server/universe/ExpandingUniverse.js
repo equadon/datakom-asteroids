@@ -1,4 +1,4 @@
-import HashBounds from 'hashbounds'
+import SpatialHash from 'server/universe/SpatialHash'
 
 import Player from 'universe/Player'
 import Cow from 'universe/Cow'
@@ -9,7 +9,7 @@ export default
 class ExpandingUniverse {
     constructor(server) {
         this.server = server;
-        this.hash = new HashBounds(10, 4, 10000);
+        this.hash = new SpatialHash(1000);
         this.players = [];
         this.cows = [];
 
@@ -23,7 +23,7 @@ class ExpandingUniverse {
 
         let player = new Player(this.server.uniqueObjectId(), socket, x, y, angle, 0);
 
-        this.hash.insert({ id: player.id }, player.bounds);
+        this.hash.add(player.hash, player.bounds);
 
         this.players[player.id] = player;
 
@@ -37,7 +37,7 @@ class ExpandingUniverse {
     }
 
     removePlayer(player) {
-        this.hash.delete({ id: player.id });
+        this.hash.remove(player.hash, player.bounds);
 
         delete this.players[player.id];
     }

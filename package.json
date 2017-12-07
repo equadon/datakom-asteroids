@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "express": "^4.16.2",
-    "hashbounds": "github:ThreeLetters/HashBounds",
     "mongodb": "^2.2.33",
     "phaser-ce": "^2.9.2",
     "socket.io": "^2.0.4"

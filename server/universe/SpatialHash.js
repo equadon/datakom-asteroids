@@ -1,3 +1,4 @@
+export default
 class SpatialHash {
     constructor(cellSize) {
         this.cellSize = cellSize;
@@ -60,8 +61,8 @@ class SpatialHash {
         for (let key of keys) {
             // Filter objects
             for (let obj of this.hash[key]) {
-                if (f && f(obj)) {
-                    if (!objects.includes(obj)) {
+                if (f != null) {
+                    if (f(obj) && !objects.includes(obj)) {
                         objects.push(obj);
                     }
                 } else {
@@ -134,7 +135,8 @@ class SpatialHash {
 
 function test() {
     let obj1 = {
-        id: 1
+        id: 1,
+        type: 'player'
     };
     let bounds1 = {
         x: 0,
@@ -166,6 +168,8 @@ function test() {
 
     console.log('Object count: ' + hash.count());
     console.log('Has objects in bounds? ' + hash.any(newBounds));
+    console.log('Query results for "player": ' + hash.query(newBounds, (o) => o.type == 'player').length);
+    console.log('Query results for "cow": ' + hash.query(newBounds, (o) => o.type == 'cow').length);
 
     hash.remove(obj1, newBounds);
 
