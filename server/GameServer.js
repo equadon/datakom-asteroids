@@ -38,7 +38,7 @@ class GameServer {
             this.handler.loginRequest(socket, data);
 
             socket.on('game-update', (data) => {
-                this.handler.gameUpdate(socket, data);
+                this.handler.playerUpdate(socket, data);
             });
 
             socket.on('cow-update', (data) => {

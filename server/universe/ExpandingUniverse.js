@@ -36,6 +36,8 @@ class ExpandingUniverse {
         player = player.update(data);
 
         this.hash.update(player.hash, oldBounds, player.bounds);
+
+        return player;
     }
 
     removePlayer(player) {
@@ -44,18 +46,13 @@ class ExpandingUniverse {
         delete this.players[player.id];
     }
 
-    getPlayers() {
-        let all = [];
-        for (let id of Object.keys(this.players)) {
-            all.push(this.players[id].object);
-        }
-        return all;
+    getPlayers(player) {
+        return this.hash.query(player.viewport, (o) => o.type == 'player');
     }
 
     createTestCows() {
         for (let x = 0; x < 10; x++) {
             let cow = new Cow(this.server.uniqueObjectId(), x*400, 0, 0, 1);
-            console.log('adding cow: ' + cow.id);
             this.cows[cow.id] = cow;
             this.hash.add(cow.hash, cow.bounds);
 

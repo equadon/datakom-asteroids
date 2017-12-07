@@ -40,7 +40,12 @@ class PacketHandler {
             }
 
             // Send login response
-            new LoginResponsePacket(isValid, socket.player, this.universe.getPlayers(), this.universe.getCows()).send(socket);
+            new LoginResponsePacket(
+                isValid,
+                socket.player,
+                this.universe.getPlayers(socket.player),
+                this.universe.getCows(socket.player)
+            ).send(socket);
         });
     }
 
@@ -48,13 +53,14 @@ class PacketHandler {
      * 
      * @param request Request data with player position 
      */
-    gameUpdate(socket, data) {
-        this.universe.updatePlayer(data);
+    playerUpdate(socket, data) {
+        const player = this.universe.updatePlayer(data);
 
-        new GameUpdateResponsePacket({
-            players: this.universe.getPlayers(),
-            cows: []
-        }).send(socket);
+        new GameUpdateResponsePacket(
+            this.universe.getPlayers(player),
+            this.universe.getCows(player),
+            []
+        ).send(socket);
     }
 
     onCowUpdate(socket, data) {

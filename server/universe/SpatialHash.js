@@ -53,21 +53,25 @@ class SpatialHash {
      * Get objects in bounds with an optional filter.
      * @param bounds Bounds to search for objects
      * @param f Filter function, return true to include in result
-     * @returns Objects matching query
+     * @returns Array of objects matching query
      */
     query(bounds, f=null) {
         let objects = [];
         let keys = this._keys(bounds);
         for (let key of keys) {
             // Filter objects
-            for (let obj of this.hash[key]) {
-                if (f != null) {
-                    if (f(obj) && !objects.includes(obj)) {
-                        objects.push(obj);
-                    }
-                } else {
-                    if (!objects.includes(obj)) {
-                        objects.push(obj);
+            let objs = this.hash[key];
+
+            if (objs != undefined) {
+                for (let obj of objs) {
+                    if (f != null) {
+                        if (f(obj) && !objects.includes(obj)) {
+                            objects.push(obj);
+                        }
+                    } else {
+                        if (!objects.includes(obj)) {
+                            objects.push(obj);
+                        }
                     }
                 }
             }
@@ -126,7 +130,7 @@ class SpatialHash {
         let keys = [];
         for (let i = x1; i <= x2; i++) {
             for (let j = y1; j <= y2; j++) {
-                keys.push(i + '-' + j);
+                keys.push(i + '_' + j);
             }
         }
         return keys;
