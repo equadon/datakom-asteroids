@@ -52,9 +52,10 @@ class GameObject {
         return obj;
     }
 
-    get hash() {
-        return {
-            id: this.id
-        }
+    static boundsEqual(b1, b2) {
+        return b1.x == b2.x &&
+               b1.y == b2.y &&
+               b1.width == b2.width &&
+               b1.height == b2.height;
     }
 }

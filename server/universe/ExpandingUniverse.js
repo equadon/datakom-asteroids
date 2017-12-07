@@ -35,7 +35,9 @@ class ExpandingUniverse {
         const oldBounds = player.bounds;
         player = player.update(data);
 
-        this.hash.update(player.hash, oldBounds, player.bounds);
+        if (!Player.boundsEqual(oldBounds, player.bounds)) {
+            this.hash.update(player.hash, oldBounds, player.bounds);
+        }
 
         return player;
     }
@@ -47,7 +49,15 @@ class ExpandingUniverse {
     }
 
     getPlayers(player) {
-        return this.hash.query(player.viewport, (o) => o.type == 'player');
+        let objects = this.hash.query(player.viewport, (o) => o.type == 'player');
+        let visible = [];
+        for (let obj of objects) {
+            if (obj.id in this.players) {
+                visible.push(this.players[obj.id].object);
+            }
+        }
+
+        return visible;
     }
 
     createTestCows() {

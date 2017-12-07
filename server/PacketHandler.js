@@ -31,19 +31,23 @@ class PacketHandler {
      */
     loginRequest(socket, data) {
         this.loginHandler.login(data, (isValid, id) => {
+            let players = [];
+
             if (isValid) {
                 // Create player 
                 socket.player = this.universe.createPlayer(socket);
                 console.log('Player ' + socket.player.id + ' has joined!');
 
                 this.userUpdate(socket, 'connect');
+
+                players = this.universe.getPlayers(socket.player);
             }
 
             // Send login response
             new LoginResponsePacket(
                 isValid,
                 socket.player,
-                this.universe.getPlayers(socket.player),
+                players,
                 this.universe.getCows(socket.player)
             ).send(socket);
         });

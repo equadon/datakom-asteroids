@@ -174,6 +174,10 @@ function test() {
     console.log('Has objects in bounds? ' + hash.any(newBounds));
     console.log('Query results for "player": ' + hash.query(newBounds, (o) => o.type == 'player').length);
     console.log('Query results for "cow": ' + hash.query(newBounds, (o) => o.type == 'cow').length);
+    console.log('Query results for "player" (large bounds): ' + hash.query(
+        {x: -1000, y: -1000, width: 2000, height: 2000},
+        (o) => o.type == 'player').length
+    );
 
     hash.remove(obj1, newBounds);
 
