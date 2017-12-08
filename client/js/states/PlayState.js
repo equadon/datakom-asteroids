@@ -50,7 +50,7 @@ class PlayState extends Phaser.State {
         this.planet.scale.setTo(1.5, 1.5);
         this.planet.mass = 50000;
         this.planet.body.immovable = true;
-        this.planet.body.setCircle(58);
+        this.planet.body.setCircle(84);
 
 
         //Timers
