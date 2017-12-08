@@ -10,18 +10,19 @@ class GameObject {
         this.data.x = x;
         this.data.y = y;
         this.data.angle = angle;
-        this.data.velocity = velocity;
-        this.data.acceleration = acceleration;
-        this.data.angularVelocity = angularVelocity;
-        this.data.angularAcceleration = angularAcceleration;
+        this.data.vel = velocity;
+        this.data.acc = acceleration;
+        this.data.aVel = angularVelocity;
+        this.data.aAcc = angularAcceleration;
     }
 
     get x() { return this.data.x; }
     get y() { return this.data.y; }
     get angle() { return this.data.angle; }
-    get velocity() { return this.data.velocity; }
-    get angularVelocity() { return this.data.angularVelocity; }
-    get angularAcceleration() { return this.data.angularAcceleration; }
+    get velocity() { return this.data.vel; }
+    get acceleration() { return this.data.acc; }
+    get angularVelocity() { return this.data.aVel; }
+    get angularAcceleration() { return this.data.aAcc; }
 
     update(status) {
         delete status.id;

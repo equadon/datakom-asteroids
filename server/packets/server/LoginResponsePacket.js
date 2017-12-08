@@ -10,10 +10,10 @@ class LoginResponsePacket extends Packet {
             x: player ? player.x : null,
             y: player ? player.y : null,
             angle: player ? player.angle : null,
-            velocity: player ? player.velocity : null,
-            acceleration: player ? player.acceleration : null,
-            angularVelocity: player ? player.angularVelocity : null,
-            angularAcceleration: player ? player.angularAcceleration : null
+            vel: player ? player.velocity : null,
+            acc: player ? player.acceleration : null,
+            aVel: player ? player.angularVelocity : null,
+            aAcc: player ? player.angularAcceleration : null
         });
     }
 }

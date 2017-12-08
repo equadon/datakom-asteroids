@@ -273,10 +273,10 @@ class PlayState extends Phaser.State {
                        ship.x = obj.x;
                        ship.y = obj.y;
                        ship.angle = obj.angle;
-                       ship.body.velocity = obj.velocity;
-                       ship.body.acceleration = obj.acceleration;
-                       ship.body.angularVelocity= obj.angularVelocity;
-                       ship.body.angularAcceleration= obj.angularAcceleration;
+                       ship.body.velocity = obj.vel;
+                       ship.body.acceleration = obj.acc;
+                       ship.body.angularVelocity= obj.aVel;
+                       ship.body.angularAcceleration= obj.aAcc;
                        if (ship.body.acceleration.x > 0 || ship.body.acceleration.y > 0)  {
                            ship.animations.play('flames', 30, true);
                        }
