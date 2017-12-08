@@ -3,7 +3,7 @@ import Game from 'Game';
 
 
 //let game = new Game();
-
+new Game().start();
 
 $(document).ready(function(){
     $("#hide").click(function(){
@@ -25,12 +25,12 @@ $(document).ready(function(){
 
 
 $(document).ready(function() {
-    $("button").click(function(){
+    $("button").click(function(event){
         //alert($('#username').val());
         var username = $('#username').val();
         var password = $('#password').val();
-        alert(password);
-        //Event.preventDefault();
+ 
+        event.preventDefault();
         //this.client.login(username, password); //Send login to client
 
         showGame();
@@ -38,6 +38,7 @@ $(document).ready(function() {
 });
 
 function showGame() {
+
     //document.getElementById("gameContainer").style.display = "block";
     window.scroll({
         top: 2500,
@@ -45,7 +46,7 @@ function showGame() {
         behavior: 'smooth'
     });
 
-    setTimeout(function() {  new Game().start(); }, 10);
+    //setTimeout(function() {  new Game().start(); }, 10);
 
 };
 

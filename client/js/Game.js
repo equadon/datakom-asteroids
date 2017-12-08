@@ -17,7 +17,7 @@ class Game extends Phaser.Game {
     }
 
     start() {
-        this.state.start('Play');
+        this.state.start('Login');
     }
 }
 
