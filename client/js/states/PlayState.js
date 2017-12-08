@@ -19,9 +19,8 @@ class PlayState extends Phaser.State {
         this.client = new GameClient();
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
+        this.game.load.spritesheet('ship_animated', 'images/rocket-animation-horizontal.png', 251, 176);
         this.load.image('planet','images/planet.png');
-        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
-
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
 	}
@@ -43,14 +42,9 @@ class PlayState extends Phaser.State {
 
 
         //Planets
-        this.planet = this.add.sprite(400, 400, 'planet');
-        this.planet.anchor.setTo(0.5,0.5);
-        this.physics.arcade.enable(this.planet);
-        this.planet.g = 100;
-        this.planet.scale.setTo(1.5, 1.5);
-        this.planet.mass = 50000;
-        this.planet.body.immovable = true;
-        this.planet.body.setCircle(84);
+        this.planets = this.game.add.group();
+        this.spawnPlanet(1, 400, 400, 1);
+        this.spawnPlanet(2, 200, 200, 0.5);
 
 
         //Timers
@@ -108,28 +102,45 @@ class PlayState extends Phaser.State {
     }
 
 
-
+    spawnPlanet(id, x, y, s) {
+        let planet = this.add.sprite(x, y, 'planet');
+        planet.anchor.setTo(0.5, 0.5);
+        this.physics.arcade.enable(planet);
+        planet.g = 100*s;
+        planet.id = id;
+        planet.scale.setTo(s, s);
+        planet.mass = 50000*s;
+        planet.body.immovable = true;
+        planet.body.setCircle(84);
+        this.planets.add(planet);
+    }
 
     spawnPlayer(id, x, y, v) {
-        let ship = this.add.sprite(x, y, 'ship');
-        //this.flames = ship.animations.add('walk');
+
+        let ship = this.add.sprite(x, y, 'ship_animated');
         ship.id = id;
+
+        //Adding animation on ship
+        var flames = ship.animations.add('flames');
 
         //Adding ship to group
         this.playerMap[id] = ship;
 
         //Scale and angle ship
-        ship.scale.setTo(0.35, 0.35);
-        ship.anchor.setTo(0.5, 0.5);
-        ship.angle = v;
+        let scale = 0.35;
+        ship.scale.setTo(scale, scale);
+        ship.anchor.setTo(0.7, 0.5);
+        //ship.angle = v;
         ship.mass = 100;
-
+        
         //Enable physics on ship
         this.physics.arcade.enable(ship);
         ship.body.maxVelocity = new Phaser.Point(250, 250);
         ship.body.drag = new Phaser.Point(30,30);
         ship.body.collideWorldBounds=true;
-        ship.body.setCircle(122, 122, 0);
+
+        //Set hitbox
+        ship.body.setCircle(80, 88, 0);
 
         return ship;
     }
@@ -150,13 +161,25 @@ class PlayState extends Phaser.State {
     }
 
 
-    calculateGravity(player, planet) {
-        let distance = Phaser.Math.distance(player.body.x, player.body.y, planet.body.x, planet.body.y);
-        let angle = Phaser.Math.angleBetween(player.x, player.y, planet.x, planet.y);
-        //this.game.physics.arcade.accelerateToObject(player, planet.body, 10000/(distance));
-        let a_x = Math.cos(angle)*planet.g*(planet.mass/(distance*distance));
-        let a_y = Math.sin(angle)*planet.g*(planet.mass/(distance*distance));
-        player.body.acceleration.setTo(a_x, a_y);
+
+    calculateGravity(planets, player) {
+
+        let planetsArray = planets.getAll();
+        let total_a_x = 0;
+        let total_a_y = 0;
+
+        for (let planet of planetsArray) {
+            let distance = Phaser.Math.distance(player.body.x, player.body.y, planet.body.x, planet.body.y);
+            let angle = Phaser.Math.angleBetween(player.x, player.y, planet.x, planet.y);
+            //this.game.physics.arcade.accelerateToObject(player, planet.body, 10000/(distance));
+            let a_x = Math.cos(angle)*planet.g*(planet.mass/(distance*distance));
+            let a_y = Math.sin(angle)*planet.g*(planet.mass/(distance*distance));
+            total_a_x += a_x;
+            total_a_y += a_y;
+        }
+
+        player.body.acceleration.x = total_a_x;
+        player.body.acceleration.y = total_a_y;
     }   
 
     deletePlayer(id) {
@@ -198,9 +221,9 @@ class PlayState extends Phaser.State {
         }
     }
 
-    //Update the position of all ships
+    //Update the position of all ships and add flames if they are accelerating
     onUpdateResponse(data) {
-        console.log('update response:' + data);
+        //console.log('update response:' + data);
         for (let p of data.players) {
             if (p.id != this.player.id) {
                 let ship = this.playerMap[p.id];
@@ -209,8 +232,16 @@ class PlayState extends Phaser.State {
                 ship.angle = p.angle;
                 ship.body.velocity = p.velocity;
                 ship.body.acceleration = p.acceleration;
+                console.log('player acc: ' + p.acceleration );
                 ship.body.angularVelocity= p.angularVelocity;
                 ship.body.angularAcceleration= p.angularAcceleration;
+                if (ship.body.acceleration.x > 0 || ship.body.acceleration.y >0)  {
+                console.log('playing animation');
+                    ship.animations.play('flames', 30, true);
+                }
+                else if (ship.body.acceleration.x == 0 && ship.body.acceleration.y == 0) {
+                    ship.animations.stop(null, true);
+                }
                 //console.log('angular vel' + p.angularVelocity);
             }
         }
@@ -223,7 +254,7 @@ class PlayState extends Phaser.State {
 
     onUserUpdate(data) {
         if (data.type == 'connect') {
-            console.log('Spawn player id ' + data.id);
+            //console.log('Spawn player id ' + data.id);
             this.spawnPlayer(data.id, data.x, data.y, data.angle);
         }
 
@@ -260,13 +291,19 @@ class PlayState extends Phaser.State {
             return;
         }
 
-        this.calculateGravity(this.player, this.planet);
+        
+        //let args = [null, this.player];
+        //this.planets.iterate('exists', true, Phaser.Group.RETURN_NONE, this.calculateGravity, this, args);
+        //let planet = this.planets.getClosestTo(this.player);
+        this.calculateGravity(this.planets, this.player);
+
         this.game.physics.arcade.collide(this.player, this.cows, this.collideCow, null, this);
-        this.game.physics.arcade.collide(this.player, this.planet);
+        this.game.physics.arcade.collide(this.player, this.planets);
+
+        //Rotations
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             //  Move to the left
             this.player.body.angularVelocity = -150;
-
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             //  Move to the right
@@ -275,11 +312,12 @@ class PlayState extends Phaser.State {
             this.player.body.angularVelocity = 0;
         }
 
-
+        //Acceleration
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             // Add forward acceleration
             this.physics.arcade.accelerationFromRotation(this.player.rotation, 300, this.player.body.acceleration);
-            //this.player.animations.play('walk', 14, true);
+            //Starting flame animation
+            this.player.animations.play('flames', 30, true);
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             // Add backward acceleration (Mostly for testing)
@@ -287,22 +325,15 @@ class PlayState extends Phaser.State {
             //this.player.animations.play('walk', 14, true);
 
         } else if (this.player != undefined){
-            //this.player.body.acceleration.setTo(0, 0);
+            //Stopping animation
+            this.player.animations.stop(null, true);
         }
 
-
-        if (this.player.body.velocity.x != 0 || this.player.body.velocity.y != 0) {
-
-        }
 
         //Update timer
         this.updateServer -= this.game.time.physicsElapsed;
-        //console.log('TIME:' + this.game.time.physicsElapsed);
-        // this.client.update(this.player);
-
         //Update server on position, angle and velocity of ship every 0.1 seconds
         if (this.updateServer<=0) {
-            //console.log('UPDATE TIMER');
             this.updateServer = this.maxTime;
             this.client.update(this.player);
         }
@@ -319,7 +350,9 @@ class PlayState extends Phaser.State {
            this.game.debug.text('cows: ' + this.cows.length, 30, start+=20);
            this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
            this.game.debug.body(this.player);
-           this.game.debug.body(this.planet);
+           for (let planet of this.planets.getAll()) {
+            this.game.debug.body(planet);
+           }
        
        }
     }
