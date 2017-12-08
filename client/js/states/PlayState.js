@@ -17,10 +17,6 @@ class PlayState extends Phaser.State {
             this.onUserUpdate(obj)
         });
 
-        this.client.on('cow-update', (obj) => {
-            this.onCowUpdate(obj)
-        });
-
         this.client.on('score-update', (obj) => {
             this.onScoreUpdate(obj);
         });
@@ -176,9 +172,7 @@ class PlayState extends Phaser.State {
                 }
             }
 
-            for (let cow of login.cows) {
-                this.spawnCow(cow.id, cow.x, cow.y);
-            }
+            this.updateCows(login.cows);
         } else {
 	        console.log('Login failed: ' + login.message);
         }
@@ -207,20 +201,7 @@ class PlayState extends Phaser.State {
             }
         }
 
-        let cowIds = [];
-        for (let c of data.cows) {
-            if (!(id in Object.keys(this.cowMap))) {
-                console.log('added new cow');
-                this.spawnCow(c.id, c.x, c.y);
-            }
-            cowIds.push(c.id);
-        }
-        for (let c of this.cowMap) {
-            if (!cowIds.includes(c.id)) {
-                console.log('deleting cow: ' + c.id);
-                this.deleteCow(c.id);
-            }
-        }
+        this.updateCows(data.cows);
     }
 
     /**
@@ -242,16 +223,6 @@ class PlayState extends Phaser.State {
             console.log("ERROR in user update");
         }
 
-    }
-
-    onCowUpdate(data) {
-        if (data.status == "add") {
-            this.spawnCow(data.id, data.x, data.y);
-        } else if (data.status == "remove") {
-            this.deleteCow(data.id);
-        } else {
-            console.log("ERROR in cow update");
-        }
     }
 
     onScoreUpdate(data) {
@@ -309,6 +280,32 @@ class PlayState extends Phaser.State {
             this.client.update(this.player);
         }
     }
+
+   /**
+    * Update client's list of cows.
+     * @param cows Array of cow objects
+    */
+   updateCows(cows) {
+       let existing = Object.keys(this.cowMap);
+       let updated = [];
+
+       // Add new cows
+       for (let cow of cows) {
+           if (!existing.includes(cow.id + '')) {
+               console.log('adding new cow to cowMap: ' + cow.id);
+               this.spawnCow(cow.id, cow.x, cow.y);
+           }
+           updated.push(cow.id + '');
+       }
+
+       // Remove cows that are no longer visible
+       for (let id of Object.keys(this.cowMap)) {
+           if (updated.indexOf(id) == -1) {
+               console.log('cow no longer visible, removing: ' + id);
+               this.deleteCow(id);
+           }
+       }
+   }
 
    render() {
        let start = 130;

@@ -60,13 +60,18 @@ class ExpandingUniverse {
     }
 
     createTestCows() {
-        for (let x = 0; x < 100; x++) {
-            let cow = new Cow(this.server.uniqueObjectId(), x*300, 0, 0, 1);
-            this.cows[cow.id] = cow;
-            this.hash.add(cow.hash, cow.bounds);
+        const cols = 100;
+        const rows = 100;
+        const space = 400;
 
-            // this.server.handler.sendCowUpdate(cow);
+        for (let x = -(cols / 2); x < (cols / 2); x++) {
+            for (let y = -(rows / 2); y < (rows / 2); y++) {
+                let cow = new Cow(this.server.uniqueObjectId(), space * x, space * y, 0, 1);
+                this.cows[cow.id] = cow;
+                this.hash.add(cow.hash, cow.bounds);
+            }
         }
+        console.log('Successfully created ' + (cols * rows) + ' cow(s)');
     }
 
     removeCow(id) {

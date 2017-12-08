@@ -1,6 +1,6 @@
 import GameObject from 'universe/GameObject'
 
-const VIEWPORT_WIDTH = 1000;
+const VIEWPORT_WIDTH = 1400;
 const VIEWPORT_HEIGHT = 1000;
 
 const WIDTH = 50;
@@ -20,8 +20,8 @@ class Player extends GameObject {
         return {
             x: this.x - VIEWPORT_WIDTH / 2,
             y: this.y - VIEWPORT_HEIGHT / 2,
-            width: this.x + VIEWPORT_WIDTH,
-            height: this.y + VIEWPORT_HEIGHT
+            width: VIEWPORT_WIDTH,
+            height: VIEWPORT_HEIGHT
         };
     }
 }
