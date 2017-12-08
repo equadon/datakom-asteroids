@@ -292,7 +292,6 @@ class PlayState extends Phaser.State {
        // Add new cows
        for (let cow of cows) {
            if (!existing.includes(cow.id + '')) {
-               console.log('adding new cow to cowMap: ' + cow.id);
                this.spawnCow(cow.id, cow.x, cow.y);
            }
            updated.push(cow.id + '');
@@ -301,7 +300,6 @@ class PlayState extends Phaser.State {
        // Remove cows that are no longer visible
        for (let id of Object.keys(this.cowMap)) {
            if (updated.indexOf(id) == -1) {
-               console.log('cow no longer visible, removing: ' + id);
                this.deleteCow(id);
            }
        }

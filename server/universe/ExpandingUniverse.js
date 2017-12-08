@@ -62,11 +62,15 @@ class ExpandingUniverse {
     createTestCows() {
         const cols = 100;
         const rows = 100;
-        const space = 400;
+        const space = 600;
 
-        for (let x = -(cols / 2); x < (cols / 2); x++) {
-            for (let y = -(rows / 2); y < (rows / 2); y++) {
-                let cow = new Cow(this.server.uniqueObjectId(), space * x, space * y, 0, 1);
+        for (let r = -(rows / 2); r < (rows / 2); r++) {
+            for (let c = -(cols / 2); c < (cols / 2); c++) {
+                let x = space * c;
+                let y = space * r;
+                let xrand = Utility.randomInt(x - 200, x + 200);
+                let yrand = Utility.randomInt(y - 200, y + 200);
+                let cow = new Cow(this.server.uniqueObjectId(), xrand, yrand, 0, 1);
                 this.cows[cow.id] = cow;
                 this.hash.add(cow.hash, cow.bounds);
             }
