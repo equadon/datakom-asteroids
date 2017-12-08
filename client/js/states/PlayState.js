@@ -43,8 +43,8 @@ class PlayState extends Phaser.State {
 
         //Planets
         this.planets = this.game.add.group();
-        this.spawnPlanet(1, 400, 400, 1);
-        this.spawnPlanet(2, 200, 200, 0.5);
+        this.spawnPlanet(1, 550, 400, 1);
+        this.spawnPlanet(2, 350, 200, 0.5);
 
 
         //Timers
@@ -109,6 +109,7 @@ class PlayState extends Phaser.State {
         planet.g = 100*s;
         planet.id = id;
         planet.scale.setTo(s, s);
+        planet.r = (168/2)*s;
         planet.mass = 50000*s;
         planet.body.immovable = true;
         planet.body.setCircle(84);
@@ -169,8 +170,8 @@ class PlayState extends Phaser.State {
         let total_a_y = 0;
 
         for (let planet of planetsArray) {
-            let distance = Phaser.Math.distance(player.body.x, player.body.y, planet.body.x, planet.body.y);
-            let angle = Phaser.Math.angleBetween(player.x, player.y, planet.x, planet.y);
+            let distance = Phaser.Math.distance(player.x, player.y, planet.x, planet.y);//planet.body.x+planet.r, planet.body.y+planet.r);
+            let angle = Phaser.Math.angleBetween(player.x, player.y, planet.x, planet.y);//planet.body.x+planet.r, planet.body.y+planet.r);
             //this.game.physics.arcade.accelerateToObject(player, planet.body, 10000/(distance));
             let a_x = Math.cos(angle)*planet.g*(planet.mass/(distance*distance));
             let a_y = Math.sin(angle)*planet.g*(planet.mass/(distance*distance));
@@ -178,8 +179,9 @@ class PlayState extends Phaser.State {
             total_a_y += a_y;
         }
 
-        player.body.acceleration.x = total_a_x;
-        player.body.acceleration.y = total_a_y;
+        //player.body.acceleration.x = total_a_x;
+        //player.body.acceleration.y = total_a_y;
+        return [total_a_x, total_a_y];
     }   
 
     deletePlayer(id) {
@@ -291,12 +293,6 @@ class PlayState extends Phaser.State {
             return;
         }
 
-        
-        //let args = [null, this.player];
-        //this.planets.iterate('exists', true, Phaser.Group.RETURN_NONE, this.calculateGravity, this, args);
-        //let planet = this.planets.getClosestTo(this.player);
-        this.calculateGravity(this.planets, this.player);
-
         this.game.physics.arcade.collide(this.player, this.cows, this.collideCow, null, this);
         this.game.physics.arcade.collide(this.player, this.planets);
 
@@ -315,18 +311,27 @@ class PlayState extends Phaser.State {
         //Acceleration
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             // Add forward acceleration
-            this.physics.arcade.accelerationFromRotation(this.player.rotation, 300, this.player.body.acceleration);
+            this.physics.arcade.accelerationFromRotation(this.player.rotation, 500, this.player.body.acceleration);
             //Starting flame animation
             this.player.animations.play('flames', 30, true);
+            let [a_x, a_y] = this.calculateGravity(this.planets, this.player);
+            this.player.body.acceleration.x += a_x;
+            this.player.body.acceleration.y += a_y;
 
-        } else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+        } /*else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             // Add backward acceleration (Mostly for testing)
             this.physics.arcade.accelerationFromRotation(this.player.rotation, -300, this.player.body.acceleration);
             //this.player.animations.play('walk', 14, true);
 
-        } else if (this.player != undefined){
+        }*/ else if (this.player != undefined){
+
+            let [total_a_x, total_a_y] = this.calculateGravity(this.planets, this.player);
+            this.player.body.acceleration.x = total_a_x;
+            this.player.body.acceleration.y = total_a_y;
+
             //Stopping animation
             this.player.animations.stop(null, true);
+
         }
 
 
@@ -350,6 +355,7 @@ class PlayState extends Phaser.State {
            this.game.debug.text('cows: ' + this.cows.length, 30, start+=20);
            this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
            this.game.debug.body(this.player);
+
            for (let planet of this.planets.getAll()) {
             this.game.debug.body(planet);
            }
