@@ -1,6 +1,5 @@
 import GameClient from 'network/GameClient'
 
-
 export default
 class PlayState extends Phaser.State {
 
@@ -16,11 +15,11 @@ class PlayState extends Phaser.State {
     }
 
     preload() {
-        this.client = new GameClient();
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
         this.game.load.spritesheet('ship_animated', 'images/rocket-animation-horizontal.png', 251, 176, );
 
+        this.client = new GameClient();
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
 	}
