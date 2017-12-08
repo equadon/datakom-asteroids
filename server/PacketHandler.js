@@ -31,8 +31,6 @@ class PacketHandler {
      */
     loginRequest(socket, data) {
         this.loginHandler.login(data, (isValid, user_data) => {
-            let players = [];
-
             if (isValid) {
                 let id = user_data.id;
                 if (user_data.info) {
@@ -43,18 +41,12 @@ class PacketHandler {
                     socket.player = this.universe.createPlayer(socket, id);
                 }
                 console.log('Player ' + socket.player.id + ' has joined!');
-
-                this.userUpdate(socket, 'connect');
-
-                players = this.universe.getPlayers(socket.player);
             }
 
             // Send login response
             new LoginResponsePacket(
                 isValid,
-                socket.player,
-                players,
-                this.universe.getCows(socket.player)
+                socket.player
             ).send(socket);
         });
     }
@@ -65,12 +57,9 @@ class PacketHandler {
      */
     playerUpdate(socket, data) {
         const player = this.universe.updatePlayer(data);
+        const objects = this.universe.getObjects(player);
 
-        new GameUpdateResponsePacket(
-            this.universe.getPlayers(player),
-            this.universe.getCows(player),
-            []
-        ).send(socket);
+        new GameUpdateResponsePacket(objects).send(socket);
     }
 
     onCowUpdate(socket, data) {
@@ -84,23 +73,6 @@ class PacketHandler {
             // Update score for player that was first to remove the cow
             socket.player.score += cow.score;
             new ScoreUpdatePacket(socket.player).send(socket);
-        }
-    }
-
-    sendCowUpdate(cow) {
-        const packet = new CowUpdatePacket(cow, true);
-        this.server.io.emit(packet.name, packet.data);
-
-        console.log(`spawned cow (id=${cow.id})`);
-    }
-
-    userUpdate(socket, type) {
-        if (type === 'disconnect') {
-            this.loginHandler.logout(socket.player, function() {
-                new UserUpdatePacket(socket.player, type).broadcast(socket);
-            });
-        } else {
-            new UserUpdatePacket(socket.player, type).broadcast(socket);
         }
     }
 }

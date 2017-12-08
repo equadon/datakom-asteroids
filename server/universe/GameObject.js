@@ -49,6 +49,7 @@ class GameObject {
     get object() {
         let obj = this.data;
         obj.id = this.id;
+        obj.type = this.type;
         return obj;
     }
 

@@ -165,14 +165,6 @@ class PlayState extends Phaser.State {
 	        console.log('Login successful!');
             this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
             this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
-
-            for (let p of login.players) {
-                if (p.id != this.player.id) {
-                    this.spawnPlayer(p.id, p.x, p.y, p.angle);
-                }
-            }
-
-            this.updateCows(login.cows);
         } else {
 	        console.log('Login failed: ' + login.message);
         }
@@ -182,26 +174,7 @@ class PlayState extends Phaser.State {
     // TODO: Add new players/cows/planets and remove those no longer in the list
     onUpdateResponse(data) {
         //console.log('update response:' + data);
-        for (let p of data.players) {
-            if (p.id != this.player.id) {
-                let ship = this.playerMap[p.id];
-                ship.x = p.x;
-                ship.y = p.y;
-                ship.angle = p.angle;
-                ship.body.velocity = p.velocity;
-                ship.body.acceleration = p.acceleration;
-                ship.body.angularVelocity= p.angularVelocity;
-                ship.body.angularAcceleration= p.angularAcceleration;
-                if (ship.body.acceleration.x > 0 || ship.body.acceleration.y >0)  {
-                    ship.animations.play('flames', 30, true);
-                }
-                else if (ship.body.acceleration.x == 0 && ship.body.acceleration.y == 0) {
-                    ship.animations.stop(null, true);
-                }
-            }
-        }
-
-        this.updateCows(data.cows);
+        this.updateObjects(data.objects);
     }
 
     /**
@@ -282,24 +255,58 @@ class PlayState extends Phaser.State {
     }
 
    /**
-    * Update client's list of cows.
-     * @param cows Array of cow objects
+    * Update client's object list.
+    * @param cows Array of cow objects
     */
-   updateCows(cows) {
-       let existing = Object.keys(this.cowMap);
-       let updated = [];
+   updateObjects(objects) {
+       let existingPlayers = Object.keys(this.playerMap);
+       let updatedPlayers = [];
+       let existingCows = Object.keys(this.cowMap);
+       let updatedCows = [];
 
-       // Add new cows
-       for (let cow of cows) {
-           if (!existing.includes(cow.id + '')) {
-               this.spawnCow(cow.id, cow.x, cow.y);
+       // Add new objects
+       for (let obj of objects) {
+           if (obj.type == 'player') {
+               if (obj.id != this.player.id) {
+                   if (existingPlayers.includes(obj.id + '')) {
+                       let ship = this.playerMap[obj.id];
+                       ship.x = obj.x;
+                       ship.y = obj.y;
+                       ship.angle = obj.angle;
+                       ship.body.velocity = obj.velocity;
+                       ship.body.acceleration = obj.acceleration;
+                       ship.body.angularVelocity= obj.angularVelocity;
+                       ship.body.angularAcceleration= obj.angularAcceleration;
+                       if (ship.body.acceleration.x > 0 || ship.body.acceleration.y > 0)  {
+                           ship.animations.play('flames', 30, true);
+                       }
+                       else if (ship.body.acceleration.x == 0 && ship.body.acceleration.y == 0) {
+                           ship.animations.stop(null, true);
+                       }
+                   } else {
+                       console.log('adding new player: ' + obj.id);
+                       this.spawnPlayer(obj.id, obj.x, obj.y, obj.angle);
+                   }
+               }
+               updatedPlayers.push(obj.id + '');
+           } else if (obj.type == 'cow') {
+               if (!existingCows.includes(obj.id + '')) {
+                   this.spawnCow(obj.id, obj.x, obj.y);
+               }
+               updatedCows.push(obj.id + '');
            }
-           updated.push(cow.id + '');
        }
 
+       // Remove players that are no longer visible
+       for (let id of Object.keys(this.playerMap)) {
+           if (updatedPlayers.indexOf(id) == -1) {
+               console.log('removing player: ' + id);
+               this.deletePlayer(id);
+           }
+       }
        // Remove cows that are no longer visible
        for (let id of Object.keys(this.cowMap)) {
-           if (updated.indexOf(id) == -1) {
+           if (updatedCows.indexOf(id) == -1) {
                this.deleteCow(id);
            }
        }

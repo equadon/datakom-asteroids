@@ -16,6 +16,19 @@ class ExpandingUniverse {
         this.createTestCows();
     }
 
+    getObjects(player) {
+        let objects = this.hash.query(player.viewport);
+        let visible = [];
+        for (let obj of objects) {
+            if (obj.type == 'player' && obj.id in this.players) {
+                visible.push(this.players[obj.id].object);
+            } else if (obj.type == 'cow' && obj.id in this.cows) {
+                visible.push(this.cows[obj.id].object);
+            }
+        }
+        return visible;
+    }
+
     createPlayer(socket, dbId=null, x=null, y=null, angle=null, score=null) {
         x = x || Utility.randomInt(0, 400);
         y = y || Utility.randomInt(0, 400);

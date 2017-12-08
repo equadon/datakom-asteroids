@@ -2,11 +2,9 @@ import Packet from 'packets/Packet';
 
 export default
 class GameUpdateResponsePacket extends Packet {
-    constructor(players, cows, planets) {
+    constructor(objects) {
         super('game-update', {
-            players: players,
-            cows: cows,
-            planets: planets
+            objects
         });
     }
 }
