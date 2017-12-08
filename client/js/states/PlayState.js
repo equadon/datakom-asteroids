@@ -1,10 +1,30 @@
 import GameClient from 'network/GameClient'
 
-
 export default
 class PlayState extends Phaser.State {
 
     init() {
+
+        this.client = new GameClient();
+
+        this.client.on('login-response', (obj) => {
+            this.onLoginResponse(obj)
+        });
+        this.client.on('game-update', (obj) => {
+            this.onUpdateResponse(obj)
+        });
+        this.client.on('user-update', (obj) => {
+            this.onUserUpdate(obj)
+        });
+
+        this.client.on('cow-update', (obj) => {
+            this.onCowUpdate(obj)
+        });
+
+        this.client.on('score-update', (obj) => {
+            this.onScoreUpdate(obj);
+        });
+
         this.game.stage.disableVisibilityChange = true;
 
         // Disable window scrolling when window is smaller than the game area
@@ -16,10 +36,10 @@ class PlayState extends Phaser.State {
     }
 
     preload() {
-        this.client = new GameClient();
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
-        this.game.load.spritesheet('ship_animated', 'images/rocket-animation-horizontal.png', 251, 176, );
+        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
+
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
@@ -34,7 +54,6 @@ class PlayState extends Phaser.State {
             width: Number.MAX_SAFE_INTEGER * 2,
             height: Number.MAX_SAFE_INTEGER * 2
         };
-        this.game.stage.backgroundColor = "#151A38";
 
         //Group of ship objects
         this.playerMap = {};
@@ -59,27 +78,6 @@ class PlayState extends Phaser.State {
 
         this.playerScore=0;
 
-
-        //Client on server
-        this.client.on('login-response', (obj) => {
-            this.onLoginResponse(obj)
-        });
-        this.client.on('game-update', (obj) => {
-            this.onUpdateResponse(obj)
-        });
-        // this.client.on('user-update', (obj) => {
-        //     this.onUserUpdate(obj)
-        // });
-
-        // this.client.on('cow-update', (obj) => {
-        //     this.onCowUpdate(obj)
-        // });
-
-        this.client.on('score-update', (obj) => {
-            this.onScoreUpdate(obj);
-        });
-
-        this.client.login('admin', '123');
     }
 
     //Spawn functions
@@ -98,9 +96,13 @@ class PlayState extends Phaser.State {
         cow.body.angularVelocity = 5;
     }
 
+
+
+
     spawnPlayer(id, x, y, v) {
 
-        let ship = this.add.sprite(x, y, 'ship_animated');
+        let ship = this.add.sprite(x, y, 'rocket_flame');
+
         ship.id = id;
 
         //Adding animation on ship
@@ -282,12 +284,15 @@ class PlayState extends Phaser.State {
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             // Add forward acceleration
             this.physics.arcade.accelerationFromRotation(this.player.rotation, 300, this.player.body.acceleration);
-            //Starting flame animation
+
             this.player.animations.play('flames', 30, true);
+
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             // Add backward acceleration (Mostly for testing)
             this.physics.arcade.accelerationFromRotation(this.player.rotation, -300, this.player.body.acceleration);
+            this.player.animations.play('flames', 30, true);
+
 
         } else if (this.player != undefined){
             this.player.body.acceleration.setTo(0, 0);

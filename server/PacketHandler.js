@@ -30,12 +30,18 @@ class PacketHandler {
      * @param data Request data with username and password
      */
     loginRequest(socket, data) {
-        this.loginHandler.login(data, (isValid, id) => {
+        this.loginHandler.login(data, (isValid, user_data) => {
             let players = [];
 
             if (isValid) {
-                // Create player 
-                socket.player = this.universe.createPlayer(socket);
+                let id = user_data.id;
+                if (user_data.info) {
+                    let info = user_data.info;
+                    // Create player
+                    socket.player = this.universe.createPlayer(socket, id, info.x, info.y, info.angle, info.score);
+                } else {
+                    socket.player = this.universe.createPlayer(socket, id);
+                }
                 console.log('Player ' + socket.player.id + ' has joined!');
 
                 this.userUpdate(socket, 'connect');
@@ -89,6 +95,12 @@ class PacketHandler {
     }
 
     userUpdate(socket, type) {
-        new UserUpdatePacket(socket.player, type).broadcast(socket);
+        if (type === 'disconnect') {
+            this.loginHandler.logout(socket.player, function() {
+                new UserUpdatePacket(socket.player, type).broadcast(socket);
+            });
+        } else {
+            new UserUpdatePacket(socket.player, type).broadcast(socket);
+        }
     }
 }

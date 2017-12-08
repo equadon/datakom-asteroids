@@ -52,7 +52,7 @@ class GameServer {
     }
 
     onDisconnect(socket, reason) {
-        console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
+       // console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
         this.handler.userUpdate(socket, 'disconnect');
         this.universe.removePlayer(socket.player);
     }
