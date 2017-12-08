@@ -28,7 +28,7 @@ class PlayState extends Phaser.State {
 
 	create() {
 
-        this.game.stage.backgroundColor = "#151A38";
+        //this.game.stage.backgroundColor = "#151A38";
 
         //Group of ship objects
         this.playerMap = {};
@@ -265,6 +265,7 @@ class PlayState extends Phaser.State {
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             // Add backward acceleration (Mostly for testing)
             this.physics.arcade.accelerationFromRotation(this.player.rotation, -300, this.player.body.acceleration);
+            this.player.animations.play('flames', 30, true);
 
         } else if (this.player != undefined){
             this.player.body.acceleration.setTo(0, 0);
