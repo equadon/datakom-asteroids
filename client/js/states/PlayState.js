@@ -170,9 +170,8 @@ class PlayState extends Phaser.State {
         let total_a_y = 0;
 
         for (let planet of planetsArray) {
-            let distance = Phaser.Math.distance(player.x, player.y, planet.x, planet.y);//planet.body.x+planet.r, planet.body.y+planet.r);
-            let angle = Phaser.Math.angleBetween(player.x, player.y, planet.x, planet.y);//planet.body.x+planet.r, planet.body.y+planet.r);
-            //this.game.physics.arcade.accelerateToObject(player, planet.body, 10000/(distance));
+            let distance = Phaser.Math.distance(player.x, player.y, planet.x, planet.y);
+            let angle = Phaser.Math.angleBetween(player.x, player.y, planet.x, planet.y);
             let a_x = Math.cos(angle)*planet.g*(planet.mass/(distance*distance));
             let a_y = Math.sin(angle)*planet.g*(planet.mass/(distance*distance));
             total_a_x += a_x;
