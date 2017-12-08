@@ -16,12 +16,12 @@ class ExpandingUniverse {
         this.createTestCows();
     }
 
-    createPlayer(socket) {
-        const x = Utility.randomInt(0, 400);
-        const y = Utility.randomInt(0, 400);
-        const angle = Utility.randomInt(0, 359);
+    createPlayer(socket, dbId=null, x=null, y=null, angle=null, score=null) {
+        x = x || Utility.randomInt(0, 400);
+        y = y || Utility.randomInt(0, 400);
+        angle = angle || Utility.randomInt(0, 359);
 
-        let player = new Player(this.server.uniqueObjectId(), socket, x, y, angle, 0);
+        let player = new Player(this.server.uniqueObjectId(), socket, x, y, angle, score || 0, dbId);
 
         this.hash.add(player.hash, player.bounds);
 
