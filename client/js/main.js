@@ -2,8 +2,8 @@ import Game from 'Game';
 
 
 
-//let game = new Game();
-new Game().start();
+let game = new Game();
+game.start();
 
 $(document).ready(function(){
     $("#hide").click(function(){
@@ -31,7 +31,7 @@ $(document).ready(function() {
         var password = $('#password').val();
  
         event.preventDefault();
-        //this.client.login(username, password); //Send login to client
+        game.client.login(username, password); //Send login to client
 
         showGame();
     });

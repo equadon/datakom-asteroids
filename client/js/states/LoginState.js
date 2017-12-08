@@ -5,12 +5,16 @@ class LoginState extends Phaser.State {
     preload() {
         this.client = new GameClient();
         this.load.image('login_text', 'images/logintext.png'); //OBS
+        this.client.on('login-response', (login) => {
+            if (login.success) {
+                console.log('LOGGIN');
+                this.onPositiveLogin()
+            }
+        });
+
     }
 
     create() {
-        this.client.on('login-response', (obj) => {
-            this.onPositiveLogin()
-        });
 
         this.gameOver = this.add.sprite(this.game.width * 0.5, this.game.height * 0.5, 'login_text');
         this.gameOver.anchor.setTo(0.5, 0.5);

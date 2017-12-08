@@ -4,6 +4,27 @@ export default
 class PlayState extends Phaser.State {
 
     init() {
+
+        this.client = new GameClient();
+
+        this.client.on('login-response', (obj) => {
+            this.onLoginResponse(obj)
+        });
+        this.client.on('game-update', (obj) => {
+            this.onUpdateResponse(obj)
+        });
+        this.client.on('user-update', (obj) => {
+            this.onUserUpdate(obj)
+        });
+
+        this.client.on('cow-update', (obj) => {
+            this.onCowUpdate(obj)
+        });
+
+        this.client.on('score-update', (obj) => {
+            this.onScoreUpdate(obj);
+        });
+
         this.game.stage.disableVisibilityChange = true;
 
         // Disable window scrolling when window is smaller than the game area
@@ -19,7 +40,7 @@ class PlayState extends Phaser.State {
         this.load.image('cow', 'images/Ko2.png');
         this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
 
-        this.client = new GameClient();
+
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
 	}
@@ -51,27 +72,6 @@ class PlayState extends Phaser.State {
 
         this.playerScore=0;
 
-
-        //Client on server
-        this.client.on('login-response', (obj) => {
-            this.onLoginResponse(obj)
-        });
-        this.client.on('game-update', (obj) => {
-            this.onUpdateResponse(obj)
-        });
-        this.client.on('user-update', (obj) => {
-            this.onUserUpdate(obj)
-        });
-
-        this.client.on('cow-update', (obj) => {
-            this.onCowUpdate(obj)
-        });
-
-        this.client.on('score-update', (obj) => {
-            this.onScoreUpdate(obj);
-        });
-
-        this.client.login('admin', '123');
     }
 
     //Spawn functions
@@ -95,7 +95,7 @@ class PlayState extends Phaser.State {
 
     spawnPlayer(id, x, y, v) {
 
-        let ship = this.add.sprite(x, y, 'ship');
+        let ship = this.add.sprite(x, y, 'rocket_flame');
 
         ship.id = id;
 

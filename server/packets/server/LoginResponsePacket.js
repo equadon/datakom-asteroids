@@ -6,18 +6,6 @@ class LoginResponsePacket extends Packet {
         super('login-response', {
             success: isValid,
             message: isValid ? null : "Invalid password",
-<<<<<<< HEAD
-            id: player.id,
-            x: player.x,
-            y: player.y,
-            angle: player.angle,
-            velocity: player.velocity,
-            acceleration: player.acceleration,
-            angularVelocity: player.angularVelocity,
-            angularAcceleration: player.angularAcceleration,
-            players: players,
-            cows: cows
-=======
             id: player ? player.id : null,
             x: player ? player.x : null,
             y: player ? player.y : null,
@@ -26,8 +14,8 @@ class LoginResponsePacket extends Packet {
             acceleration: player ? player.acceleration : null,
             angularVelocity: player ? player.angularVelocity : null,
             angularAcceleration: player ? player.angularAcceleration : null,
-            players: player ? players : null
->>>>>>> server/db
+            players: player ? players : null,
+            cows: cows
         });
     }
 }
