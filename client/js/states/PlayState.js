@@ -67,13 +67,13 @@ class PlayState extends Phaser.State {
         this.client.on('game-update', (obj) => {
             this.onUpdateResponse(obj)
         });
-        this.client.on('user-update', (obj) => {
-            this.onUserUpdate(obj)
-        });
+        // this.client.on('user-update', (obj) => {
+        //     this.onUserUpdate(obj)
+        // });
 
-        this.client.on('cow-update', (obj) => {
-            this.onCowUpdate(obj)
-        });
+        // this.client.on('cow-update', (obj) => {
+        //     this.onCowUpdate(obj)
+        // });
 
         this.client.on('score-update', (obj) => {
             this.onScoreUpdate(obj);
@@ -146,6 +146,7 @@ class PlayState extends Phaser.State {
         for (let cow of this.cows.children) {
             if (cow.id == id) {
                 cow.pendingDestroy = true;
+                delete this.cowMap[id];
             }
         }
     }
@@ -182,6 +183,7 @@ class PlayState extends Phaser.State {
     }
 
     //Update the position of all ships and add flames if they are accelerating
+    // TODO: Add new players/cows/planets and remove those no longer in the list
     onUpdateResponse(data) {
         //console.log('update response:' + data);
         for (let p of data.players) {
@@ -200,6 +202,21 @@ class PlayState extends Phaser.State {
                 else if (ship.body.acceleration.x == 0 && ship.body.acceleration.y == 0) {
                     ship.animations.stop(null, true);
                 }
+            }
+        }
+
+        let cowIds = [];
+        for (let c of data.cows) {
+            if (!(id in Object.keys(this.cowMap))) {
+                console.log('added new cow');
+                this.spawnCow(c.id, c.x, c.y);
+            }
+            cowIds.push(c.id);
+        }
+        for (let c of this.cowMap) {
+            if (!cowIds.includes(c.id)) {
+                console.log('deleting cow: ' + c.id);
+                this.deleteCow(c.id);
             }
         }
     }
@@ -297,7 +314,7 @@ class PlayState extends Phaser.State {
            this.game.debug.text('velocity: ' + this.player.body.velocity, 30, start+=20);
            this.game.debug.text('angularvelocity: ' + this.player.body.angularVelocity, 30, start+=20);
            this.game.debug.text('id: ' + this.player.id, 30, start+=20);
-           this.game.debug.text('cows: ' + this.cows.length, 30, start+=20);
+           this.game.debug.text('cows: ' + Object.keys(this.cowMap).length, 30, start+=20);
            this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
        }
     }

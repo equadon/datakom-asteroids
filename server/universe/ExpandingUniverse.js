@@ -56,17 +56,16 @@ class ExpandingUniverse {
                 visible.push(this.players[obj.id].object);
             }
         }
-
         return visible;
     }
 
     createTestCows() {
-        for (let x = 0; x < 10; x++) {
-            let cow = new Cow(this.server.uniqueObjectId(), x*400, 0, 0, 1);
+        for (let x = 0; x < 100; x++) {
+            let cow = new Cow(this.server.uniqueObjectId(), x*300, 0, 0, 1);
             this.cows[cow.id] = cow;
             this.hash.add(cow.hash, cow.bounds);
 
-            this.server.handler.sendCowUpdate(cow);
+            // this.server.handler.sendCowUpdate(cow);
         }
     }
 
@@ -83,11 +82,14 @@ class ExpandingUniverse {
         return removedCow;
     }
 
-    getCows() {
-        let all = [];
-        for (let id of Object.keys(this.cows)) {
-            all.push(this.cows[id].object);
+    getCows(player) {
+        let objects = this.hash.query(player.viewport, (o) => o.type == 'cow');
+        let visible = [];
+        for (let obj of objects) {
+            if (obj.id in this.cows) {
+                visible.push(this.cows[obj.id].object);
+            }
         }
-        return all;
+        return visible;
     }
 }
