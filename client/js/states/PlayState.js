@@ -17,7 +17,7 @@ class PlayState extends Phaser.State {
     preload() {
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
-        this.game.load.spritesheet('ship_animated', 'images/rocket-animation-horizontal.png', 251, 176, );
+        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
 
         this.client = new GameClient();
         this.client.on('connect', (obj) => {this.onConnect(obj) });
@@ -27,8 +27,6 @@ class PlayState extends Phaser.State {
 	//Vi kommer ha ett spelar-id som kopplas till ens användare. Som lagras i databasen.
 
 	create() {
-
-        //this.game.stage.backgroundColor = "#151A38";
 
         //Group of ship objects
         this.playerMap = {};
@@ -92,9 +90,13 @@ class PlayState extends Phaser.State {
         cow.body.angularVelocity = 5;
     }
 
+
+
+
     spawnPlayer(id, x, y, v) {
 
-        let ship = this.add.sprite(x, y, 'ship_animated');
+        let ship = this.add.sprite(x, y, 'ship');
+
         ship.id = id;
 
         //Adding animation on ship
@@ -259,13 +261,15 @@ class PlayState extends Phaser.State {
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             // Add forward acceleration
             this.physics.arcade.accelerationFromRotation(this.player.rotation, 300, this.player.body.acceleration);
-            //Starting flame animation
+
             this.player.animations.play('flames', 30, true);
+
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             // Add backward acceleration (Mostly for testing)
             this.physics.arcade.accelerationFromRotation(this.player.rotation, -300, this.player.body.acceleration);
             this.player.animations.play('flames', 30, true);
+
 
         } else if (this.player != undefined){
             this.player.body.acceleration.setTo(0, 0);
