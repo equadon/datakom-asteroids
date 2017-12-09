@@ -15,6 +15,6 @@ database.connect(function (err, db) {
     } else {
         // Start game server
         const game = new GameServer(web, db);
-        web.start(process.env.PORT || process.env.COWS_PORT);
+        web.start(process.env.COWS_PORT || process.env.PORT);
     }
 });
