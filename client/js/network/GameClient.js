@@ -6,8 +6,8 @@ class GameClient {
         if (!instance) {
             instance = this;
 
-            this.socket = io('http://localhost:8080', {
-                path: '/cows'
+            this.socket = io(COWS_URL + ':' + COWS_PORT, {
+                path: '/' + COWS_PATH
             });
         }
 

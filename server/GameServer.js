@@ -7,7 +7,7 @@ class GameServer {
         this.__nextObjectId = 1;
         this.cows = [];
         this.io = require('socket.io')(web.server, {
-            path: '/cows',
+            path: '/' + process.env.COWS_PATH,
             serveClient: false,
             pingInterval: 300000,
             pingTimeout: 50000,

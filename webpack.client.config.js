@@ -1,3 +1,4 @@
+require('./node_modules/dotenv').config();
 const webpack = require('webpack');
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
@@ -32,6 +33,11 @@ const client = {
         }),*/
         new HtmlWebpackPlugin({
             template: './client/index.html'
+        }),
+        new webpack.DefinePlugin({
+            'COWS_URL': JSON.stringify(process.env.COWS_HOST),
+            'COWS_PORT': JSON.stringify(process.env.PORT || process.env.COWS_PORT),
+            'COWS_PATH': JSON.stringify(process.env.COWS_PATH)
         })
     ]
 };

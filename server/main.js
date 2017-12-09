@@ -2,6 +2,8 @@ import GameServer from 'GameServer'
 import WebServer from 'WebServer'
 import Database from 'Database'
 
+require('../node_modules/dotenv').config();
+
 // Start web server
 const web = new WebServer();
 
@@ -13,6 +15,6 @@ database.connect(function (err, db) {
     } else {
         // Start game server
         const game = new GameServer(web, db);
-        web.start(8080);
+        web.start(process.env.PORT || process.env.COWS_PORT);
     }
 });
