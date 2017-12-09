@@ -22,6 +22,8 @@ class PlayState extends Phaser.State {
         });
 
         this.game.stage.disableVisibilityChange = true;
+        this.game.physics.arcade.skipQuadTree = true;
+        this.physics.arcade.skipQuadTree = true;
 
         // Disable window scrolling when window is smaller than the game area
         this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
@@ -328,22 +330,25 @@ class PlayState extends Phaser.State {
        }
 
        // Remove players that are no longer visible
-       for (let id of Object.keys(this.playerMap)) {
+       let invisible = Object.keys(this.playerMap).filter((i) => { return updatedPlayers.indexOf(i) < 0; });
+       for (let id of invisible) {
            if (updatedPlayers.indexOf(id) == -1) {
                console.log('removing player: ' + id);
-               this.deletePlayer(id);
-           }
+           this.deletePlayer(id);
        }
+
        // Remove cows that are no longer visible
-       for (let id of Object.keys(this.cowMap)) {
+       invisible = Object.keys(this.cowMap).filter((i) => { return updatedCows.indexOf(i) < 0; });
+       for (let id of invisible) {
            if (updatedCows.indexOf(id) == -1) {
-               this.deleteCow(id);
-           }
+           this.deleteCow(id);
        }
+
        // Remove celestial bodies that are no longer visible
-       for (let id of Object.keys(this.celestialMap)) {
+       invisible = Object.keys(this.celestialMap).filter((i) => { return updatedCelestial.indexOf(i) < 0; });
+       for (let id of invisible) {
            if (updatedCelestial.indexOf(id) == -1) {
-               this.deleteCelestial(id);
+           this.deleteCelestial(id);
            }
        }
    }
