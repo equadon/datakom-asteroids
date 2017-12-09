@@ -4,7 +4,6 @@ import Database from 'Database'
 
 // Start web server
 const web = new WebServer();
-web.start(8080);
 
 var database = new Database();
 
@@ -13,7 +12,7 @@ database.connect(function (err, db) {
         throw err;
     } else {
         // Start game server
-        const game = new GameServer(db);
-        game.start(3000);
+        const game = new GameServer(web, db);
+        web.start(8080);
     }
 });

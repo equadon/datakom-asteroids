@@ -3,11 +3,10 @@ import ExpandingUniverse from 'universe/ExpandingUniverse'
 
 export default
 class GameServer {
-    constructor(db) {
+    constructor(web, db) {
         this.__nextObjectId = 1;
         this.cows = [];
-        this.server = require('http').createServer();
-        this.io = require('socket.io')(this.server, {
+        this.io = require('socket.io')(web.server, {
             path: '/cows',
             serveClient: false,
             pingInterval: 300000,
@@ -27,10 +26,6 @@ class GameServer {
 
     uniqueObjectId() {
         return this.__nextObjectId++;
-    }
-
-    start(port) {
-        this.server.listen(port);
     }
 
     onConnect(socket) {
