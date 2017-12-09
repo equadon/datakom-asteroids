@@ -46,7 +46,7 @@ class PacketHandler {
             }
 
             // Send login response
-            new LoginResponsePacket(isValid, socket.player, this.universe.getPlayers()).send(socket);
+            new LoginResponsePacket(isValid, socket.player, this.universe.getPlayers(), this.universe.getCows()).send(socket);
         });
     }
 
