@@ -5,11 +5,13 @@ class GameClient {
     constructor() {
         if (!instance) {
             instance = this;
+
+            this.socket = io('http://localhost:3000', {
+                path: '/cows'
+            });
         }
 
-        this.socket = io('http://localhost:3000', {
-            path: '/cows'
-        });
+        return instance;
     }
 
     connect() {

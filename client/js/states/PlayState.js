@@ -1,10 +1,30 @@
 import GameClient from 'network/GameClient'
 
-
 export default
 class PlayState extends Phaser.State {
 
     init() {
+
+        this.client = new GameClient();
+
+        this.client.on('login-response', (obj) => {
+            this.onLoginResponse(obj)
+        });
+        this.client.on('game-update', (obj) => {
+            this.onUpdateResponse(obj)
+        });
+        this.client.on('user-update', (obj) => {
+            this.onUserUpdate(obj)
+        });
+
+        this.client.on('cow-update', (obj) => {
+            this.onCowUpdate(obj)
+        });
+
+        this.client.on('score-update', (obj) => {
+            this.onScoreUpdate(obj);
+        });
+
         this.game.stage.disableVisibilityChange = true;
 
         // Disable window scrolling when window is smaller than the game area
@@ -16,10 +36,10 @@ class PlayState extends Phaser.State {
     }
 
     preload() {
-        this.client = new GameClient();
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
         this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
+
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
         this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
@@ -28,10 +48,6 @@ class PlayState extends Phaser.State {
 	//Vi kommer ha ett spelar-id som kopplas till ens användare. Som lagras i databasen.
 
 	create() {
-
-
-
-        this.game.stage.backgroundColor = "#151A38";
 
         //Group of ship objects
         this.playerMap = {};
@@ -56,27 +72,6 @@ class PlayState extends Phaser.State {
 
         this.playerScore=0;
 
-
-        //Client on server
-        this.client.on('login-response', (obj) => {
-            this.onLoginResponse(obj)
-        });
-        this.client.on('game-update', (obj) => {
-            this.onUpdateResponse(obj)
-        });
-        this.client.on('user-update', (obj) => {
-            this.onUserUpdate(obj)
-        });
-
-        this.client.on('cow-update', (obj) => {
-            this.onCowUpdate(obj)
-        });
-
-        this.client.on('score-update', (obj) => {
-            this.onScoreUpdate(obj);
-        });
-
-        this.client.login('admin', '123');
     }
 
     //Spawn functions
@@ -99,9 +94,13 @@ class PlayState extends Phaser.State {
 
 
     spawnPlayer(id, x, y, v) {
-        let ship = this.add.sprite(x, y, 'ship');
-        //this.flames = ship.animations.add('walk');
+
+        let ship = this.add.sprite(x, y, 'rocket_flame');
+
         ship.id = id;
+
+        //Adding animation on ship
+        var flames = ship.animations.add('flames');
 
         //Adding ship to group
         this.playerMap[id] = ship;
@@ -163,20 +162,25 @@ class PlayState extends Phaser.State {
 	    if (login.success) {
 	        console.log('Login successful!');
             this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
+            this.onScoreUpdate(login);
 
             for (let p of login.players) {
                 if (p.id != this.player.id) {
                     this.spawnPlayer(p.id, p.x, p.y, p.angle);
                 }
             }
+
+            for (let cow of login.cows) {
+                this.spawnCow(cow.id, cow.x, cow.y);
+            }
         } else {
 	        console.log('Login failed: ' + login.message);
         }
     }
 
-    //Update the position of all ships
+    //Update the position of all ships and add flames if they are accelerating
     onUpdateResponse(data) {
-        console.log('update response:' + data);
+        //console.log('update response:' + data);
         for (let p of data.players) {
             if (p.id != this.player.id) {
                 let ship = this.playerMap[p.id];
@@ -187,7 +191,12 @@ class PlayState extends Phaser.State {
                 ship.body.acceleration = p.acceleration;
                 ship.body.angularVelocity= p.angularVelocity;
                 ship.body.angularAcceleration= p.angularAcceleration;
-                //console.log('angular vel' + p.angularVelocity);
+                if (ship.body.acceleration.x > 0 || ship.body.acceleration.y >0)  {
+                    ship.animations.play('flames', 30, true);
+                }
+                else if (ship.body.acceleration.x == 0 && ship.body.acceleration.y == 0) {
+                    ship.animations.stop(null, true);
+                }
             }
         }
     }
@@ -199,7 +208,7 @@ class PlayState extends Phaser.State {
 
     onUserUpdate(data) {
         if (data.type == 'connect') {
-            console.log('Spawn player id ' + data.id);
+            //console.log('Spawn player id ' + data.id);
             this.spawnPlayer(data.id, data.x, data.y, data.angle);
         }
 
@@ -236,10 +245,11 @@ class PlayState extends Phaser.State {
         if (this.player==undefined) {
             return;
         }
+
+        //Rotations
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             //  Move to the left
             this.player.body.angularVelocity = -150;
-
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             //  Move to the right
@@ -248,34 +258,31 @@ class PlayState extends Phaser.State {
             this.player.body.angularVelocity = 0;
         }
 
-
+        //Acceleration
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             // Add forward acceleration
             this.physics.arcade.accelerationFromRotation(this.player.rotation, 300, this.player.body.acceleration);
-            //this.player.animations.play('walk', 14, true);
+
+            this.player.animations.play('flames', 30, true);
+
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             // Add backward acceleration (Mostly for testing)
             this.physics.arcade.accelerationFromRotation(this.player.rotation, -300, this.player.body.acceleration);
-            //this.player.animations.play('walk', 14, true);
+            this.player.animations.play('flames', 30, true);
+
 
         } else if (this.player != undefined){
             this.player.body.acceleration.setTo(0, 0);
+            //Stopping animation
+            this.player.animations.stop(null, true);
         }
 
-
-        if (this.player.body.velocity.x != 0 || this.player.body.velocity.y != 0) {
-
-        }
 
         //Update timer
         this.updateServer -= this.game.time.physicsElapsed;
-        //console.log('TIME:' + this.game.time.physicsElapsed);
-        // this.client.update(this.player);
-
         //Update server on position, angle and velocity of ship every 0.1 seconds
         if (this.updateServer<=0) {
-            //console.log('UPDATE TIMER');
             this.updateServer = this.maxTime;
             this.client.update(this.player);
         }
