@@ -163,6 +163,7 @@ class PlayState extends Phaser.State {
 	    if (login.success) {
 	        console.log('Login successful!');
             this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
+            this.onScoreUpdate(login);
 
             for (let p of login.players) {
                 if (p.id != this.player.id) {
