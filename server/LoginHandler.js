@@ -68,7 +68,6 @@ class LoginHandler {
                            angle: player.data.angle,
                            score: player.score};
         let users = this.db.collection('users');
-        console.log(player_info);
         users.findOneAndUpdate({userid: player.id},
             {$set: {player_info: player_info}},
             function(err, r) {

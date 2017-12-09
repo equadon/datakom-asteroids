@@ -8,4 +8,10 @@ class Player extends GameObject {
         this.socket = socket;
         this.score = score || 0;
     }
+
+    get object() {
+        let obj = super.object;
+        obj.score = this.score;
+        return obj;
+    }
 }

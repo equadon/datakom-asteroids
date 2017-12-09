@@ -1,4 +1,5 @@
 import PacketHandler from 'PacketHandler';
+import BackupHandler from 'BackupHandler';
 import Universe from 'universe/Universe'
 
 export default
@@ -20,6 +21,7 @@ class GameServer {
 
         // initiate packet handler
         this.handler = new PacketHandler(this, this.db);
+        this.backup = new BackupHandler(this, this.db);
 
         this.io.on('connection', (o) => this.onConnect(o));
     }
