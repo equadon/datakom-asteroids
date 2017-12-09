@@ -26,17 +26,16 @@ const client = {
         ]
     },
     plugins: [
-        /*new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            }
-        }),*/
+        // new webpack.optimize.UglifyJsPlugin({
+        //     compress: {
+        //         warnings: false
+        //     }
+        // }),
         new HtmlWebpackPlugin({
             template: './client/index.html'
         }),
         new webpack.DefinePlugin({
-            'COWS_URL': JSON.stringify(process.env.COWS_HOST),
-            'COWS_PORT': JSON.stringify(process.env.COWS_PORT || process.env.PORT),
+            'COWS_URL': JSON.stringify(process.env.COWS_HOST + (process.env.COWS_PORT ? ':' + process.env.COWS_PORT : '')),
             'COWS_PATH': JSON.stringify(process.env.COWS_PATH)
         })
     ]
