@@ -34,6 +34,10 @@ class PlayState extends Phaser.State {
     preload() {
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
+        this.load.image('star1', 'images/star1.png');
+        this.load.image('planet1', 'images/planet1.png');
+        this.load.image('moon1', 'images/moon1.png');
+        this.load.image('blackHole1', 'images/blackHole1.png');
         this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
 
 
@@ -44,12 +48,7 @@ class PlayState extends Phaser.State {
 	//Vi kommer ha ett spelar-id som kopplas till ens användare. Som lagras i databasen.
 
 	create() {
-        this.game.camera.bounds = {
-            x: Number.MIN_SAFE_INTEGER,
-            y: Number.MIN_SAFE_INTEGER,
-            width: Number.MAX_SAFE_INTEGER * 2,
-            height: Number.MAX_SAFE_INTEGER * 2
-        };
+        this.game.camera.bounds = null;
 
         //Group of ship objects
         this.playerMap = {};
@@ -58,6 +57,8 @@ class PlayState extends Phaser.State {
         this.cowMap = {};
         this.cows = this.game.add.group();
 
+        this.celestialMap = {};
+        this.celestial = this.game.add.group();
 
         //Timers
         this.maxTime = 0.1;
@@ -145,6 +146,28 @@ class PlayState extends Phaser.State {
             if (cow.id == id) {
                 cow.pendingDestroy = true;
                 delete this.cowMap[id];
+            }
+        }
+    }
+
+    spawnCelestial(id, type, x, y) {
+        let celestial = this.add.sprite(x, y, type);
+        celestial.scale.setTo(0.35, 0.35);
+
+        celestial.id = id;
+        celestial.type = type;
+        this.physics.arcade.enable(celestial);
+        celestial.anchor.setTo(0.5, 0.5);
+
+        this.celestial.add(celestial);
+        this.celestialMap[id] = celestial;
+    }
+
+    deleteCelestial(id) {
+        for (let body of this.celestial.children) {
+            if (body.id == id) {
+                body.pendingDestroy = true;
+                delete this.celestialMap[id];
             }
         }
     }
@@ -263,6 +286,8 @@ class PlayState extends Phaser.State {
        let updatedPlayers = [];
        let existingCows = Object.keys(this.cowMap);
        let updatedCows = [];
+       let existingCelestial = Object.keys(this.celestialMap);
+       let updatedCelestial = [];
 
        // Add new objects
        for (let obj of objects) {
@@ -294,6 +319,11 @@ class PlayState extends Phaser.State {
                    this.spawnCow(obj.id, obj.x, obj.y);
                }
                updatedCows.push(obj.id + '');
+           } else {
+               if (!existingCelestial.includes(obj.id + '')) {
+                   this.spawnCelestial(obj.id, obj.type, obj.x, obj.y);
+               }
+               updatedCelestial.push(obj.id + '');
            }
        }
 
@@ -310,6 +340,12 @@ class PlayState extends Phaser.State {
                this.deleteCow(id);
            }
        }
+       // Remove celestial bodies that are no longer visible
+       for (let id of Object.keys(this.celestialMap)) {
+           if (updatedCelestial.indexOf(id) == -1) {
+               this.deleteCelestial(id);
+           }
+       }
    }
 
    render() {
@@ -323,6 +359,7 @@ class PlayState extends Phaser.State {
            this.game.debug.text('id: ' + this.player.id, 30, start+=20);
            this.game.debug.text('cows: ' + Object.keys(this.cowMap).length, 30, start+=20);
            this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
+           this.game.debug.text('celestial bodies: ' + Object.keys(this.celestialMap).length, 30, start+=20);
        }
     }
 }

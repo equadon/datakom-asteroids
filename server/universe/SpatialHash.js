@@ -5,6 +5,15 @@ class SpatialHash {
         this.hash = {};
     }
 
+    cellBounds(x, y) {
+        return {
+            left: x * this.cellSize,
+            right: x * this.cellSize + this.cellSize,
+            top: y * this.cellSize,
+            bottom: y * this.cellSize + this.cellSize
+        };
+    }
+
     /**
      * Add object to spatial hash.
      * @param obj

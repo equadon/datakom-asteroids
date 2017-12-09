@@ -156,3 +156,4 @@ build/
 
 #MongoDB files
 data/
+.DS_Store
