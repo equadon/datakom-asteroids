@@ -283,10 +283,6 @@ class PlayState extends Phaser.State {
         console.log('received score: ' + data.score);
     }
 
-    playerDeath(player) {
-        player.body.position.setTo()
-    }
-
     onClusterUpdate(data) {
         const camBounds = new Phaser.Rectangle(this.camera.x, this.camera.y, this.camera.width, this.camera.height);
 
