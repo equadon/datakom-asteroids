@@ -3,6 +3,7 @@ import ClusterUpdatePacket from 'packets/server/ClusterUpdatePacket';
 import GameUpdateResponsePacket from 'packets/server/GameUpdateResponsePacket';
 import CowUpdatePacket from 'packets/server/CowUpdatePacket'
 import ScoreUpdatePacket from 'packets/server/ScoreUpdatePacket'
+import PlanetCollisionPacket from 'packets/server/PlanetCollisionPacket'
 
 import Player from 'universe/Player';
 
@@ -74,6 +75,16 @@ class PacketHandler {
             // Update score for player that was first to remove the cow
             socket.player.score += cow.score;
             new ScoreUpdatePacket(socket.player).send(socket);
+        }
+    }
+
+    onPlanetCollision(socket, data) {
+        if (socket.player != undefined) {
+            console.log('planet collision');
+            const [x, y] = this.universe.respawnPlayer(socket.player);
+            socket.player.score = Math.max(socket.player.score - 5, 0);
+
+            new PlanetCollisionPacket(socket.player.id, x, y, socket.player.score).send(socket);
         }
     }
 

@@ -47,6 +47,10 @@ class GameServer {
                     this.onDisconnect(socket, reason);
                 });
             });
+
+            socket.on('planet-collision', (data) => {
+                this.handler.onPlanetCollision(socket, data);
+            });
         });
     }
 

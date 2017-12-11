@@ -158,11 +158,7 @@ class PlayState extends Phaser.State {
     //If this client collides on a cow.
     collidePlanet(player, planet) {
         console.log("Crashed!");
-        if (player.key.includes('ship')) {
-            this.client.planetCollision();
-        } else if (planet.key.includes('ship')) {
-            this.client.planetCollision();
-        }
+        this.client.planetCollision();
     }
 
 
@@ -275,7 +271,9 @@ class PlayState extends Phaser.State {
     }
 
     onFail(data) {
-        this.player.body.position.setTo(data.x, data.y);
+        this.player.x = data.x;
+        this.player.y = data.y;
+        this.playerScore = data.score;
     }
 
     onScoreUpdate(data) {
@@ -426,6 +424,8 @@ class PlayState extends Phaser.State {
                         console.log('adding new player: ' + obj.id);
                         this.spawnPlayer(obj.id, obj.x, obj.y, obj.angle, obj.radius);
                     }
+                } else {
+                    this.playerScore = obj.score;
                 }
                 updatedPlayers.push(obj.id + '');
             } else if (obj.type == 'cow') {
@@ -433,7 +433,7 @@ class PlayState extends Phaser.State {
                     this.spawnCow(obj.id, obj.x, obj.y);
                 }
                 updatedCows.push(obj.id + '');
-            } else {
+            } else {0
                 if (!existingCelestial.includes(obj.id + '')) {
                     this.spawnCelestial(obj.id, obj.type, obj.x, obj.y, obj.mass, obj.radius);
                 }
@@ -467,7 +467,7 @@ class PlayState extends Phaser.State {
     }
 
     render() {
-        if (true) {
+        if (DEBUG) {
             let start = 130;
             if (this.player != undefined) {
                 this.game.debug.spriteInfo(this.player, 32, 32);
