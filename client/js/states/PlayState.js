@@ -55,6 +55,7 @@ class PlayState extends Phaser.State {
         this.load.image('planet9', 'images/planet9.png');
         this.load.image('planet10', 'images/planet10.png');
         this.load.image('moon1', 'images/moon1.png');
+        this.load.image('moon2', 'images/moon2.png');
         this.load.image('blackHole1', 'images/blackHole1.png');
         this.load.image('arrow', 'images/arrow.png');
         this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
@@ -484,7 +485,7 @@ class PlayState extends Phaser.State {
     }
 
     render() {
-        if (true) {
+        if (DEBUG) {
             let start = 130;
             if (this.player != undefined) {
                 this.game.debug.spriteInfo(this.player, 32, 32);
