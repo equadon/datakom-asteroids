@@ -146,6 +146,7 @@ fabric.properties
 
 # Sonarlint plugin
 .idea/sonarlint
+.idea/watcherTasks.xml
 
 # End of https://www.gitignore.io/api/node,java,webstorm
 
@@ -155,3 +156,4 @@ build/
 
 #MongoDB files
 data/
+.DS_Store

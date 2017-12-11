@@ -5,9 +5,6 @@ import Utility from 'Utility'
 
 const MAX_COWS = 5;
 
-/**
- * Expanding universe consisting of multiple zones.
- */
 export default
 class Universe {
     constructor(server) {
@@ -23,12 +20,13 @@ class Universe {
         this.spawnCow();
     }
 
-    createPlayer(socket, id) {
-        const x = Utility.randomInt(100, 400);
-        const y = Utility.randomInt(100, 400);
-        const angle = Utility.randomInt(0, 359);
+    createPlayer(socket, id, x, y, angle, score) {
+        const x_in = x ? x : Utility.randomInt(100, 400);
+        const y_in = y ? y : Utility.randomInt(100, 400);
+        const angle_in = angle ? angle : Utility.randomInt(0, 359);
+        const score_in = score ? score : 0;
 
-        let player = new Player(id, socket, x, y, angle, 0);
+        let player = new Player(id, socket, x_in, y_in, angle_in, score_in);
 
         this.players[player.id] = player;
 
@@ -36,7 +34,13 @@ class Universe {
     }
 
     updatePlayer(data) {
-        this.players[data.id].update(data);
+        let player = this.players[data.id];
+
+        if (player == undefined) {
+            console.warn("trying to update a non-existing player with data: " + data);
+        } else {
+            this.players[data.id].update(data);
+        }
     }
 
     removePlayer(player) {
