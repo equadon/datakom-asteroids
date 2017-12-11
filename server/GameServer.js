@@ -1,3 +1,4 @@
+import LoginHandler from 'LoginHandler';
 import PacketHandler from 'PacketHandler';
 import BackupHandler from 'BackupHandler';
 import ExpandingUniverse from 'universe/ExpandingUniverse'
@@ -18,7 +19,8 @@ class GameServer {
         this.db = db;
 
         // initiate packet handler
-        this.handler = new PacketHandler(this, this.db);
+        this.loginhandler = new LoginHandler(db);
+        this.handler = new PacketHandler(this, this.db, this.loginhandler);
         this.backup = new BackupHandler(this, this.db);
 
         this.universe = new ExpandingUniverse(this);
