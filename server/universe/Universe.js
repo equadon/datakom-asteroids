@@ -15,9 +15,12 @@ class Universe {
         this.players = {};
         this.cows = {};
 
+        this.clusters = []; // coordinates to clusters of players
+
         this.spawnedCowCount = 0;
 
         this.spawnCow();
+        this.updateClusters();
     }
 
     createPlayer(socket, id, x, y, angle, score) {
@@ -96,5 +99,11 @@ class Universe {
             all.push(this.cows[id].object);
         }
         return all;
+    }
+
+    updateClusters() {
+        this.clusters = [];
+        console.log(`updated clusters to: () and ()`);
+        Utility.delay(5000).then(result => this.updateClusters());
     }
 }

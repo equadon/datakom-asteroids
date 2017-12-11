@@ -5,13 +5,13 @@ const MASS_DIFF = 0.10; // mass can differ by at most +-10%
 
 const BODIES = {
     stars: {
-        star1: [1000, 350] // mass, radius
+        sun: [10000, 100] // mass, radius
     },
     planets: {
-        planet1: [500, 120]
+        planet1: [50000, 120]
     },
     blackHoles: {
-        blackHole1: [1500, 110]
+        blackHole1: [100000, 110]
     },
     moons: {
         moon1: [100, 90]
@@ -21,6 +21,7 @@ const BODIES = {
 function randomMass(mass, diff) {
     return mass * (1 - Utility.randomFloat(-diff, diff));
 }
+
 
 function randomPosition(zone, radius, parent=null) {
     let x, y;

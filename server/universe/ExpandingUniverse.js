@@ -4,6 +4,7 @@ import CelestialBody from 'universe/CelestialBody'
 import Player from 'universe/Player'
 import Cow from 'universe/Cow'
 import Utility from 'Utility'
+import KMeans from 'KMeans'
 
 
 export default
@@ -22,6 +23,10 @@ class ExpandingUniverse {
                 this.populateZone(x, y);
             }
         }
+
+        this.kmeans = new KMeans();
+        this.clusters = []; // coordinates to clusters of players
+        this.updateClusters();
     }
 
     getObjects(player) {
@@ -190,5 +195,34 @@ class ExpandingUniverse {
             this.addCelestialBody(moon);
             probMoon = 0.2 * probMoon;
         }
+    }
+
+    updateClusters() {
+        let positions = [];
+        for (let p of Object.values(this.players)) {
+            positions.push([p.x, p.y]);
+        }
+        this.kmeans.cluster(positions, 2);
+
+        let clusters = [];
+        this.kmeans.centroids.forEach((centroid) => {
+            let minDistance = Infinity;
+            let minId = null;
+            for (let i = 0; i < positions.length; i++) {
+                let distance = Utility.euclidean(positions[i], centroid);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    minId = i;
+                }
+            }
+            if (minId != null) {
+                clusters.push(positions[minId]);
+            }
+        });
+        this.clusters = clusters;
+
+        this.server.handler.clusterUpdate(this.clusters);
+
+        Utility.delay(1000).then(result => this.updateClusters());
     }
 }

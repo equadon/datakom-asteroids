@@ -7,7 +7,7 @@ class GameClient {
             instance = this;
 
             this.socket = io(COWS_URL, {
-                path: '/' + COWS_PATH
+                path: COWS_PATH
             });
         }
 
@@ -47,6 +47,11 @@ class GameClient {
     gotCow(id) {
         this.socket.emit('cow-update', {
             id: id
+        });
+    }
+
+    planetCollision(id) {
+        this.socket.emit('planet-collision', {
         });
     }
 
