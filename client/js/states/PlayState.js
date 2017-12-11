@@ -132,8 +132,7 @@ class PlayState extends Phaser.State {
 
         //Enable physics on ship
         this.physics.arcade.enable(ship);
-        ship.body.maxVelocity = new Phaser.Point(250, 250);
-        ship.body.drag = new Phaser.Point(30, 30);
+        //ship.body.maxVelocity = new Phaser.Point(250, 250);
 
         //Set hitbox
         ship.body.setCircle(80, 88, 0);
@@ -339,11 +338,11 @@ class PlayState extends Phaser.State {
         //Rotations
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             //  Move to the left
-            this.player.body.angularVelocity = -150;
+            this.player.body.angularVelocity = -300;
 
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             //  Move to the right
-            this.player.body.angularVelocity = 150;
+            this.player.body.angularVelocity = 300;
         } else {
             this.player.body.angularVelocity = 0;
         }
