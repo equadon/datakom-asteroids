@@ -106,7 +106,7 @@ class PlayState extends Phaser.State {
         let planet = this.add.sprite(x, y, 'planet');
         planet.anchor.setTo(0.5, 0.5);
         this.physics.arcade.enable(planet);
-        planet.g = 100*s;
+        planet.g = 200*s;
         planet.id = id;
         planet.scale.setTo(s, s);
         planet.r = (168/2)*s;
@@ -310,7 +310,7 @@ class PlayState extends Phaser.State {
         //Acceleration
         if (this.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             // Add forward acceleration
-            this.physics.arcade.accelerationFromRotation(this.player.rotation, 500, this.player.body.acceleration);
+            this.physics.arcade.accelerationFromRotation(this.player.rotation, 1000, this.player.body.acceleration);
             //Starting flame animation
             this.player.animations.play('flames', 30, true);
             let [a_x, a_y] = this.calculateGravity(this.planets, this.player);
