@@ -50,4 +50,9 @@ class GameClient {
         });
     }
 
+    planetCollision(id) {
+        this.socket.emit('planet-collision', {
+        });
+    }
+
 }

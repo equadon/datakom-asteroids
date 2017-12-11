@@ -21,6 +21,10 @@ class PlayState extends Phaser.State {
             this.onScoreUpdate(obj);
         });
 
+        this.client.on('planet-collision', (obj) => {
+            this.onFail(obj);
+        });
+
         this.game.stage.disableVisibilityChange = true;
         this.game.physics.arcade.skipQuadTree = true;
         this.physics.arcade.skipQuadTree = true;
@@ -171,6 +175,17 @@ class PlayState extends Phaser.State {
         }
     }
 
+    //If this client collides on a cow.
+    collidePlanet(player, planet) {
+        console.log("Crashed!");
+        if (player.key.includes('ship')) {
+            this.client.planetCollision();
+        } else if (planet.key.includes('ship')) {
+            this.client.planetCollision();
+        }
+    }
+
+
 
 
     calculateGravity(planets, player) {
@@ -279,9 +294,17 @@ class PlayState extends Phaser.State {
 
     }
 
+    onFail(data) {
+        this.player.body.position.setTo(data.x, data.y);
+    }
+
     onScoreUpdate(data) {
         this.playerScore = data.score;
         console.log('received score: ' + data.score);
+    }
+
+    playerDeath(player) {
+        player.body.position.setTo()
     }
 
     update() {
@@ -293,7 +316,7 @@ class PlayState extends Phaser.State {
         }
 
         this.game.physics.arcade.collide(this.player, this.cows, this.collideCow, null, this);
-        this.game.physics.arcade.collide(this.player, this.celestial);
+        this.game.physics.arcade.collide(this.player, this.celestial, this.collidePlanet, null, this);
 
         //Rotations
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
