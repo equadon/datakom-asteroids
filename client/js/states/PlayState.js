@@ -332,39 +332,40 @@ class PlayState extends Phaser.State {
        // Remove players that are no longer visible
        let invisible = Object.keys(this.playerMap).filter((i) => { return updatedPlayers.indexOf(i) < 0; });
        for (let id of invisible) {
-           if (updatedPlayers.indexOf(id) == -1) {
-               console.log('removing player: ' + id);
            this.deletePlayer(id);
        }
 
        // Remove cows that are no longer visible
        invisible = Object.keys(this.cowMap).filter((i) => { return updatedCows.indexOf(i) < 0; });
        for (let id of invisible) {
-           if (updatedCows.indexOf(id) == -1) {
            this.deleteCow(id);
        }
 
        // Remove celestial bodies that are no longer visible
        invisible = Object.keys(this.celestialMap).filter((i) => { return updatedCelestial.indexOf(i) < 0; });
        for (let id of invisible) {
-           if (updatedCelestial.indexOf(id) == -1) {
            this.deleteCelestial(id);
-           }
        }
    }
 
    render() {
-       let start = 130;
-       if (this.player!=undefined){
-           this.game.debug.spriteInfo(this.player, 32, 32);
-           this.game.debug.cameraInfo(this.game.camera, 432, 32);
-           this.game.debug.text('acceleration: ' + this.player.body.acceleration, 30, start+=20);
-           this.game.debug.text('velocity: ' + this.player.body.velocity, 30, start+=20);
-           this.game.debug.text('angularvelocity: ' + this.player.body.angularVelocity, 30, start+=20);
-           this.game.debug.text('id: ' + this.player.id, 30, start+=20);
-           this.game.debug.text('cows: ' + Object.keys(this.cowMap).length, 30, start+=20);
-           this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
-           this.game.debug.text('celestial bodies: ' + Object.keys(this.celestialMap).length, 30, start+=20);
+       if (DEBUG) {
+           let start = 130;
+           if (this.player != undefined) {
+               this.game.debug.spriteInfo(this.player, 32, 32);
+               this.game.debug.cameraInfo(this.game.camera, 432, 32);
+               this.game.debug.text('acceleration: ' + this.player.body.acceleration, 30,
+                                    start += 20);
+               this.game.debug.text('velocity: ' + this.player.body.velocity, 30, start += 20);
+               this.game.debug.text('angularvelocity: ' + this.player.body.angularVelocity, 30,
+                                    start += 20);
+               this.game.debug.text('id: ' + this.player.id, 30, start += 20);
+               this.game.debug.text('cows: ' + Object.keys(this.cowMap).length, 30, start += 20);
+               this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30,
+                                    start += 20);
+               this.game.debug.text('celestial bodies: ' + Object.keys(this.celestialMap).length,
+                                    30, start += 20);
+           }
        }
     }
 }
