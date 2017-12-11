@@ -5,16 +5,23 @@ const MASS_DIFF = 0.10; // mass can differ by at most +-10%
 
 const BODIES = {
     stars: {
-        sun: [10000, 100] // mass, radius
+        sun: [60000, 1000] // mass, radius
     },
     planets: {
-        planet1: [50000, 120]
+        planet1: [45000, 600],
+        planet2: [45000, 600],
+        planet3: [45000, 600],
+        planet4: [45000, 600],
+        planet7: [45000, 600],
+        planet8: [45000, 600],
+        planet9: [45000, 600],
+        planet10: [45000, 600]
     },
     blackHoles: {
-        blackHole1: [100000, 110]
+        blackHole1: [100000, 200]
     },
     moons: {
-        moon1: [100, 90]
+        moon1: [25000, 300]
     }
 };
 

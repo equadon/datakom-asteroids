@@ -47,6 +47,13 @@ class PlayState extends Phaser.State {
         this.load.image('star1', 'images/star1.png');
         this.load.image('sun', 'images/sun.png');
         this.load.image('planet1', 'images/planet1.png');
+        this.load.image('planet2', 'images/planet2.png');
+        this.load.image('planet3', 'images/planet3.png');
+        this.load.image('planet4', 'images/planet4.png');
+        this.load.image('planet7', 'images/planet7.png');
+        this.load.image('planet8', 'images/planet8.png');
+        this.load.image('planet9', 'images/planet9.png');
+        this.load.image('planet10', 'images/planet10.png');
         this.load.image('moon1', 'images/moon1.png');
         this.load.image('blackHole1', 'images/blackHole1.png');
         this.load.image('arrow', 'images/arrow.png');
@@ -484,6 +491,7 @@ class PlayState extends Phaser.State {
                 this.game.debug.text('celestial bodies: ' + Object.keys(this.celestialMap).length,
                     30, start += 20);
 
+                /*
                 this.game.debug.body(this.player);
 
                 for (let planet of this.celestial.getAll()) {
@@ -493,6 +501,7 @@ class PlayState extends Phaser.State {
                 for (let cow of this.cows.getAll()) {
                     this.game.debug.body(cow);
                 }
+                */
             }
         }
     }
