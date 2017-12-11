@@ -20,6 +20,9 @@ class PlayState extends Phaser.State {
         this.client.on('score-update', (obj) => {
             this.onScoreUpdate(obj);
         });
+        this.client.on('cluster-update', (obj) => {
+            this.onClusterUpdate(obj);
+        });
 
         this.game.stage.disableVisibilityChange = true;
         this.game.physics.arcade.skipQuadTree = true;
@@ -42,15 +45,14 @@ class PlayState extends Phaser.State {
         this.load.image('planet1', 'images/planet1.png');
         this.load.image('moon1', 'images/moon1.png');
         this.load.image('blackHole1', 'images/blackHole1.png');
-        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
+        this.load.image('arrow', 'images/arrow.png');
+        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
+        this.load.image('arrow', 'images/arrow.png');
+        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
 
 
-        this.client.on('connect', (obj) => {
-            this.onConnect(obj)
-        });
-        this.client.on('disconnect', (obj) => {
-            this.onDisconnect(obj)
-        });
+        this.client.on('connect', (obj) => {this.onConnect(obj) });
+        this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
     }
 
     //Vi kommer ha ett spelar-id som kopplas till ens användare. Som lagras i databasen.
@@ -68,21 +70,13 @@ class PlayState extends Phaser.State {
         this.celestialMap = {};
         this.celestial = this.game.add.group();
 
-        //Planets
-        this.planets = this.game.add.group();
-        this.spawnPlanet(1, 550, 400, 1);
-        this.spawnPlanet(2, 350, 200, 0.5);
-
+        this.arrows = this.game.add.group();
 
         //Timers
         this.maxTime = 0.1;
         this.updateServer = this.maxTime;
 
-        let textStyle = {
-            font: "16px Arial",
-            fill: "#ffffff",
-            align: "center"
-        };
+        let textStyle = {font: "16px Arial", fill: "#ffffff", align: "center"};
         this.scoreTitle = this.game.add.text(this.game.width * 0.8, 30, "SCORE: ", textStyle);
         this.scoreTitle.fixedToCamera = true;
         this.scoreTitle.anchor.setTo(0.5, 0.5);
@@ -111,20 +105,6 @@ class PlayState extends Phaser.State {
         this.physics.arcade.enable(cow);
         cow.anchor.setTo(0.5, 0.5);
         cow.body.angularVelocity = 5;
-    }
-
-
-    spawnPlanet(id, x, y, s) {
-        let planet = this.add.sprite(x, y, 'planet');
-        planet.anchor.setTo(0.5, 0.5);
-        this.physics.arcade.enable(planet);
-        planet.g = 200 * s;
-        planet.id = id;
-        planet.scale.setTo(s, s);
-        planet.mass = 50000 * s;
-        planet.body.immovable = true;
-        planet.body.setCircle(84);
-        this.planets.add(planet);
     }
 
     spawnPlayer(id, x, y, v) {
@@ -284,6 +264,48 @@ class PlayState extends Phaser.State {
         console.log('received score: ' + data.score);
     }
 
+    onClusterUpdate(data) {
+        const camBounds = new Phaser.Rectangle(this.camera.x, this.camera.y, this.camera.width, this.camera.height);
+
+        if (this.player != undefined) {
+            // Clear old arrows
+            this.arrows.removeAll();
+
+            for (let [tX, tY] of data.clusters) {
+                if (!camBounds.contains(tX, tY)) {
+                    let arrow = this.game.add.sprite(this.game.world.centerX,
+                                                     this.game.world.centerY, 'arrow');
+                    arrow.anchor.setTo(1.0, 0.0);
+                    arrow.fixedToCamera = true;
+                    arrow.target = [tX, tY];
+
+                    this.updateArrow(arrow);
+
+                    this.arrows.add(arrow);
+                }
+            }
+        }
+    }
+
+    updateArrow(arrow) {
+        if (this.player != undefined) {
+            // arrow.rotation = this.physics.arcade.angleToXY(this.player, targetX, targetY);
+            const tX = arrow.target[0] - this.player.x;
+            const tY = arrow.target[1] - this.player.y;
+
+            const scaling = Math.min(this.camera.width/2, this.camera.height/2) / Math.sqrt(tX*tX + tY*tY);
+
+            const camX = scaling * tX;
+            const camY = scaling * tY;
+
+            const offX = camX + this.camera.width/2;
+            const offY = camY + this.camera.height/2;
+
+            arrow.rotation = this.physics.arcade.angleToXY(this.player, arrow.target[0], arrow.target[1]);
+            arrow.cameraOffset.setTo(offX, offY);
+        }
+    }
+
     update() {
 
         this.scoreValue.setText(this.playerScore);
@@ -337,6 +359,10 @@ class PlayState extends Phaser.State {
 
         }
 
+        // Update arrows
+        for (let arrow of this.arrows.children) {
+            this.updateArrow(arrow);
+        }
 
         //Update timer
         this.updateServer -= this.game.time.physicsElapsed;
@@ -440,10 +466,6 @@ class PlayState extends Phaser.State {
                     30, start += 20);
 
                 this.game.debug.body(this.player);
-
-                for (let planet of this.planets.getAll()) {
-                    this.game.debug.body(planet);
-                }
 
                 for (let planet of this.celestial.getAll()) {
                     this.game.debug.body(planet);

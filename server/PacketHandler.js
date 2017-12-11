@@ -1,5 +1,5 @@
 import LoginResponsePacket from 'packets/server/LoginResponsePacket';
-import UserUpdatePacket from 'packets/server/UserUpdatePacket';
+import ClusterUpdatePacket from 'packets/server/ClusterUpdatePacket';
 import GameUpdateResponsePacket from 'packets/server/GameUpdateResponsePacket';
 import CowUpdatePacket from 'packets/server/CowUpdatePacket'
 import ScoreUpdatePacket from 'packets/server/ScoreUpdatePacket'
@@ -74,5 +74,15 @@ class PacketHandler {
             socket.player.score += cow.score;
             new ScoreUpdatePacket(socket.player).send(socket);
         }
+    }
+
+    /**
+     * Send updates to all clients where players are clustering.
+     * @param clusters coordinates of clusters
+     */
+    clusterUpdate(clusters) {
+        const packet = new ClusterUpdatePacket(clusters);
+
+        this.server.io.emit(packet.name, packet.data);
     }
 }
