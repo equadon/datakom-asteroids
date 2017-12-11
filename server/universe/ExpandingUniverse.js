@@ -20,7 +20,9 @@ class ExpandingUniverse {
 
         for (let y = -5; y <= 5; y++) {
             for (let x = -5; x <= 5; x++) {
-                this.populateZone(x, y);
+                if (!(x == 0 && y == 0)) {
+                    this.populateZone(x, y);
+                }
             }
         }
 
@@ -71,9 +73,11 @@ class ExpandingUniverse {
     }
 
     removePlayer(player) {
-        this.hash.remove(player.hash, player.bounds);
+        if (player != undefined) {
+            this.hash.remove(player.hash, player.bounds);
 
-        delete this.players[player.id];
+            delete this.players[player.id];
+        }
     }
 
     getPlayers(player) {
@@ -85,6 +89,13 @@ class ExpandingUniverse {
             }
         }
         return visible;
+    }
+
+    respawnPlayer(player) {
+        const x = Utility.randomInt(0, 500);
+        const y = Utility.randomInt(0, 500);
+
+        return [x, y];
     }
 
     createTestCows() {

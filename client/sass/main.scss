@@ -11,11 +11,30 @@ canvas {
 }
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
+
+.login-box {
+    height: 50vh;
+}
 .login-page {
     width: 50%;
-    padding: 2% 0 0;
+    padding: 4% 0 0;
+    height:100%;
     margin: auto;
 }
+
+#empty-box {
+    height: 50vh;
+    text-align:center;
+    width: 100%;
+
+
+}
+
+#display-cow {
+    margin: 10vh 0 auto 0;
+
+}
+
 .form {
     position: relative;
     z-index: 1;
@@ -42,8 +61,8 @@ canvas {
     font-family: "Roboto", sans-serif;
     text-transform: uppercase;
     outline: 0;
-    background: #ea537f;
-    width: 80%;
+    background: #af3f76;
+    width: 50%;
     border: 0;
     padding: 13px;
     color: #FFFFFF;
@@ -53,7 +72,7 @@ canvas {
     cursor: pointer;
 }
 .form button:hover,.form button:active,.form button:focus {
-    background: #20accc;
+    background: #af216c;
 }
 
 .container {
@@ -75,40 +94,39 @@ body {
     background: -webkit-linear-gradient(top, #140034 0%,#631375 100%); /* Chrome10-25,Safari5.1-6 */
     background: linear-gradient(to bottom, #140034 0%,#631375 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#140034', endColorstr='#631375',GradientType=0 ); /* IE6-9 */
-    height: 1350px;
+
 }
 
-#header {
+.header {
     margin: 0 auto;
-    min-height: 50vh;
+    max-height: 50vh;
 
 }
 
 #logo {
-    padding-top: 4vh;
+    padding-top: 1vh;
     width: 50%;
     margin: 0 auto;
     display: block;
-    min-width: 40vw;
-}
 
-#display_cow {
-position: relative;
- right: -400px;
-    top: -200px;
 }
 
 
+
+#loading-icon {
+    height:100vh;
+    text-align: center;
+    z-index: 2;
+}
+#main {
+    z-index: 3;
+}
 
 .milk-bottle {
-    padding-top: 50vh;
-    position: relative;
-    left: 50%;
-    -webkit-transform: translateX(-50%);
-    -ms-transform: translateX(-50%);
-    transform: translateX(-50%);
-    width: 10%;
-    height: 10%;
+    margin: 40vh 0 auto 0;
+
+    width: 15%;
+    height: 15%;
 }
 
 .mask-rect {
