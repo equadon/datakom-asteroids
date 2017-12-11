@@ -190,7 +190,7 @@ class PlayState extends Phaser.State {
             let a_x = 0;
             let a_y = 0;
 
-            if (distance < 2*planet.height) {
+            if (distance < (planet.mass)/10000) {
                 let angle = Phaser.Math.angleBetween(player.x, player.y, planet.x, planet.y);
                 a_x = Math.cos(angle) * (planet.mass / (distance * distance));
                 a_y = Math.sin(angle) * (planet.mass / (distance * distance));
