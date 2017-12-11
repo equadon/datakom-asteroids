@@ -7,7 +7,7 @@ class GameClient {
             instance = this;
 
             this.socket = io(COWS_URL, {
-                path: '/' + COWS_PATH
+                path: COWS_PATH
             });
         }
 
