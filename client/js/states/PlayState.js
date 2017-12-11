@@ -24,6 +24,10 @@ class PlayState extends Phaser.State {
             this.onClusterUpdate(obj);
         });
 
+        this.client.on('planet-collision', (obj) => {
+            this.onFail(obj);
+        });
+
         this.game.stage.disableVisibilityChange = true;
         this.game.physics.arcade.skipQuadTree = true;
         this.physics.arcade.skipQuadTree = true;
@@ -46,9 +50,9 @@ class PlayState extends Phaser.State {
         this.load.image('moon1', 'images/moon1.png');
         this.load.image('blackHole1', 'images/blackHole1.png');
         this.load.image('arrow', 'images/arrow.png');
-        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
+        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
         this.load.image('arrow', 'images/arrow.png');
-        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
+        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
 
 
         this.client.on('connect', (obj) => {this.onConnect(obj) });
@@ -150,6 +154,17 @@ class PlayState extends Phaser.State {
             this.client.gotCow(cow.id);
         }
     }
+
+    //If this client collides on a cow.
+    collidePlanet(player, planet) {
+        console.log("Crashed!");
+        if (player.key.includes('ship')) {
+            this.client.planetCollision();
+        } else if (planet.key.includes('ship')) {
+            this.client.planetCollision();
+        }
+    }
+
 
 
 
@@ -259,6 +274,10 @@ class PlayState extends Phaser.State {
 
     }
 
+    onFail(data) {
+        this.player.body.position.setTo(data.x, data.y);
+    }
+
     onScoreUpdate(data) {
         this.playerScore = data.score;
         console.log('received score: ' + data.score);
@@ -315,7 +334,7 @@ class PlayState extends Phaser.State {
         }
 
         this.game.physics.arcade.collide(this.player, this.cows, this.collideCow, null, this);
-        this.game.physics.arcade.collide(this.player, this.celestial);
+        this.game.physics.arcade.collide(this.player, this.celestial, this.collidePlanet, null, this);
 
         //Rotations
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
