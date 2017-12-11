@@ -24,4 +24,10 @@ class Player extends MovableObject {
             height: VIEWPORT_HEIGHT
         };
     }
+
+    get object() {
+        let obj = super.object;
+        obj.score = this.score;
+        return obj;
+    }
 }

@@ -1,5 +1,5 @@
 import GameObject from 'universe/GameObject'
-import Utility from 'utility'
+import Utility from 'Utility'
 
 const MASS_DIFF = 0.10; // mass can differ by at most +-10%
 

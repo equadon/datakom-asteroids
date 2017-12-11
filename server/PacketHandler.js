@@ -6,7 +6,6 @@ import ScoreUpdatePacket from 'packets/server/ScoreUpdatePacket'
 
 import Player from 'universe/Player';
 
-import LoginHandler from 'LoginHandler'
 
 /**
  * Packet handler handles what to do with incoming packets.
@@ -14,10 +13,10 @@ import LoginHandler from 'LoginHandler'
 
 export default
 class PacketHandler {
-    constructor(server, db) {
+    constructor(server, db, loginhandler) {
         this.server = server;
         this.db = db;
-        this.loginHandler = new LoginHandler(db);
+        this.loginHandler = loginhandler;
     }
 
     get universe() {

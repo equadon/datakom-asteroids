@@ -12,9 +12,9 @@ class ExpandingUniverse {
     constructor(server) {
         this.server = server;
         this.hash = new SpatialHash(1300);
-        this.players = [];
-        this.cows = [];
-        this.celestial = [];
+        this.players = {};
+        this.cows = {};
+        this.celestial = {};
 
         this.createTestCows();
 
