@@ -5,9 +5,6 @@ import Utility from 'Utility'
 
 const MAX_COWS = 5;
 
-/**
- * Expanding universe consisting of multiple zones.
- */
 export default
 class Universe {
     constructor(server) {

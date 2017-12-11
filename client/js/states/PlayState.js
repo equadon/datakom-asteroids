@@ -17,15 +17,13 @@ class PlayState extends Phaser.State {
             this.onUserUpdate(obj)
         });
 
-        this.client.on('cow-update', (obj) => {
-            this.onCowUpdate(obj)
-        });
-
         this.client.on('score-update', (obj) => {
             this.onScoreUpdate(obj);
         });
 
         this.game.stage.disableVisibilityChange = true;
+        this.game.physics.arcade.skipQuadTree = true;
+        this.physics.arcade.skipQuadTree = true;
 
         // Disable window scrolling when window is smaller than the game area
         this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
@@ -38,6 +36,10 @@ class PlayState extends Phaser.State {
     preload() {
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
+        this.load.image('star1', 'images/star1.png');
+        this.load.image('planet1', 'images/planet1.png');
+        this.load.image('moon1', 'images/moon1.png');
+        this.load.image('blackHole1', 'images/blackHole1.png');
         this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176, );
 
 
@@ -48,6 +50,7 @@ class PlayState extends Phaser.State {
 	//Vi kommer ha ett spelar-id som kopplas till ens användare. Som lagras i databasen.
 
 	create() {
+        this.game.camera.bounds = null;
 
         //Group of ship objects
         this.playerMap = {};
@@ -56,6 +59,8 @@ class PlayState extends Phaser.State {
         this.cowMap = {};
         this.cows = this.game.add.group();
 
+        this.celestialMap = {};
+        this.celestial = this.game.add.group();
 
         //Timers
         this.maxTime = 0.1;
@@ -114,7 +119,6 @@ class PlayState extends Phaser.State {
         this.physics.arcade.enable(ship);
         ship.body.maxVelocity = new Phaser.Point(250, 250);
         ship.body.drag = new Phaser.Point(30,30);
-        ship.body.collideWorldBounds=true;
 
         return ship;
     }
@@ -143,6 +147,29 @@ class PlayState extends Phaser.State {
         for (let cow of this.cows.children) {
             if (cow.id == id) {
                 cow.pendingDestroy = true;
+                delete this.cowMap[id];
+            }
+        }
+    }
+
+    spawnCelestial(id, type, x, y) {
+        let celestial = this.add.sprite(x, y, type);
+        celestial.scale.setTo(0.35, 0.35);
+
+        celestial.id = id;
+        celestial.type = type;
+        this.physics.arcade.enable(celestial);
+        celestial.anchor.setTo(0.5, 0.5);
+
+        this.celestial.add(celestial);
+        this.celestialMap[id] = celestial;
+    }
+
+    deleteCelestial(id) {
+        for (let body of this.celestial.children) {
+            if (body.id == id) {
+                body.pendingDestroy = true;
+                delete this.celestialMap[id];
             }
         }
     }
@@ -162,43 +189,17 @@ class PlayState extends Phaser.State {
 	    if (login.success) {
 	        console.log('Login successful!');
             this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
-            this.onScoreUpdate(login);
-
-            for (let p of login.players) {
-                if (p.id != this.player.id) {
-                    this.spawnPlayer(p.id, p.x, p.y, p.angle);
-                }
-            }
-
-            for (let cow of login.cows) {
-                this.spawnCow(cow.id, cow.x, cow.y);
-            }
+            this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
         } else {
 	        console.log('Login failed: ' + login.message);
         }
     }
 
     //Update the position of all ships and add flames if they are accelerating
+    // TODO: Add new players/cows/planets and remove those no longer in the list
     onUpdateResponse(data) {
         //console.log('update response:' + data);
-        for (let p of data.players) {
-            if (p.id != this.player.id) {
-                let ship = this.playerMap[p.id];
-                ship.x = p.x;
-                ship.y = p.y;
-                ship.angle = p.angle;
-                ship.body.velocity = p.velocity;
-                ship.body.acceleration = p.acceleration;
-                ship.body.angularVelocity= p.angularVelocity;
-                ship.body.angularAcceleration= p.angularAcceleration;
-                if (ship.body.acceleration.x > 0 || ship.body.acceleration.y >0)  {
-                    ship.animations.play('flames', 30, true);
-                }
-                else if (ship.body.acceleration.x == 0 && ship.body.acceleration.y == 0) {
-                    ship.animations.stop(null, true);
-                }
-            }
-        }
+        this.updateObjects(data.objects);
     }
 
     /**
@@ -220,16 +221,6 @@ class PlayState extends Phaser.State {
             console.log("ERROR in user update");
         }
 
-    }
-
-    onCowUpdate(data) {
-        if (data.status == "add") {
-            this.spawnCow(data.id, data.x, data.y);
-        } else if (data.status == "remove") {
-            this.deleteCow(data.id);
-        } else {
-            console.log("ERROR in cow update");
-        }
     }
 
     onScoreUpdate(data) {
@@ -288,16 +279,95 @@ class PlayState extends Phaser.State {
         }
     }
 
+   /**
+    * Update client's object list.
+    * @param cows Array of cow objects
+    */
+   updateObjects(objects) {
+       let existingPlayers = Object.keys(this.playerMap);
+       let updatedPlayers = [];
+       let existingCows = Object.keys(this.cowMap);
+       let updatedCows = [];
+       let existingCelestial = Object.keys(this.celestialMap);
+       let updatedCelestial = [];
+
+       // Add new objects
+       for (let obj of objects) {
+           if (obj.type == 'player') {
+               if (obj.id != this.player.id) {
+                   if (existingPlayers.includes(obj.id + '')) {
+                       let ship = this.playerMap[obj.id];
+                       ship.x = obj.x;
+                       ship.y = obj.y;
+                       ship.angle = obj.angle;
+                       ship.body.velocity = obj.vel;
+                       ship.body.acceleration = obj.acc;
+                       ship.body.angularVelocity= obj.aVel;
+                       ship.body.angularAcceleration= obj.aAcc;
+                       if (ship.body.acceleration.x > 0 || ship.body.acceleration.y > 0)  {
+                           ship.animations.play('flames', 30, true);
+                       }
+                       else if (ship.body.acceleration.x == 0 && ship.body.acceleration.y == 0) {
+                           ship.animations.stop(null, true);
+                       }
+                   } else {
+                       console.log('adding new player: ' + obj.id);
+                       this.spawnPlayer(obj.id, obj.x, obj.y, obj.angle);
+                   }
+               } else {
+                   onScoreUpdate(obj);
+               }
+               updatedPlayers.push(obj.id + '');
+           } else if (obj.type == 'cow') {
+               if (!existingCows.includes(obj.id + '')) {
+                   this.spawnCow(obj.id, obj.x, obj.y);
+               }
+               updatedCows.push(obj.id + '');
+           } else {
+               if (!existingCelestial.includes(obj.id + '')) {
+                   this.spawnCelestial(obj.id, obj.type, obj.x, obj.y);
+               }
+               updatedCelestial.push(obj.id + '');
+           }
+       }
+
+       // Remove players that are no longer visible
+       let invisible = Object.keys(this.playerMap).filter((i) => { return updatedPlayers.indexOf(i) < 0; });
+       for (let id of invisible) {
+           this.deletePlayer(id);
+       }
+
+       // Remove cows that are no longer visible
+       invisible = Object.keys(this.cowMap).filter((i) => { return updatedCows.indexOf(i) < 0; });
+       for (let id of invisible) {
+           this.deleteCow(id);
+       }
+
+       // Remove celestial bodies that are no longer visible
+       invisible = Object.keys(this.celestialMap).filter((i) => { return updatedCelestial.indexOf(i) < 0; });
+       for (let id of invisible) {
+           this.deleteCelestial(id);
+       }
+   }
+
    render() {
-       let start = 130;
-       if (this.player!=undefined){
-           this.game.debug.spriteInfo(this.player, 32, 32);
-           this.game.debug.text('acceleration: ' + this.player.body.acceleration, 30, start+=20);
-           this.game.debug.text('velocity: ' + this.player.body.velocity, 30, start+=20);
-           this.game.debug.text('angularvelocity: ' + this.player.body.angularVelocity, 30, start+=20);
-           this.game.debug.text('id: ' + this.player.id, 30, start+=20);
-           this.game.debug.text('cows: ' + this.cows.length, 30, start+=20);
-           this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30, start+=20);
+       if (DEBUG) {
+           let start = 130;
+           if (this.player != undefined) {
+               this.game.debug.spriteInfo(this.player, 32, 32);
+               this.game.debug.cameraInfo(this.game.camera, 432, 32);
+               this.game.debug.text('acceleration: ' + this.player.body.acceleration, 30,
+                                    start += 20);
+               this.game.debug.text('velocity: ' + this.player.body.velocity, 30, start += 20);
+               this.game.debug.text('angularvelocity: ' + this.player.body.angularVelocity, 30,
+                                    start += 20);
+               this.game.debug.text('id: ' + this.player.id, 30, start += 20);
+               this.game.debug.text('cows: ' + Object.keys(this.cowMap).length, 30, start += 20);
+               this.game.debug.text('players: ' + Object.keys(this.playerMap).length, 30,
+                                    start += 20);
+               this.game.debug.text('celestial bodies: ' + Object.keys(this.celestialMap).length,
+                                    30, start += 20);
+           }
        }
     }
 }
