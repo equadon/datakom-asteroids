@@ -7,7 +7,8 @@ import GameClient from 'network/GameClient'
 export default
 class Game extends Phaser.Game {
     constructor() {
-        super(1080, 720, Phaser.AUTO, 'main', null, true);
+        super('100', '100', Phaser.AUTO, 'main', null, true);
+       // new ScaleManager(game, 1080, 100%);
         this.showDebugHeader = () => {};
 
         this.client = new GameClient();

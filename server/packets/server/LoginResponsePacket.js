@@ -13,7 +13,8 @@ class LoginResponsePacket extends Packet {
             vel: player ? player.velocity : null,
             acc: player ? player.acceleration : null,
             aVel: player ? player.angularVelocity : null,
-            aAcc: player ? player.angularAcceleration : null
+            aAcc: player ? player.angularAcceleration : null,
+            score: player ? player.score : null
         });
     }
 }

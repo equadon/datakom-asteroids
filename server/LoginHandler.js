@@ -66,10 +66,9 @@ class LoginHandler {
         let player_info = {x: player.data.x,
                            y: player.data.y,
                            angle: player.data.angle,
-                           score: player.score};
+                           score: player.data.score};
         let users = this.db.collection('users');
-        console.log(player_info);
-        users.findOneAndUpdate({userid: player.id},
+        users.findOneAndUpdate({userid: player.dbId},
             {$set: {player_info: player_info}},
             function(err, r) {
                 if (err) throw err; // TODO: Handle error

@@ -3,10 +3,10 @@ import ClusterUpdatePacket from 'packets/server/ClusterUpdatePacket';
 import GameUpdateResponsePacket from 'packets/server/GameUpdateResponsePacket';
 import CowUpdatePacket from 'packets/server/CowUpdatePacket'
 import ScoreUpdatePacket from 'packets/server/ScoreUpdatePacket'
+import PlanetCollisionPacket from 'packets/server/PlanetCollisionPacket'
 
 import Player from 'universe/Player';
 
-import LoginHandler from 'LoginHandler'
 
 /**
  * Packet handler handles what to do with incoming packets.
@@ -14,10 +14,10 @@ import LoginHandler from 'LoginHandler'
 
 export default
 class PacketHandler {
-    constructor(server, db) {
+    constructor(server, db, loginhandler) {
         this.server = server;
         this.db = db;
-        this.loginHandler = new LoginHandler(db);
+        this.loginHandler = loginhandler;
     }
 
     get universe() {
@@ -29,7 +29,7 @@ class PacketHandler {
      * @param socket Socket making the request
      * @param data Request data with username and password
      */
-    loginRequest(socket, data) {
+    loginRequest(socket, data, onSuccess) {
         this.loginHandler.login(data, (isValid, user_data) => {
             if (isValid) {
                 let id = user_data.id;
@@ -42,12 +42,14 @@ class PacketHandler {
                 }
                 console.log('Player ' + socket.player.id + ' has joined!');
             }
-
             // Send login response
             new LoginResponsePacket(
                 isValid,
                 socket.player
             ).send(socket);
+            if (isValid) {
+                onSuccess();
+            }
         });
     }
 
@@ -73,6 +75,16 @@ class PacketHandler {
             // Update score for player that was first to remove the cow
             socket.player.score += cow.score;
             new ScoreUpdatePacket(socket.player).send(socket);
+        }
+    }
+
+    onPlanetCollision(socket, data) {
+        if (socket.player != undefined) {
+            console.log('planet collision');
+            const [x, y] = this.universe.respawnPlayer(socket.player);
+            socket.player.score = Math.max(socket.player.score - 5, 0);
+
+            new PlanetCollisionPacket(socket.player.id, x, y, socket.player.score).send(socket);
         }
     }
 

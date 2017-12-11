@@ -36,4 +36,11 @@ class Utility {
 
         return Math.sqrt(x*x + y*y);
     }
+
+    static randomPosition(bounds) {
+        const x = Utility.randomInt(bounds.x, bounds.x + bounds.width);
+        const y = Utility.randomInt(bounds.y, bounds.y + bounds.height);
+
+        return [x, y];
+    }
 }

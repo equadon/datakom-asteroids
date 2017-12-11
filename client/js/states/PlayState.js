@@ -47,6 +47,13 @@ class PlayState extends Phaser.State {
         this.load.image('star1', 'images/star1.png');
         this.load.image('sun', 'images/sun.png');
         this.load.image('planet1', 'images/planet1.png');
+        this.load.image('planet2', 'images/planet2.png');
+        this.load.image('planet3', 'images/planet3.png');
+        this.load.image('planet4', 'images/planet4.png');
+        this.load.image('planet7', 'images/planet7.png');
+        this.load.image('planet8', 'images/planet8.png');
+        this.load.image('planet9', 'images/planet9.png');
+        this.load.image('planet10', 'images/planet10.png');
         this.load.image('moon1', 'images/moon1.png');
         this.load.image('blackHole1', 'images/blackHole1.png');
         this.load.image('arrow', 'images/arrow.png');
@@ -157,11 +164,7 @@ class PlayState extends Phaser.State {
     //If this client collides on a cow.
     collidePlanet(player, planet) {
         console.log("Crashed!");
-        if (player.key.includes('ship')) {
-            this.client.planetCollision();
-        } else if (planet.key.includes('ship')) {
-            this.client.planetCollision();
-        }
+        this.client.planetCollision();
     }
 
 
@@ -274,7 +277,9 @@ class PlayState extends Phaser.State {
     }
 
     onFail(data) {
-        this.player.body.position.setTo(data.x, data.y);
+        this.player.x = data.x;
+        this.player.y = data.y;
+        this.playerScore = data.score;
     }
 
     onScoreUpdate(data) {
@@ -424,6 +429,8 @@ class PlayState extends Phaser.State {
                         console.log('adding new player: ' + obj.id);
                         this.spawnPlayer(obj.id, obj.x, obj.y, obj.angle, obj.radius);
                     }
+                } else {
+                    this.playerScore = obj.score;
                 }
                 updatedPlayers.push(obj.id + '');
             } else if (obj.type == 'cow') {
@@ -431,7 +438,7 @@ class PlayState extends Phaser.State {
                     this.spawnCow(obj.id, obj.x, obj.y);
                 }
                 updatedCows.push(obj.id + '');
-            } else {
+            } else {0
                 if (!existingCelestial.includes(obj.id + '')) {
                     this.spawnCelestial(obj.id, obj.type, obj.x, obj.y, obj.mass, obj.radius);
                 }
@@ -465,7 +472,7 @@ class PlayState extends Phaser.State {
     }
 
     render() {
-        if (true) {
+        if (DEBUG) {
             let start = 130;
             if (this.player != undefined) {
                 this.game.debug.spriteInfo(this.player, 32, 32);
@@ -482,6 +489,7 @@ class PlayState extends Phaser.State {
                 this.game.debug.text('celestial bodies: ' + Object.keys(this.celestialMap).length,
                     30, start += 20);
 
+                /*
                 this.game.debug.body(this.player);
 
                 for (let planet of this.celestial.getAll()) {
@@ -491,6 +499,7 @@ class PlayState extends Phaser.State {
                 for (let cow of this.cows.getAll()) {
                     this.game.debug.body(cow);
                 }
+                */
             }
         }
     }
