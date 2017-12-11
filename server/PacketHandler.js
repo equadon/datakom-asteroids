@@ -28,7 +28,7 @@ class PacketHandler {
      * @param socket Socket making the request
      * @param data Request data with username and password
      */
-    loginRequest(socket, data) {
+    loginRequest(socket, data, onSuccess) {
         this.loginHandler.login(data, (isValid, user_data) => {
             if (isValid) {
                 let id = user_data.id;
@@ -41,12 +41,14 @@ class PacketHandler {
                 }
                 console.log('Player ' + socket.player.id + ' has joined!');
             }
-
             // Send login response
             new LoginResponsePacket(
                 isValid,
                 socket.player
             ).send(socket);
+            if (isValid) {
+                onSuccess();
+            }
         });
     }
 

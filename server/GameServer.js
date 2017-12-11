@@ -34,18 +34,18 @@ class GameServer {
 
     onConnect(socket) {
         socket.on('login-request', (data) => {
-            this.handler.loginRequest(socket, data);
+            this.handler.loginRequest(socket, data, () => {
+                socket.on('game-update', (data) => {
+                    this.handler.playerUpdate(socket, data);
+                });
 
-            socket.on('game-update', (data) => {
-                this.handler.playerUpdate(socket, data);
-            });
+                socket.on('cow-update', (data) => {
+                    this.handler.onCowUpdate(socket, data);
+                });
 
-            socket.on('cow-update', (data) => {
-                this.handler.onCowUpdate(socket, data);
-            });
-
-            socket.on('disconnect', (reason) => {
-                this.onDisconnect(socket, reason);
+                socket.on('disconnect', (reason) => {
+                    this.onDisconnect(socket, reason);
+                });
             });
         });
     }
