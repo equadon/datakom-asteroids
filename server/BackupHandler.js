@@ -12,14 +12,14 @@ class BackupHandler {
             console.log("Starting backup...");
 
             let players = _this.server.universe.players;
-            console.log(players);
             let users = _this.db.collection('users');
-            for (let i = 0; i < players.length; i++) {
-                let player = players[i].data;
+            for (let player_key in players) {
+                let player = players[player_key].data;
                 let player_info = {x: player.x,
                     y: player.y,
                     angle: player.angle,
                     score: player.score};
+                console.log(player_info);
                 users.findOneAndUpdate({userid: player.id},
                     {$set: {player_info: player_info}});
             }
