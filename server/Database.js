@@ -1,7 +1,7 @@
 export default
 class Database {
     constructor() {
-        this.url = "mongodb://localhost:27017/mydb";
+        this.url = process.env.COWS_DB_URL;
         this.MongoClient = require('mongodb').MongoClient;
     }
 

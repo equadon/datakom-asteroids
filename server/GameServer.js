@@ -1,14 +1,13 @@
 import PacketHandler from 'PacketHandler';
-import Universe from 'universe/Universe'
+import ExpandingUniverse from 'universe/ExpandingUniverse'
 
 export default
 class GameServer {
-    constructor(db) {
+    constructor(web, db) {
         this.__nextObjectId = 1;
         this.cows = [];
-        this.server = require('http').createServer();
-        this.io = require('socket.io')(this.server, {
-            path: '/cows',
+        this.io = require('socket.io')(web.server, {
+            path: '/' + process.env.COWS_PATH,
             serveClient: false,
             pingInterval: 300000,
             pingTimeout: 50000,
@@ -16,10 +15,11 @@ class GameServer {
         });
 
         this.db = db;
-        this.universe = new Universe(this);
 
         // initiate packet handler
         this.handler = new PacketHandler(this, this.db);
+
+        this.universe = new ExpandingUniverse(this);
 
         this.io.on('connection', (o) => this.onConnect(o));
     }
@@ -28,16 +28,12 @@ class GameServer {
         return this.__nextObjectId++;
     }
 
-    start(port) {
-        this.server.listen(port);
-    }
-
     onConnect(socket) {
         socket.on('login-request', (data) => {
             this.handler.loginRequest(socket, data);
 
             socket.on('game-update', (data) => {
-                this.handler.gameUpdate(socket, data);
+                this.handler.playerUpdate(socket, data);
             });
 
             socket.on('cow-update', (data) => {
@@ -51,8 +47,7 @@ class GameServer {
     }
 
     onDisconnect(socket, reason) {
-        console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
-        this.handler.userUpdate(socket, 'disconnect');
+       // console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
         this.universe.removePlayer(socket.player);
     }
 }

@@ -2,19 +2,18 @@ import Packet from 'packets/Packet';
 
 export default
 class LoginResponsePacket extends Packet {
-    constructor(isValid, player, players) {
+    constructor(isValid, player) {
         super('login-response', {
             success: isValid,
             message: isValid ? null : "Invalid password",
-            id: player.id,
-            x: player.x,
-            y: player.y,
-            angle: player.angle,
-            velocity: player.velocity,
-            acceleration: player.acceleration,
-            angularVelocity: player.angularVelocity,
-            angularAcceleration: player.angularAcceleration,
-            players: players
+            id: player ? player.id : null,
+            x: player ? player.x : null,
+            y: player ? player.y : null,
+            angle: player ? player.angle : null,
+            vel: player ? player.velocity : null,
+            acc: player ? player.acceleration : null,
+            aVel: player ? player.angularVelocity : null,
+            aAcc: player ? player.angularAcceleration : null
         });
     }
 }

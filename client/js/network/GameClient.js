@@ -5,11 +5,13 @@ class GameClient {
     constructor() {
         if (!instance) {
             instance = this;
+
+            this.socket = io(COWS_URL, {
+                path: '/' + COWS_PATH
+            });
         }
 
-        this.socket = io('http://localhost:3000', {
-            path: '/cows'
-        });
+        return instance;
     }
 
     connect() {
@@ -30,18 +32,16 @@ class GameClient {
     }
 
     update(player) {
-        
         this.socket.emit('game-update', {
             x: player.x,
             y: player.y,
             angle: player.angle,
             id: player.id,
-            velocity: player.body.velocity,
-            acceleration: player.body.acceleration,
-            angularVelocity: player.body.angularVelocity,
-            angularAcceleration: player.body.angularAcceleration
+            vel: player.body.velocity,
+            acc: player.body.acceleration,
+            aVel: player.body.angularVelocity,
+            aAcc: player.body.angularAcceleration
             });
-        
     }
 
     gotCow(id) {
