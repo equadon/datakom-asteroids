@@ -109,7 +109,6 @@ class PlayState extends Phaser.State {
         planet.g = 200*s;
         planet.id = id;
         planet.scale.setTo(s, s);
-        planet.r = (168/2)*s;
         planet.mass = 50000*s;
         planet.body.immovable = true;
         planet.body.setCircle(84);
