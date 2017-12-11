@@ -18,8 +18,8 @@ class ExpandingUniverse {
 
         this.createTestCows();
 
-        for (let y = -5; y <= 5; y++) {
-            for (let x = -5; x <= 5; x++) {
+        for (let y = -10; y <= 10; y++) {
+            for (let x = -10; x <= 10; x++) {
                 if (!(x == 0 && y == 0)) {
                     this.populateZone(x, y);
                 }
@@ -109,12 +109,16 @@ class ExpandingUniverse {
                 let y = space * r;
                 let xrand = Utility.randomInt(x - 200, x + 200);
                 let yrand = Utility.randomInt(y - 200, y + 200);
-                let cow = new Cow(this.server.uniqueObjectId(), xrand, yrand, 0, 1);
-                this.cows[cow.id] = cow;
-                this.hash.add(cow.hash, cow.bounds);
+                this.createCow(xrand, yrand);
             }
         }
         console.log('Successfully created ' + (cols * rows) + ' cow(s)');
+    }
+
+    createCow(x, y) {
+        let cow = new Cow(this.server.uniqueObjectId(), x, y, 0, 1);
+        this.cows[cow.id] = cow;
+        this.hash.add(cow.hash, cow.bounds);
     }
 
     removeCow(id) {
@@ -125,9 +129,24 @@ class ExpandingUniverse {
 
             this.hash.remove(removedCow.hash, removedCow.bounds);
             delete this.cows[id];
+
+            if (removedCow != undefined) {
+                this.spawnCow(removedCow);
+            }
         }
 
         return removedCow;
+    }
+
+    spawnCow(oldCow) {
+        const bounds = {
+            x: oldCow.x - 300,
+            y: oldCow.y - 300,
+            width: 600,
+            height: 600
+        };
+        const [x, y] = Utility.randomPosition(bounds);
+        Utility.delay(Utility.randomInt(2000, 7000)).then(result => this.createCow(x, y));
     }
 
     getCows(player) {
