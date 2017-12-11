@@ -20,7 +20,8 @@ const BODIES = {
         planet10: [BASE*1.7, 600]
     },
     blackHoles: {
-        blackHole1: [BASE*3, 200]
+        blackHole1: [BASE*3, 200],
+        planet: [BASE*7, 84]
     },
     moons: {
         moon1: [BASE*0.5, 300]
