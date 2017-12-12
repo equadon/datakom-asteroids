@@ -48,6 +48,9 @@ class PlayState extends Phaser.State {
     }
 
     preload() {
+
+        this.game.load.audio('mainmusic', 'images/game-music.mp3');
+        this.game.load.audio('cow-sound', 'images/cowshort.mp3');
         this.load.image('ship', 'images/rocket-green-flames.png'); //OBS
         this.load.image('cow', 'images/Ko2.png');
         this.load.image('planet', 'images/planet.png');
@@ -61,9 +64,10 @@ class PlayState extends Phaser.State {
         this.load.image('planet8', 'images/planet8.png');
         this.load.image('planet9', 'images/planet9.png');
         this.load.image('planet10', 'images/planet10.png');
+        this.load.image('planet11', 'images/planet11.png');
         this.load.image('moon1', 'images/moon1.png');
         this.load.image('moon2', 'images/moon2.png');
-        this.load.image('blackHole1', 'images/blackHole1.png');
+        this.load.image('blackHole1', 'images/blackhole.png');
         this.load.image('arrow', 'images/arrow.png');
         this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
         this.load.image('arrow', 'images/arrow.png');
@@ -82,6 +86,17 @@ class PlayState extends Phaser.State {
     //Vi kommer ha ett spelar-id som kopplas till ens användare. Som lagras i databasen.
 
     create() {
+
+        //Add musics
+        this.music = this.game.add.audio('mainmusic');
+        this.music.play();
+        this.music.loopFull();
+
+        this.cowsound = this.game.add.audio('cow-sound');
+        this.cowsound.volume = 0.3;
+
+
+        //Camera config
         this.game.camera.bounds = null;
 
         //Group of ship objects
@@ -181,10 +196,12 @@ class PlayState extends Phaser.State {
     collideCow(player, cow) {
         console.log("Got cow!");
         if (player.key.includes('cow')) {
+            this.cowsound.play();
             player.pendingDestroy = true;
             console.log("collision with cow id:nr" + player.id);
             this.client.gotCow(player.id);
         } else if (cow.key.includes('cow')) {
+            this.cowsound.play();
             cow.pendingDestroy = true;
             console.log("cow id " + cow.id);
             this.client.gotCow(cow.id);
