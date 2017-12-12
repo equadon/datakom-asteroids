@@ -64,6 +64,7 @@ class PlayState extends Phaser.State {
         this.load.image('planet9', 'images/planet9.png');
         this.load.image('planet10', 'images/planet10.png');
         this.load.image('moon1', 'images/moon1.png');
+        this.load.image('moon2', 'images/moon2.png');
         this.load.image('blackHole1', 'images/blackHole1.png');
         this.load.image('arrow', 'images/arrow.png');
         this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
@@ -71,8 +72,12 @@ class PlayState extends Phaser.State {
         this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
 
 
-        this.client.on('connect', (obj) => {this.onConnect(obj) });
-        this.client.on('disconnect', (obj) => {this.onDisconnect(obj) });
+        this.client.on('connect', (obj) => {
+            this.onConnect(obj)
+        });
+        this.client.on('disconnect', (obj) => {
+            this.onDisconnect(obj)
+        });
     }
 
     //Vi kommer ha ett spelar-id som kopplas till ens användare. Som lagras i databasen.
@@ -96,7 +101,11 @@ class PlayState extends Phaser.State {
         this.maxTime = 0.1;
         this.updateServer = this.maxTime;
 
-        let textStyle = {font: "16px Arial", fill: "#ffffff", align: "center"};
+        let textStyle = {
+            font: "16px Arial",
+            fill: "#ffffff",
+            align: "center"
+        };
         this.scoreTitle = this.game.add.text(this.game.width * 0.8, 30, "SCORE: ", textStyle);
         this.scoreTitle.fixedToCamera = true;
         this.scoreTitle.anchor.setTo(0.5, 0.5);
@@ -166,8 +175,7 @@ class PlayState extends Phaser.State {
 
         //Enable physics on ship
         this.physics.arcade.enable(ship);
-        ship.body.maxVelocity = new Phaser.Point(250, 250);
-        ship.body.drag = new Phaser.Point(30, 30);
+        ship.body.maxVelocity = new Phaser.Point(350, 350);
 
         //Set hitbox
         ship.body.setCircle(80, 88, 0);
@@ -206,15 +214,19 @@ class PlayState extends Phaser.State {
 
         for (let planet of planetsArray) {
             let distance = Phaser.Math.distance(player.x, player.y, planet.x, planet.y);
-            let angle = Phaser.Math.angleBetween(player.x, player.y, planet.x, planet.y);
-            let a_x = Math.cos(angle) * planet.g * (planet.mass / (distance * distance));
-            let a_y = Math.sin(angle) * planet.g * (planet.mass / (distance * distance));
+            let a_x = 0;
+            let a_y = 0;
+
+            if (distance < (planet.mass)/10000) {
+                let angle = Phaser.Math.angleBetween(player.x, player.y, planet.x, planet.y);
+                a_x = Math.cos(angle) * (planet.mass / (distance * distance));
+                a_y = Math.sin(angle) * (planet.mass / (distance * distance));
+            }
+
             total_a_x += a_x;
             total_a_y += a_y;
         }
 
-        //player.body.acceleration.x = total_a_x;
-        //player.body.acceleration.y = total_a_y;
         return [total_a_x, total_a_y];
     }
 
@@ -239,11 +251,10 @@ class PlayState extends Phaser.State {
         celestial.id = id;
         celestial.mass = mass;
         celestial.type = type;
-        celestial.g = 200;
         this.physics.arcade.enable(celestial);
         celestial.anchor.setTo(0.5, 0.5);
         celestial.body.immovable = true;
-        celestial.body.setCircle(celestial.height/2);
+        celestial.body.setCircle(celestial.height / 2);
 
         this.celestial.add(celestial);
         this.celestialMap[id] = celestial;
@@ -339,7 +350,7 @@ class PlayState extends Phaser.State {
             for (let [tX, tY] of data.clusters) {
                 if (!camBounds.contains(tX, tY)) {
                     let arrow = this.game.add.sprite(this.game.world.centerX,
-                                                     this.game.world.centerY, 'arrow');
+                        this.game.world.centerY, 'arrow');
                     arrow.anchor.setTo(1.0, 0.0);
                     arrow.fixedToCamera = true;
                     arrow.target = [tX, tY];
@@ -358,13 +369,13 @@ class PlayState extends Phaser.State {
             const tX = arrow.target[0] - this.player.x;
             const tY = arrow.target[1] - this.player.y;
 
-            const scaling = Math.min(this.camera.width/2, this.camera.height/2) / Math.sqrt(tX*tX + tY*tY);
+            const scaling = Math.min(this.camera.width / 2, this.camera.height / 2) / Math.sqrt(tX * tX + tY * tY);
 
             const camX = scaling * tX;
             const camY = scaling * tY;
 
-            const offX = camX + this.camera.width/2;
-            const offY = camY + this.camera.height/2;
+            const offX = camX + this.camera.width / 2;
+            const offY = camY + this.camera.height / 2;
 
             arrow.rotation = this.physics.arcade.angleToXY(this.player, arrow.target[0], arrow.target[1]);
             arrow.cameraOffset.setTo(offX, offY);
@@ -384,11 +395,10 @@ class PlayState extends Phaser.State {
         //Rotations
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             //  Move to the left
-            this.player.body.angularVelocity = -150;
-
+            this.player.body.angularVelocity = -250;
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             //  Move to the right
-            this.player.body.angularVelocity = 150;
+            this.player.body.angularVelocity = 250;
         } else {
             this.player.body.angularVelocity = 0;
         }
@@ -480,7 +490,8 @@ class PlayState extends Phaser.State {
                     this.spawnCow(obj.id, obj.x, obj.y);
                 }
                 updatedCows.push(obj.id + '');
-            } else {0
+            } else {
+                0
                 if (!existingCelestial.includes(obj.id + '')) {
                     this.spawnCelestial(obj.id, obj.type, obj.x, obj.y, obj.mass, obj.radius);
                 }

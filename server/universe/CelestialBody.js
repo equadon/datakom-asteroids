@@ -3,25 +3,28 @@ import Utility from 'Utility'
 
 const MASS_DIFF = 0.10; // mass can differ by at most +-10%
 
+const BASE = 5000000;
+
 const BODIES = {
     stars: {
-        sun: [60000, 1000] // mass, radius
+        sun: [BASE*2, 1000] // mass, radius
     },
     planets: {
-        planet1: [45000, 600],
-        planet2: [45000, 600],
-        planet3: [45000, 600],
-        planet4: [45000, 600],
-        planet7: [45000, 600],
-        planet8: [45000, 600],
-        planet9: [45000, 600],
-        planet10: [45000, 600]
+        planet1: [BASE*1, 600],
+        planet2: [BASE*1.1, 600],
+        planet3: [BASE*1.2, 600],
+        planet4: [BASE*1.3, 600],
+        planet7: [BASE*1.4, 600],
+        planet8: [BASE*1.5, 600],
+        planet9: [BASE*1.6, 600],
+        planet10: [BASE*1.7, 600]
     },
     blackHoles: {
-        blackHole1: [100000, 200]
+        blackHole1: [BASE*3, 200]
     },
     moons: {
-        moon1: [25000, 300]
+        moon1: [BASE*0.5, 300],
+        moon2: [BASE*0.5, 300]
     }
 };
 
