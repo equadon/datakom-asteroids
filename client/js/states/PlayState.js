@@ -89,11 +89,12 @@ class PlayState extends Phaser.State {
 
         //Add musics
         this.music = this.game.add.audio('mainmusic');
+        this.music.volume = 0.5;
         this.music.play();
         this.music.loopFull();
 
         this.cowsound = this.game.add.audio('cow-sound');
-        this.cowsound.volume = 0.3;
+        this.cowsound.volume = 0.2;
 
 
         //Camera config
