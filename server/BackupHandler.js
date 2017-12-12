@@ -9,8 +9,6 @@ class BackupHandler {
     startBackup() {
         let _this = this;
         this.timeout = setInterval(function() {
-            console.log("Starting backup...");
-
             let players = _this.server.universe.players;
             let users = _this.db.collection('users');
             for (let player_key in players) {

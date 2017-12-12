@@ -31,7 +31,7 @@ class PacketHandler {
      */
     loginRequest(socket, data, onSuccess) {
         this.loginHandler.login(data, (isValid, user_data) => {
-            let exists = this.universe.playerExists(user_data.id);
+            let exists = isValid && this.universe.playerExists(user_data.id);
             if (isValid && !exists) {
                 let id = user_data.id;
                 if (user_data.info) {
@@ -40,7 +40,7 @@ class PacketHandler {
                 } else {
                     socket.player = this.universe.createPlayer(socket, id);
                 }
-                console.log('Player ' + socket.player.id + ' has joined!');
+                console.log('Player ' + socket.player.dbId + ' has joined!');
             }
             new LoginResponsePacket(
                 isValid && !exists,
@@ -80,7 +80,6 @@ class PacketHandler {
 
     onPlanetCollision(socket, data) {
         if (socket.player != undefined) {
-            console.log('planet collision');
             const [x, y] = this.universe.respawnPlayer(socket.player);
             socket.player.score = Math.max(socket.player.score - 5, 0);
 
