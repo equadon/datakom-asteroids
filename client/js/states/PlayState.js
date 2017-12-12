@@ -3,8 +3,8 @@ import GameClient from 'network/GameClient'
 export default
 class PlayState extends Phaser.State {
 
-    init() {
-
+    init(login) {
+        this.login = login;
         this.client = new GameClient();
 
         this.client.on('login-response', (obj) => {
@@ -97,7 +97,7 @@ class PlayState extends Phaser.State {
         this.scoreValue.anchor.setTo(0.5, 0.5);
 
         this.playerScore = 0;
-
+        this.onLoginResponse(this.login);
     }
 
     //Spawn functions

@@ -43,8 +43,8 @@ $(document).ready(function() {
 
         //game.start();
         setTimeout(function() { $(".milk-bottle").hide();  }, 4000);
-        setTimeout(function() { $("#main").show();  }, 4000);
-        setTimeout(function() {   game.start(); }, 4000);
+        // setTimeout(function() { $("#main").show();  }, 4000);
+        // setTimeout(function() {   game.start(); }, 4000);
         setTimeout(function() {game.client.login(username, password); }, 4500);
 
 
@@ -65,8 +65,8 @@ $(document).ready(function() {
 function onLoginResponse(login) {
     if (login.success) {
         console.log('MAIN: Login successful!');
-
-
+        $("#main").show();
+        setTimeout(function() {   game.start(login); }, 1000);
     } else {
         console.log('Login failed: ' + login.message);
         $(".login-box").show();
