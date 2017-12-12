@@ -1,11 +1,18 @@
+const seed = 'cows are awesome';
+const rand = require('random-seed').create(seed);
+
 export default
 class Utility {
+    static random() {
+        return rand.random();
+    }
+
     static randomInt(min, max) {
-        return Math.floor(Math.random() * (max - min) + min);
+        return Math.floor(rand.random() * (max - min) + min);
     }
 
     static randomFloat(min, max) {
-        return Math.random() * (max - min) + min;
+        return rand.random() * (max - min) + min;
     }
 
     static randomElement(elements) {

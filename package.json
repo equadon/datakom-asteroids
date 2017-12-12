@@ -34,6 +34,7 @@
         "express": "^4.16.2",
         "mongodb": "^2.2.33",
         "phaser-ce": "^2.9.2",
+        "random-seed": "^0.3.0",
         "socket.io": "^2.0.4"
     }
 }

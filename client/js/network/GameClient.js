@@ -9,6 +9,7 @@ class GameClient {
             this.socket = io(COWS_URL, {
                 path: COWS_PATH
             });
+            this.socket.connect();
         }
 
         return instance;
@@ -19,10 +20,6 @@ class GameClient {
             instance = new GameClient();
         }
         return instance;
-    }
-
-    connect() {
-        this.socket.connect();
     }
 
     relogin() {

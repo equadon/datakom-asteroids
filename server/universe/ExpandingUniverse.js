@@ -178,7 +178,7 @@ class ExpandingUniverse {
     populateZone(x, y) {
         const bounds = this.hash.cellBounds(x, y);
 
-        const pCentralBody = Math.random();
+        const pCentralBody = Utility.random();
 
         if (pCentralBody < 0.4) {
             // Star
@@ -203,7 +203,7 @@ class ExpandingUniverse {
     _populateStar(star, bounds) {
         let probPlanet = 0.8;
 
-        while (Math.random() < probPlanet) {
+        while (Utility.random() < probPlanet) {
             let planet = CelestialBody.randomPlanet(this.server.uniqueObjectId(), bounds, star);
             this.addCelestialBody(planet);
             this._populatePlanet(planet, bounds);
@@ -214,7 +214,7 @@ class ExpandingUniverse {
     _populateBlackHole(blackHole, bounds) {
         let probPlanet = 0.2;
 
-        while (Math.random() < probPlanet) {
+        while (Utility.random() < probPlanet) {
             let planet = CelestialBody.randomPlanet(this.server.uniqueObjectId(), bounds, blackHole);
             this.addCelestialBody(planet);
             this._populatePlanet(planet, bounds);
@@ -225,7 +225,7 @@ class ExpandingUniverse {
     _populatePlanet(planet, bounds) {
         let probMoon = 0.3;
 
-        while (Math.random() < probMoon) {
+        while (Utility.random() < probMoon) {
             let moon = CelestialBody.randomMoon(this.server.uniqueObjectId(), bounds, planet);
             this.addCelestialBody(moon);
             probMoon = 0.2 * probMoon;

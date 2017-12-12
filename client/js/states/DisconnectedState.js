@@ -5,7 +5,6 @@ class DisconnectedState extends Phaser.State {
     init(login) {
         this.client = GameClient.instance;
         this.client.socket.on('connect', (socket) => this.onConnect(socket));
-        this.client.socket.on('login-response', (data) => this.onLoginResponse(data));
     }
 
     create() {
@@ -26,9 +25,5 @@ class DisconnectedState extends Phaser.State {
 
     onConnect(socket) {
         this.client.relogin();
-    }
-
-    onLoginResponse(login) {
-        this.state.start('Play', true, false, login);
     }
 }

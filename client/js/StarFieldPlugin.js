@@ -120,8 +120,13 @@ class StarFieldPlugin extends Phaser.Plugin {
     destroy() {
         this.active = false;
         this.visible = false;
-        this.bitmap.clear();
-        this.bitmap = null;
-        this.sprite.destroy();
+        if (this.bitmap) {
+            this.bitmap.clear();
+            this.bitmap = null;
+        }
+
+        if (this.sprite) {
+            this.sprite.destroy();
+        }
     }
 }

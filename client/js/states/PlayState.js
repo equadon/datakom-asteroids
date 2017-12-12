@@ -17,9 +17,6 @@ class PlayState extends Phaser.State {
         this.client = new GameClient();
         this.stars = null;
 
-        this.client.on('login-response', (obj) => {
-            this.onLoginResponse(obj)
-        });
         this.client.on('game-update', (obj) => {
             this.onUpdateResponse(obj)
         });
@@ -281,13 +278,10 @@ class PlayState extends Phaser.State {
     //login.players = array with player id:s
     onLoginResponse(login) {
         if (login.success) {
-            console.log('Login successful!');
             this.player = this.spawnPlayer(login.id, login.x, login.y, login.angle);
             this.game.camera.follow(this.player, Phaser.Camera.FOLLOW_LOCKON, 0.1, 0.1);
 
             this.toggleStars();
-        } else {
-            console.log('Login failed: ' + login.message);
         }
     }
 
