@@ -65,27 +65,30 @@ class SpatialHash {
      * @returns Array of objects matching query
      */
     query(bounds, f=null) {
-        let objects = [];
+        let results = [];
+        let ids = {};
         let keys = this._keys(bounds);
         for (let key of keys) {
-            // Filter objects
+            // Filter results
             let objs = this.hash[key];
 
             if (objs != undefined) {
                 for (let obj of objs) {
                     if (f != null) {
-                        if (f(obj) && !objects.includes(obj)) {
-                            objects.push(obj);
+                        if (f(obj) && !(obj.id in ids)) {
+                            results.push(obj);
+                            ids[obj.id] = obj;
                         }
                     } else {
-                        if (!objects.includes(obj)) {
-                            objects.push(obj);
+                        if (!(obj.id in ids)) {
+                            results.push(obj);
+                            ids[obj.id] = obj;
                         }
                     }
                 }
             }
         }
-        return objects;
+        return results;
     }
 
     /**
