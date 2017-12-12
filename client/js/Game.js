@@ -17,8 +17,8 @@ class Game extends Phaser.Game {
         //this.stage.disableVisibilityChange = true;
     }
 
-    start() {
-        this.state.start('Play');
+    start(login) {
+        this.state.start('Play', true, false, login);
     }
 }
 

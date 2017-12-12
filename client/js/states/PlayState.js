@@ -12,7 +12,8 @@ const BG_STAR_SPEED = {
 export default
 class PlayState extends Phaser.State {
 
-    init() {
+    init(login) {
+        this.login = login;
         this.client = new GameClient();
         this.stars = null;
 
@@ -71,7 +72,6 @@ class PlayState extends Phaser.State {
         this.load.image('arrow', 'images/arrow.png');
         this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
 
-
         this.client.on('connect', (obj) => {
             this.onConnect(obj)
         });
@@ -118,6 +118,8 @@ class PlayState extends Phaser.State {
 
         this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
         this.input.keyboard.onUpCallback = (e) => this.onKeyUp(e);
+
+        this.onLoginResponse(this.login);
     }
 
     onKeyUp(e) {
@@ -397,10 +399,10 @@ class PlayState extends Phaser.State {
         //Rotations
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
             //  Move to the left
-            this.player.body.angularVelocity = -250;
+            this.player.body.angularVelocity = -200;
         } else if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
             //  Move to the right
-            this.player.body.angularVelocity = 250;
+            this.player.body.angularVelocity = 200;
         } else {
             this.player.body.angularVelocity = 0;
         }
