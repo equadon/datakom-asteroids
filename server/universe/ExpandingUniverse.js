@@ -98,6 +98,11 @@ class ExpandingUniverse {
         return [x, y];
     }
 
+    playerExists(playerID) {
+        let objs = Object.values(this.players);
+        return objs.filter(e => e.dbId === playerID).length > 0;
+    }
+
     createTestCows() {
         const cols = 100;
         const rows = 100;

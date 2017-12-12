@@ -20,8 +20,6 @@ class BackupHandler {
                     y: player.y,
                     angle: player.angle,
                     score: player.score};
-                console.log(player_info);
-                console.log(db_id);
                 users.findOneAndUpdate({userid: db_id},
                     {$set: {player_info: player_info}});
             }

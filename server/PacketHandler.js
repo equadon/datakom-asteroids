@@ -31,21 +31,21 @@ class PacketHandler {
      */
     loginRequest(socket, data, onSuccess) {
         this.loginHandler.login(data, (isValid, user_data) => {
-            if (isValid) {
+            let exists = this.universe.playerExists(user_data.id);
+            if (isValid && !exists) {
                 let id = user_data.id;
                 if (user_data.info) {
                     let info = user_data.info;
-                    // Create player
                     socket.player = this.universe.createPlayer(socket, id, info.x, info.y, info.angle, info.score);
                 } else {
                     socket.player = this.universe.createPlayer(socket, id);
                 }
                 console.log('Player ' + socket.player.id + ' has joined!');
             }
-            // Send login response
             new LoginResponsePacket(
-                isValid,
-                socket.player
+                isValid && !exists,
+                socket.player,
+                exists
             ).send(socket);
             if (isValid) {
                 onSuccess();
