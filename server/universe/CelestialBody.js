@@ -17,7 +17,8 @@ const BODIES = {
         planet7: [BASE*1.4, 600],
         planet8: [BASE*1.5, 600],
         planet9: [BASE*1.6, 600],
-        planet10: [BASE*1.7, 600]
+        planet10: [BASE*1.7, 600],
+        planet11: [BASE*1.5, 600]
     },
     blackHoles: {
         blackHole1: [BASE*3, 200]
