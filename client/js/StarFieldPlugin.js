@@ -55,7 +55,12 @@ class StarFieldPlugin extends Phaser.Plugin {
     }
 
     update() {
-        const [velX, velY] = [this.player.body.velocity.x, this.player.body.velocity.y];
+        let velX, velY;
+        if (this.player && this.player.body) {
+            [velX, velY] = [this.player.body.velocity.x, this.player.body.velocity.y];
+        } else {
+            [velX, velY] = [0, 100];
+        }
 
         if (velX != 0 || velY != 0) {
             for (let i = 0; i < this.bgLayers.length; i++) {
@@ -113,6 +118,8 @@ class StarFieldPlugin extends Phaser.Plugin {
     }
 
     destroy() {
+        this.active = false;
+        this.visible = false;
         this.bitmap.clear();
         this.bitmap = null;
         this.sprite.destroy();

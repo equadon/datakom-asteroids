@@ -70,7 +70,9 @@ class PlayState extends Phaser.State {
         this.load.image('arrow', 'images/arrow.png');
         this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
         this.load.image('arrow', 'images/arrow.png');
-        this.game.load.spritesheet('rocket_flame', '/images/rocket-animation-horizontal.png', 250, 176);
+        this.load.spritesheet('connect', '/images/connecting.png', 100, 61);
+        this.load.bitmapFont('cabin-bold-48', '/images/cabin-bold-48.PNG', '/images/cabin-bold-48.fnt');
+        this.load.bitmapFont('cabin-bold-24', '/images/cabin-bold-24.PNG', '/images/cabin-bold-24.fnt');
 
         this.client.on('connect', (obj) => {
             this.onConnect(obj)
@@ -101,18 +103,11 @@ class PlayState extends Phaser.State {
         this.maxTime = 0.1;
         this.updateServer = this.maxTime;
 
-        let textStyle = {
-            font: "16px Arial",
-            fill: "#ffffff",
-            align: "center"
-        };
-        this.scoreTitle = this.game.add.text(this.game.width * 0.8, 30, "SCORE: ", textStyle);
+        this.scoreTitle = this.game.add.bitmapText(this.game.width, 0, 'cabin-bold-24', 'Score: ', 24);
+        this.scoreTitle.position.x = this.game.width - this.scoreTitle.width - 20;
+        this.scoreTitle.position.y = this.scoreTitle.height + 5;
         this.scoreTitle.fixedToCamera = true;
         this.scoreTitle.anchor.setTo(0.5, 0.5);
-
-        this.scoreValue = this.game.add.text(this.game.width * 0.9, 30, "0", textStyle);
-        this.scoreValue.fixedToCamera = true;
-        this.scoreValue.anchor.setTo(0.5, 0.5);
 
         this.playerScore = 0;
 
@@ -278,6 +273,8 @@ class PlayState extends Phaser.State {
 
     onDisconnect() {
         console.log('Client disconnected');
+        this.stars.destroy();
+        this.game.state.start('Disconnected', true, false, null);
     }
 
     //Spawn
@@ -387,7 +384,7 @@ class PlayState extends Phaser.State {
     }
 
     update() {
-        this.scoreValue.setText(this.playerScore);
+        this.scoreTitle.setText(`Score: ${this.playerScore}`);
 
         if (this.player == undefined) {
             return;

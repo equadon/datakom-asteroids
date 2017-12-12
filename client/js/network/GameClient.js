@@ -14,12 +14,26 @@ class GameClient {
         return instance;
     }
 
+    static get instance() {
+        if (instance == null) {
+            instance = new GameClient();
+        }
+        return instance;
+    }
+
     connect() {
         this.socket.connect();
     }
 
+    relogin() {
+        console.log('reconnecting...');
+        this.login(this.username, this.password);
+    }
+
     login(username, password) {
         console.log('Logging in user: ' + username);
+        this.username = username;
+        this.password = password;
 
         this.socket.emit('login-request', {
             username: username,
