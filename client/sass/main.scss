@@ -22,17 +22,16 @@ canvas {
     margin: auto;
 }
 
-#empty-box {
+#cover-box {
     height: 50vh;
     text-align:center;
     width: 100%;
 
-
 }
 
-#display-cow {
+#success-login{
     margin: 10vh 0 auto 0;
-    padding-top: 3em;
+    padding-top: 3vh;
 
 }
 
@@ -128,6 +127,12 @@ body {
 
     width: 15%;
     height: 15%;
+}
+#failed-login{
+    margin: 0 auto;
+    padding-top: 25vh;
+    width: 30%;
+    height:30%;
 }
 
 .mask-rect {

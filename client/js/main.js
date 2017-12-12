@@ -5,17 +5,6 @@ import GameClient from 'network/GameClient';
 
 let game = new Game();
 let client = new GameClient();
-//game.start();
-
-$(document).ready(function(){
-    $("#hide").click(function(){
-        $("#main").hide();
-    });
-    $("#show").click(function(){
-        $("p").show();
-    });
-});
-
 
 
 $(document).ready(function() {
@@ -23,41 +12,31 @@ $(document).ready(function() {
     client.on('login-response', (obj) => {
         onLoginResponse(obj)
     });
-
+    //Hide divs which should not be shown on the start screen before login
     $("#main").hide();
-    $("#empty-box").hide();
-    $(".milk-bottle").hide();
+    $("#cover-box").hide();
+    $(".milk-bottle").hide();  //Loading icon
+    $("#failed-login").hide();
 
+
+    //When the login button is pressed
     $("button").click(function(event){
+        $("#failed-login").hide();
         $(".milk-bottle").show();
 
-        $("#empty-box").show();
-        $(".login-box").hide();
-        //$(".login-box").hide();
+        $("#cover-box").show();    //Shown to cover up the space by the login-box, otherwise the game screen doesnt show right.
+        $("#success-login").hide(); //We don´t want to show the "sucessfull-login" yet
+        $(".login-box").hide();    //Hide the loginbox after we've clicked "login"
+
         var username = $('#username').val();
         var password = $('#password').val();
  
         event.preventDefault();
-        //game.client.login(username, password); //Send login to client
-        showGame();
 
-        //game.start();
+        showGame(); //Effect so that we scroll down
+
         setTimeout(function() { $(".milk-bottle").hide();  }, 4000);
-        // setTimeout(function() { $("#main").show();  }, 4000);
-        // setTimeout(function() {   game.start(); }, 4000);
         setTimeout(function() {game.client.login(username, password); }, 4500);
-
-
-
-
-
-        /*setTimeout(function() { $(".milk-bottle").hide();  }, 3500);
-        setTimeout(function() { $("#main").show();  }, 4000);
-        setTimeout(function() {   game.start(); }, 4500);
-
-
-        setTimeout(function() {game.client.login(username, password); }, 6000);*/
-
 
     });
 });
@@ -65,24 +44,23 @@ $(document).ready(function() {
 function onLoginResponse(login) {
     if (login.success) {
         console.log('MAIN: Login successful!');
-        $("#main").show();
-        setTimeout(function() {   game.start(login); }, 1000);
+        $("#main").show();  //display the game-div. Called main when using phaser
+        setTimeout(function() {   game.start(login); }, 1500);
+        $("#success-login").show();   //Show the "successful login"-cow
     } else {
         console.log('Login failed: ' + login.message);
         $(".login-box").show();
+        $("#failed-login").show();
+        $("#cover-box").hide();
     }
 };
 
 function showGame() {
-
-    //document.getElementById("gameContainer").style.display = "block";
     window.scroll({
         top: 2800,
         left: 0,
         behavior: 'smooth'
     });
-
-    //setTimeout(function() {  new Game().start(); }, 10);
-
+    
 };
 
