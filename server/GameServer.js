@@ -1,3 +1,4 @@
+import Utility from 'Utility'
 import LoginHandler from 'LoginHandler';
 import PacketHandler from 'PacketHandler';
 import BackupHandler from 'BackupHandler';
@@ -46,6 +47,11 @@ class GameServer {
                 socket.on('disconnect', (reason) => {
                     this.onDisconnect(socket, reason);
                 });
+
+                // test
+                Utility.delay(4000).then(result => socket.emit('game-stats', this.universe.stats));
+
+                this.io.emit('game-stats', this.universe.stats);
             });
 
             socket.on('planet-collision', (data) => {
@@ -58,6 +64,7 @@ class GameServer {
        // console.log('Client ' + socket.player.id + ' disconnected: ' + reason);
         this.loginhandler.logout(socket.player, () => {
             this.universe.removePlayer(socket.player);
+            this.io.emit('game-stats', this.universe.stats);
         });
     }
 }

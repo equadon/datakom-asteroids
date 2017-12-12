@@ -34,6 +34,9 @@ class PlayState extends Phaser.State {
         this.client.on('planet-collision', (obj) => {
             this.onFail(obj);
         });
+        this.client.on('game-stats', (obj) => {
+            this.onUpdateStats(obj);
+        });
 
         this.game.stage.disableVisibilityChange = true;
         this.game.physics.arcade.skipQuadTree = true;
@@ -117,10 +120,16 @@ class PlayState extends Phaser.State {
         this.updateServer = this.maxTime;
 
         this.scoreTitle = this.game.add.bitmapText(this.game.width, 0, 'cabin-bold-24', 'Score: ', 24);
-        this.scoreTitle.position.x = this.game.width - this.scoreTitle.width - 20;
-        this.scoreTitle.position.y = this.scoreTitle.height + 5;
+        this.scoreTitle.position.x = this.game.width - 30;
+        this.scoreTitle.position.y = 20;
         this.scoreTitle.fixedToCamera = true;
-        this.scoreTitle.anchor.setTo(0.5, 0.5);
+        this.scoreTitle.anchor.setTo(1.0, 0.0);
+
+        this.clientCount = this.game.add.bitmapText(0, 0, 'cabin-bold-24', 'Online: -', 24);
+        this.clientCount.position.x = 20;
+        this.clientCount.position.y = 20;
+        this.clientCount.fixedToCamera = true;
+        this.clientCount.anchor.setTo(0.0, 0.0);
 
         this.playerScore = 0;
 
@@ -144,6 +153,10 @@ class PlayState extends Phaser.State {
                 this.game.scale.startFullScreen(false);
             }
         }
+    }
+
+    onUpdateStats(stats) {
+        this.clientCount.setText(`Online: ${stats.players}`);
     }
 
     //Spawn functions

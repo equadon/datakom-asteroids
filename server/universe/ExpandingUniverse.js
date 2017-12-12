@@ -31,6 +31,12 @@ class ExpandingUniverse {
         this.updateClusters();
     }
 
+    get stats() {
+        return {
+            players: Object.keys(this.players).length
+        }
+    }
+
     getObjects(player) {
         let objects = this.hash.query(player.viewport);
         let visible = [];
