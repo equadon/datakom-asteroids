@@ -289,7 +289,9 @@ class PlayState extends Phaser.State {
     onDisconnect() {
         console.log('Client disconnected');
         this.music.stop();
-        this.stars.destroy();
+        if (this.stars != null) {
+            this.stars.destroy();
+        }
         this.game.state.start('Disconnected', true, false, null);
     }
 
