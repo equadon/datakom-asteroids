@@ -1,11 +1,20 @@
 import GameClient from 'network/GameClient'
+import StarFieldPlugin from 'StarFieldPlugin'
+
+const BG_STAR_LAYERS = 12;
+const BG_STAR_COUNT = 16;
+const BG_STAR_RADIUS = 2.0;
+const BG_STAR_SPEED = {
+    x: 30,
+    y: 30
+};
 
 export default
 class PlayState extends Phaser.State {
 
     init() {
-
         this.client = new GameClient();
+        this.stars = null;
 
         this.client.on('login-response', (obj) => {
             this.onLoginResponse(obj)
@@ -98,6 +107,24 @@ class PlayState extends Phaser.State {
 
         this.playerScore = 0;
 
+        this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+        this.input.keyboard.onUpCallback = (e) => this.onKeyUp(e);
+    }
+
+    onKeyUp(e) {
+        if (e.keyCode == Phaser.Keyboard.S) {
+            this.toggleStars();
+        } else if (e.keyCode == Phaser.Keyboard.F) {
+            if (this.game.scale.isFullScreen) {
+                this.game.scale.stopFullScreen();
+                this.game.transparent = true;
+                this.game.stage.backgroundColor = null;
+            } else {
+                this.game.transparent = false;
+                this.game.stage.backgroundColor = '#631375';
+                this.game.scale.startFullScreen(false);
+            }
+        }
     }
 
     //Spawn functions
@@ -252,6 +279,20 @@ class PlayState extends Phaser.State {
         }
     }
 
+    toggleStars() {
+        if (this.stars == null) {
+            this.stars = this.game.plugins.add(StarFieldPlugin, this.player, BG_STAR_LAYERS,
+                                               BG_STAR_COUNT, BG_STAR_RADIUS, BG_STAR_SPEED);
+            this.game.add.tween(this.stars.sprite).to( { alpha: 1 }, 1500, Phaser.Easing.Linear.None, true);
+        } else {
+            let t = this.game.add.tween(this.stars.sprite).to( { alpha: 0 }, 500, Phaser.Easing.Linear.None, true);
+            t.onComplete.add(() => {
+                this.game.plugins.remove(this.stars, true);
+                this.stars = null;
+            }, this);
+        }
+    }
+
     //Update the position of all ships and add flames if they are accelerating
     // TODO: Add new players/cows/planets and remove those no longer in the list
     onUpdateResponse(data) {
@@ -331,7 +372,6 @@ class PlayState extends Phaser.State {
     }
 
     update() {
-
         this.scoreValue.setText(this.playerScore);
 
         if (this.player == undefined) {

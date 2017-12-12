@@ -11,15 +11,15 @@ export default
 class ExpandingUniverse {
     constructor(server) {
         this.server = server;
-        this.hash = new SpatialHash(1300);
+        this.hash = new SpatialHash(1500);
         this.players = {};
         this.cows = {};
         this.celestial = {};
 
         this.createTestCows();
 
-        for (let y = -10; y <= 10; y++) {
-            for (let x = -10; x <= 10; x++) {
+        for (let y = -20; y <= 20; y++) {
+            for (let x = -20; x <= 20; x++) {
                 if (!(x == 0 && y == 0)) {
                     this.populateZone(x, y);
                 }
@@ -175,17 +175,17 @@ class ExpandingUniverse {
 
         const pCentralBody = Math.random();
 
-        if (pCentralBody < 0.3) {
+        if (pCentralBody < 0.4) {
             // Star
             const star = CelestialBody.randomStar(this.server.uniqueObjectId(), bounds);
             this.addCelestialBody(star);
             this._populateStar(star, bounds);
-        } else if (pCentralBody < 0.65) {
+        } else if (pCentralBody < 0.75) {
             // Lost planet
             const planet = CelestialBody.randomPlanet(this.server.uniqueObjectId(), bounds);
             this.addCelestialBody(planet);
             this._populatePlanet(planet, bounds);
-        } else if (pCentralBody < 0.75) {
+        } else if (pCentralBody < 0.85) {
             // Black hole
             const blackHole = CelestialBody.randomBlackHole(this.server.uniqueObjectId(), bounds);
             this.addCelestialBody(blackHole);
